@@ -419,6 +419,7 @@ body {
   <div id="boot-sub">EINE STUDIE ÜBER GEHORSAM · OHNE ENDE · OHNE INFOTAFELN · NUR GESPRÄCH</div>
   <div id="boot-log"></div>
   <div id="boot-bar"><div id="boot-fill"></div></div>
+  <button class="stage-btn" id="boot-start" style="display:none;">SPIEL STARTEN (TON AKTIVIEREN)</button>
 </div>
 
 <!-- HUD -->
@@ -685,7 +686,10 @@ function stopTTS() {
 
 /* Browserstimme: funktioniert immer, braucht keinen Schlüssel. */
 function speakBrowser(text) {
-  if (typeof speechSynthesis === 'undefined') return false;
+  if (typeof speechSynthesis === 'undefined') {
+    ttsStatus('BROWSER: KEINE SPRACHAUSGABE VORHANDEN');
+    return false;
+  }
   try {
     const u = new SpeechSynthesisUtterance(text);
     const v = fallbackVoice || pickFallbackVoice();
@@ -694,10 +698,20 @@ function speakBrowser(text) {
     u.rate = 1.02;
     u.pitch = 0.9;
     u.volume = Math.min(1, masterGain.gain.value + 0.2);
+    u.onerror = (e) => {
+      ttsStatus('BROWSERSTIMME: FEHLER (' + (e.error || 'unbekannt') + ')');
+    };
+    /* Wichtig: cancel() und speak() direkt hintereinander verschluckt
+       Chrome gern. Deshalb kurz warten und erst dann sprechen. */
     speechSynthesis.cancel();
-    speechSynthesis.speak(u);
+    setTimeout(() => {
+      try { speechSynthesis.speak(u); } catch (e) { ttsStatus('BROWSERSTIMME: BLOCKIERT'); }
+    }, 60);
     return true;
-  } catch (e) { return false; }
+  } catch (e) {
+    ttsStatus('BROWSERSTIMME: BLOCKIERT');
+    return false;
+  }
 }
 
 async function speakTTS(text) {
@@ -718,17 +732,22 @@ async function speakTTS(text) {
         const url = URL.createObjectURL(blob);
         currentAudio = new Audio(url);
         currentAudio.volume = Math.min(1, masterGain.gain.value + 0.2);
-        currentAudio.play().catch(() => {});
+        currentAudio.play().catch(() => {
+          ttsStatus('ELEVENLABS: TON BLOCKIERT → ERST KLICKEN, DANN SPRECHEN');
+          speakBrowser(text);
+        });
         ttsStatus('ELEVENLABS: OK');
         return;
       }
       /* Verständliche Fehler statt stummes Nein. */
       if (res.status === 401) ttsStatus('ELEVENLABS: SCHLÜSSEL UNGÜLTIG → BROWSERSTIMME');
       else if (res.status === 402) ttsStatus('ELEVENLABS: KONTO LEER → BROWSERSTIMME');
+      else if (res.status === 404) ttsStatus('ELEVENLABS: STIMM-ID NICHT GEFUNDEN → BROWSERSTIMME');
+      else if (res.status === 422) ttsStatus('ELEVENLABS: ANFRAGE UNGÜLTIG → BROWSERSTIMME');
       else if (res.status === 429) ttsStatus('ELEVENLABS: ZU SCHNELL GEREDET → BROWSERSTIMME');
       else ttsStatus('ELEVENLABS: FEHLER ' + res.status + ' → BROWSERSTIMME');
     } catch (e) {
-      ttsStatus('ELEVENLABS: ' + (e && e.message ? ('FEHLER: ' + e.message) : 'NICHT ERREICHBAR') + ' → BROWSERSTIMME');
+      ttsStatus('ELEVENLABS: NETZWERK/CORS BLOCKIERT → BROWSERSTIMME');
     }
   } else {
     ttsStatus('KEIN SCHLÜSSEL → BROWSERSTIMME');
@@ -1863,11 +1882,17 @@ function boot() {
       i++;
     } else {
       clearInterval(t);
-      setTimeout(() => {
+      /* Der Startknopf sorgt dafür, dass der Browser Ton und Stimme
+         freigibt. Ohne Klick blockiert jeder Browser die Sprachausgabe. */
+      const startBtn = $('boot-start');
+      startBtn.style.display = 'inline-block';
+      startBtn.onclick = () => {
+        warmUpVoice();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
         bootEl.classList.add('done');
         setTimeout(() => bootEl.remove(), 900);
         startRun();
-      }, 700);
+      };
     }
   }, 300);
 }
