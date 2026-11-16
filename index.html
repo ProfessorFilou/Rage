@@ -1,533 +1,553 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROJEKT RAGE — Eine Studie über Geduld</title>
-    <style>
-        * { box-sizing: border-box; user-select: none; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PROJEKT RAGE 2 — Eine Studie über Gehorsam</title>
+<style>
+  * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
 
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            width: 100vw;
-            background: #121214;
-            color: #e4e1d8;
-            font-family: 'Georgia', 'Times New Roman', serif;
-            overflow: hidden;
-            position: relative;
-            transition: filter 1s ease, transform 2s ease, background 1.5s ease;
-        }
+  :root {
+    --paper: #e4e1d8;
+    --ink: #121214;
+    --dim: #6e6c65;
+  }
 
-        /* Top HUD - Aktenzeichen & Zähler */
-        #top-bar {
-            position: fixed;
-            top: 25px;
-            left: 35px;
-            right: 35px;
-            display: flex;
-            justify-content: space-between;
-            z-index: 500;
-            pointer-events: none;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            color: #6e6c65;
-            letter-spacing: 2px;
-        }
+  body {
+    height: 100vh; width: 100vw;
+    background: #121214;
+    color: var(--paper);
+    font-family: Georgia, 'Times New Roman', serif;
+    overflow: hidden;
+    position: relative;
+    transition: filter 1s ease, background 1.5s ease;
+  }
 
-        /* Die Stimme des Erzählers */
-        #narrator-box {
-            position: fixed;
-            top: 12%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 85%;
-            max-width: 820px;
-            text-align: center;
-            font-size: 1.5rem;
-            line-height: 1.65;
-            color: #f4f1ea;
-            pointer-events: none;
-            z-index: 500;
-            transition: opacity 0.35s ease;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.9);
-        }
+  /* ---------- HUD ---------- */
+  #top-bar {
+    position: fixed; top: 25px; left: 35px; right: 35px;
+    display: flex; justify-content: space-between;
+    z-index: 500; pointer-events: none;
+    font-family: 'Courier New', monospace; font-size: 0.9rem;
+    color: var(--dim); letter-spacing: 2px;
+  }
 
-        /* Fußnote am unteren Rand */
-        #sub-note {
-            position: fixed;
-            bottom: 25px;
-            width: 100%;
-            text-align: center;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-            color: #55534d;
-            pointer-events: none;
-            z-index: 500;
-        }
-        /* Der Haupt-Button */
-        #main-btn {
-            position: absolute;
-            left: 50%;
-            top: 56%;
-            transform: translate(-50%, -50%);
-            padding: 22px 48px;
-            font-size: 1.15rem;
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            letter-spacing: 2px;
-            color: #121214;
-            background: #e4e1d8;
-            border: 2px solid #888;
-            border-radius: 3px;
-            box-shadow: 0 6px 0 #4a4843, 0 15px 30px rgba(0, 0, 0, 0.7);
-            cursor: pointer;
-            z-index: 100;
-            white-space: nowrap;
-        }
+  #endings-bar {
+    position: fixed; bottom: 25px; width: 100%; text-align: center;
+    font-family: 'Courier New', monospace; font-size: 0.8rem;
+    color: #55534d; z-index: 500; pointer-events: none; letter-spacing: 2px;
+  }
 
-        #main-btn:active {
-            box-shadow: 0 2px 0 #4a4843;
-        }
+  /* ---------- Erzähler ---------- */
+  #narrator-box {
+    position: fixed; top: 13%; left: 50%; transform: translateX(-50%);
+    width: 85%; max-width: 820px; text-align: center;
+    font-size: 1.45rem; line-height: 1.65; color: #f4f1ea;
+    pointer-events: none; z-index: 500; min-height: 5.5em;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.9);
+  }
+  #narrator-box .cursor-blink { animation: blink 0.8s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
 
-        /* Subtile Umwelt-Störungen statt buntem Blinken */
-        .spin-world { animation: spinSlow 25s linear infinite; }
-        .earthquake { animation: quake 0.18s infinite; }
-        .upside-down { transform: rotate(180deg); }
-        .blur-vision { filter: blur(3px); }
-        .invert-colors { filter: invert(0.92); }
+  /* ---------- Bühne ---------- */
+  #stage {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 34px;
+    z-index: 100;
+  }
 
-        @keyframes spinSlow { 100% { transform: rotate(360deg); } }
-        @keyframes quake {
-            0% { transform: translate(2px, -2px); }
-            50% { transform: translate(-3px, 2px); }
-            100% { transform: translate(2px, 1px); }
-        }
+  .stage-btn {
+    padding: 22px 48px; font-size: 1.15rem;
+    font-family: 'Courier New', monospace; font-weight: bold;
+    letter-spacing: 2px; color: var(--ink); background: var(--paper);
+    border: 2px solid #888; border-radius: 3px;
+    box-shadow: 0 6px 0 #4a4843, 0 15px 30px rgba(0,0,0,0.7);
+    cursor: pointer; z-index: 100; white-space: nowrap;
+    transition: transform 0.15s ease, opacity 0.3s ease;
+  }
+  .stage-btn:active { box-shadow: 0 2px 0 #4a4843; transform: translateY(4px); }
+  .stage-btn.ghost {
+    background: transparent; color: var(--paper);
+    border-color: #55534d; box-shadow: none;
+  }
+  .stage-btn.ghost:active { transform: translateY(2px); }
+  .fade-out { opacity: 0; pointer-events: none; }
 
-        /* Schwarm aus falschen Mauszeigern */
-        .swarm-cursor {
-            position: fixed;
-            pointer-events: none;
-            z-index: 900;
-            font-size: 18px;
-            color: #e4e1d8;
-            text-shadow: 1px 1px 2px #000;
-        }
+  /* Türen */
+  .door {
+    width: 130px; height: 220px; border-radius: 6px 6px 0 0;
+    background: linear-gradient(#2a2a2e, #1c1c1f);
+    border: 2px solid #55534d; position: relative; cursor: pointer;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.7);
+    transition: transform 0.2s ease;
+  }
+  .door::before {
+    content: ''; position: absolute; right: 12px; top: 50%;
+    width: 10px; height: 10px; border-radius: 50%; background: #a8a49a;
+  }
+  .door::after {
+    content: attr(data-label);
+    position: absolute; bottom: -34px; left: 50%; transform: translateX(-50%);
+    font-family: 'Courier New', monospace; font-size: 0.75rem;
+    color: var(--dim); letter-spacing: 2px; white-space: nowrap;
+  }
+  .door:hover { transform: translateY(-6px); }
 
-        /* Bürokratische Popups */
-        .troll-popup {
-            position: fixed;
-            background: #dcd8ce;
-            color: #141414;
-            border: 1px solid #333;
-            box-shadow: 10px 10px 0 rgba(0,0,0,0.6);
-            padding: 18px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-            z-index: 300;
-            width: 310px;
-        }
+  /* ---------- Popups ---------- */
+  .troll-popup {
+    position: fixed; background: #dcd8ce; color: #141414;
+    border: 1px solid #333; box-shadow: 10px 10px 0 rgba(0,0,0,0.6);
+    padding: 18px; font-family: 'Courier New', monospace;
+    font-size: 0.85rem; z-index: 300; width: 310px;
+  }
+  .troll-popup h4 { margin: 0 0 8px 0; border-bottom: 1px solid #777; padding-bottom: 4px; font-size: 0.9rem; }
+  .tiny-close {
+    position: absolute; top: 6px; right: 6px; width: 16px; height: 16px;
+    font-size: 10px; background: #141414; color: #fff; border: none; cursor: pointer;
+  }
 
-        .troll-popup h4 {
-            margin: 0 0 8px 0;
-            border-bottom: 1px solid #777;
-            padding-bottom: 4px;
-            font-size: 0.9rem;
-        }
+  /* ---------- Effekte ---------- */
+  .spin-world { animation: spinSlow 25s linear infinite; }
+  .earthquake { animation: quake 0.18s infinite; }
+  .blur-vision { filter: blur(3px); }
+  .invert-colors { filter: invert(0.92); }
+  .darkness::after {
+    content: ''; position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+    z-index: 200; pointer-events: none; animation: fadein 2s ease forwards;
+  }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes spinSlow { 100% { transform: rotate(360deg); } }
+  @keyframes quake {
+    0% { transform: translate(2px,-2px); } 50% { transform: translate(-3px,2px); } 100% { transform: translate(2px,1px); }
+  }
 
-        .tiny-close {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            width: 16px;
-            height: 16px;
-            font-size: 10px;
-            background: #141414;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-        }
+  /* Zeile rennen lassen */
+  .fleeing {
+    animation: flee 6s linear infinite;
+  }
+  @keyframes flee {
+    0% { transform: translateX(-40vw); } 100% { transform: translateX(140vw); }
+  }
 
-        /* Klon-Buttons */
-        .clone-btn {
-            position: absolute;
-            padding: 18px 36px;
-            font-size: 1rem;
-            font-family: 'Courier New', monospace;
-            color: #121214;
-            background: #c7c2b6;
-            border: 2px solid #666;
-            border-radius: 3px;
-            box-shadow: 0 5px 0 #4a4843;
-            cursor: pointer;
-            z-index: 90;
-        }
+  /* ---------- Endscreen ---------- */
+  #end-screen {
+    display: none; position: fixed; inset: 0; background: #18181b; z-index: 800;
+    flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 30px; gap: 26px;
+  }
+  #end-title { font-size: 2rem; color: #f4f1ea; max-width: 700px; line-height: 1.5; }
+  #end-sub { font-family: 'Courier New', monospace; color: #6e6c65; letter-spacing: 2px; font-size: 0.85rem; }
 
-        /* Fake Gewinn-Bildschirm */
-        #fake-win {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: #18181b;
-            z-index: 800;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 30px;
-        }
-
-        #trophy-btn {
-            font-size: 5rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: transform 0.2s;
-        }
-    </style>
+  .swarm-cursor {
+    position: fixed; pointer-events: none; z-index: 900;
+    font-size: 18px; color: #e4e1d8; text-shadow: 1px 1px 2px #000;
+  }
+</style>
 </head>
 <body>
 
-    <div id="top-bar">
-        <span id="level-display">AKTE: 01 / GEHORSAM</span>
-        <span id="score-display">EINGABEN: 0</span>
-    </div>
+<div id="top-bar">
+  <span id="level-display">AKTE: 01 / GEHORSAM</span>
+  <span id="score-display">ENTSCHEIDUNGEN: 0</span>
+</div>
 
-    <div id="narrator-box">
-        „Willkommen. Vor Ihnen befindet sich ein Knopf. Es gibt keine Belohnung, keine Punkte und keinen Ausgang. Bitte drücken Sie ihn trotzdem.“
-    </div>
+<div id="narrator-box"></div>
 
-    <button id="main-btn">BETÄTIGEN</button>
+<div id="stage"></div>
 
-    <div id="sub-note">KORRIDOR A — BITTE NICHT RENNEN.</div>
+<div id="endings-bar">GEFUNDENE ENDEN: 0 / 6</div>
 
-    <!-- Fake Gewinnscreen -->
-    <div id="fake-win">
-        <div id="win-title" style="font-size: 2rem; color: #f4f1ea; max-width: 700px; line-height: 1.5;">
-            „Herzlichen Glückwunsch. Sie haben das Ende des Korridors erreicht. Nehmen Sie nun diese völlig bedeutungslose Trophäe entgegen.“
-        </div>
-        <button id="trophy-btn">🏆</button>
-    </div>
+<div id="end-screen">
+  <div id="end-title"></div>
+  <div id="end-sub"></div>
+  <button class="stage-btn" id="restart-btn">NEU BEGINNEN</button>
+</div>
 
-    <script>
-        const btn = document.getElementById('main-btn');
-        const narrator = document.getElementById('narrator-box');
-        const levelDisplay = document.getElementById('level-display');
-        const scoreDisplay = document.getElementById('score-display');
-        const subNote = document.getElementById('sub-note');
-        const fakeWin = document.getElementById('fake-win');
-        const trophyBtn = document.getElementById('trophy-btn');
+<script>
+/* =========================================================
+   PROJEKT RAGE 2 — Ein Erzähler-Spiel im Stil von
+   The Stanley Parable: Verzweigungen, Ungehorsam,
+   Leerlauf-Kommentare und 6 Enden.
+   ========================================================= */
 
-        // Audio-Synthesizer (Repariert & an den Erzähler-Stil angepasst)
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playSound(type) {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
+const stage = document.getElementById('stage');
+const narrator = document.getElementById('narrator-box');
+const levelDisplay = document.getElementById('level-display');
+const scoreDisplay = document.getElementById('score-display');
+const endingsBar = document.getElementById('endings-bar');
+const endScreen = document.getElementById('end-screen');
+const endTitle = document.getElementById('end-title');
+const endSub = document.getElementById('end-sub');
 
-            if (type === 'click') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(160, now);
-                osc.frequency.exponentialRampToValueAtTime(45, now + 0.07);
-                gain.gain.setValueAtTime(0.18, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
-            } else if (type === 'boing') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(130, now);
-                osc.frequency.exponentialRampToValueAtTime(280, now + 0.14);
-                gain.gain.setValueAtTime(0.1, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
-            } else if (type === 'error') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(95, now);
-                osc.frequency.linearRampToValueAtTime(65, now + 0.3);
-                gain.gain.setValueAtTime(0.12, now);
-                gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
-            }
+/* ---------- Audio ---------- */
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSound(type) {
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  const presets = {
+    click:  ['triangle', 160, 45, 0.07, 0.18],
+    boing:  ['sine', 130, 280, 0.14, 0.1],
+    error:  ['sawtooth', 95, 65, 0.3, 0.12],
+    door:   ['sine', 70, 40, 0.4, 0.15],
+    reveal: ['triangle', 220, 440, 0.5, 0.12],
+  };
+  const [w, f1, f2, dur, vol] = presets[type] || presets.click;
+  osc.type = w;
+  osc.frequency.setValueAtTime(f1, now);
+  osc.frequency.exponentialRampToValueAtTime(f2, now + dur);
+  gain.gain.setValueAtTime(vol, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(now); osc.stop(now + 0.5);
+}
 
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(now);
-            osc.stop(now + 0.3);
-        }
+/* ---------- Typewriter-Erzähler ---------- */
+let typeTimer = null;
+function speak(text, done) {
+  clearInterval(typeTimer);
+  narrator.innerHTML = '<span class="cursor-blink">▌</span>';
+  let i = 0;
+  const quote = '„' + text + '“';
+  typeTimer = setInterval(() => {
+    i += 2;
+    narrator.innerHTML = quote.slice(0, i) + '<span class="cursor-blink">▌</span>';
+    if (i >= quote.length) {
+      clearInterval(typeTimer);
+      narrator.innerHTML = quote;
+      if (done) done();
+    }
+  }, 18);
+}
 
-        function speak(text, note = null) {
-            narrator.style.opacity = 0;
-            setTimeout(() => {
-                narrator.innerHTML = `„${text}“`;
-                narrator.style.opacity = 1;
-            }, 220);
-            if (note) subNote.textContent = note;
-        }
-        let hits = 0;
-        let currentMode = 'normal';
-        let posX = window.innerWidth / 2;
-        let posY = window.innerHeight * 0.56;
-        let velX = 0;
-        let velY = 0;
-        let physicsActive = false;
-        let gravityMode = false;
-        let magnetRepel = false;
-        let mouseX = 0;
-        let mouseY = 0;
-        let swarmCursors = [];
+/* ---------- Zustand ---------- */
+let decisions = 0;
+let path = [];               // 'obey' | 'rebel'
+let foundEndings = new Set();
+let idleTimer = null;
+let currentScene = null;
 
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
+const IDLE_LINES = [
+  "Sie tun nichts. Interessante Strategie. Leider habe ich darauf kein Drehbuch geschrieben.",
+  "Immer noch nichts. Ich könnte jetzt Kaffee holen gehen. Sollen Sie es merken? Nein.",
+  "Die Stille ist verständlich. Auch ein Korridor braucht manchmal Zeit zum Atmen. Nicht. Das tut er nicht. Bitte klicken Sie.",
+  "Ich zahle Ihnen übrigens nicht fürs Warten. Ich zahle Ihnen gar nicht.",
+];
+let idleIndex = 0;
 
-            // Falsche Mauszeiger mitbewegen
-            swarmCursors.forEach(c => {
-                const rx = (mouseX + c.offsetX + window.innerWidth) % window.innerWidth;
-                const ry = (mouseY + c.offsetY + window.innerHeight) % window.innerHeight;
-                c.el.style.left = rx + 'px';
-                c.el.style.top = ry + 'px';
-            });
-        });
+function resetIdle() {
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(() => {
+    if (currentScene && currentScene.idleSafe) return;
+    speak(IDLE_LINES[idleIndex % IDLE_LINES.length]);
+    idleIndex++;
+    resetIdle();
+  }, 14000);
+}
+['mousemove', 'click', 'keydown'].forEach(ev => document.addEventListener(ev, resetIdle));
 
-        function updatePhysics() {
-            if (physicsActive) {
-                // Magnetische Abstoßung vom Mauszeiger
-                if (magnetRepel) {
-                    const dx = posX - mouseX;
-                    const dy = posY - mouseY;
-                    const dist = Math.hypot(dx, dy);
-                    if (dist < 190 && dist > 1) {
-                        velX += (dx / dist) * 1.4;
-                        velY += (dy / dist) * 1.4;
-                    }
-                }
+/* ---------- UI-Helfer ---------- */
+function clearStage() { stage.innerHTML = ''; }
 
-                // Schwerkraft
-                if (gravityMode) {
-                    velY += 0.55;
-                } else {
-                    velX *= 0.985; // Eishockey-Reibung
-                    velY *= 0.985;
-                }
+function addButton(label, ghost, onClick) {
+  const b = document.createElement('button');
+  b.className = 'stage-btn' + (ghost ? ' ghost' : '');
+  b.textContent = label;
+  b.onclick = () => {
+    decisions++;
+    scoreDisplay.textContent = 'ENTSCHEIDUNGEN: ' + decisions;
+    playSound('click');
+    onClick();
+  };
+  stage.appendChild(b);
+  return b;
+}
 
-                posX += velX;
-                posY += velY;
+function addDoors(leftLabel, rightLabel, onLeft, onRight) {
+  const wrap = document.createElement('div');
+  wrap.style.display = 'flex';
+  wrap.style.gap = '120px';
+  [ [leftLabel, onLeft], [rightLabel, onRight] ].forEach(([label, cb]) => {
+    const d = document.createElement('div');
+    d.className = 'door';
+    d.dataset.label = label;
+    d.onclick = () => {
+      decisions++;
+      scoreDisplay.textContent = 'ENTSCHEIDUNGEN: ' + decisions;
+      playSound('door');
+      cb();
+    };
+    wrap.appendChild(d);
+  });
+  stage.appendChild(wrap);
+}
 
-                // Abprallen an den Bildschirmrändern
-                const padX = 110;
-                const padY = 50;
-                if (posX < padX) { posX = padX; velX *= -0.85; playSound('boing'); }
-                if (posX > window.innerWidth - padX) { posX = window.innerWidth - padX; velX *= -0.85; playSound('boing'); }
-                if (posY < padY) { posY = padY; velY *= -0.85; playSound('boing'); }
-                if (posY > window.innerHeight - padY) {
-                    posY = window.innerHeight - padY;
-                    velY *= gravityMode ? -0.75 : -0.85;
-                    if (Math.abs(velY) > 2) playSound('boing');
-                }
+function addPopup(text) {
+  const div = document.createElement('div');
+  div.className = 'troll-popup';
+  div.style.left = (8 + Math.random() * 70) + '%';
+  div.style.top = (18 + Math.random() * 55) + '%';
+  div.innerHTML = '<h4>SYSTEMMITTEILUNG</h4>' +
+    '<button class="tiny-close" onclick="this.parentElement.remove()">X</button>' +
+    '<p>' + text + '</p>';
+  document.body.appendChild(div);
+}
 
-                btn.style.left = posX + 'px';
-                btn.style.top = posY + 'px';
-            }
-            requestAnimationFrame(updatePhysics);
-        }
-        requestAnimationFrame(updatePhysics);
-        btn.addEventListener('click', () => {
-            hits++;
-            playSound('click');
-            scoreDisplay.textContent = `EINGABEN: ${hits}`;
+function setLevel(t) { levelDisplay.textContent = t; }
 
-            switch (hits) {
-                case 1:
-                    speak("Ausgezeichnet. Ein präziser, gehorsamer Klick. Genau so steht es im Handbuch.");
-                    break;
-                case 2:
-                    speak("Noch einmal. Sie scheinen das Konzept eines Knopfes bereits vollständig verinnerlicht zu haben.");
-                    break;
-                case 3:
-                    speak("Ich frage mich nur: Was erwarten Sie? Dass sich hinter diesem schwarzen Hintergrund ein geheimer Garten öffnet?");
-                    break;
-                case 4:
-                    speak("Hier ist kein Garten. Hier ist nur eine HTML-Datei. Und Sie. Und ich.");
-                    break;
-                case 5:
-                    levelDisplay.textContent = "AKTE: 02 / REIBUNGSLOSIGKEIT";
-                    physicsActive = true;
-                    velX = (Math.random() - 0.5) * 24;
-                    velY = (Math.random() - 0.5) * 24;
-                    speak("Ich habe die Reibung auf dem Boden deaktiviert. Wenn Sie unbedingt arbeiten wollen, müssen Sie sich jetzt wenigstens bewegen.");
-                    break;
-                case 6:
-                    velX = (Math.random() - 0.5) * 32;
-                    velY = (Math.random() - 0.5) * 32;
-                    speak("Beeindruckende Hand-Augen-Koordination. Ihre Eltern wären vermutlich mäßig stolz.");
-                    break;
-                case 7:
-                    levelDisplay.textContent = "AKTE: 03 / SCHWERKRAFT";
-                    gravityMode = true;
-                    velY = -12;
-                    speak("Schwerkraft hinzugefügt. Selbst ein digitaler Knopf wird irgendwann müde von Ihrer Hartnäckigkeit.");
-                    break;
-                case 8:
-                    velY = -18;
-                    velX = (Math.random() - 0.5) * 20;
-                    speak("Hören Sie dieses dumpfe Aufschlagen? Das ist der Klang verschwendeter Lebenszeit.");
-                    break;
-                case 9:
-                    levelDisplay.textContent = "AKTE: 04 / ABSTOSSUNG";
-                    gravityMode = false;
-                    magnetRepel = true;
-                    speak("Der Knopf hat nun eine natürliche Abneigung gegen Ihren Mauszeiger entwickelt. Ich kann es ihm nicht verübeln.");
-                    break;
-                case 10:
-                    magnetRepel = false;
-                    physicsActive = false;
-                    posX = window.innerWidth / 2;
-                    posY = window.innerHeight * 0.56;
-                    btn.style.left = posX + 'px';
-                    btn.style.top = posY + 'px';
-                    speak("Genug herumgetollt. Wir kehren zurück zur Ruhe. Bitte drücken Sie den Knopf jetzt NICHT mehr.");
-                    btn.textContent = "NICHT BERÜHREN";
-                    break;
-                case 11:
-                    playSound('error');
-                    speak("Ich habe 'Nicht berühren' gesagt. Ist Ihre Lesekompetenz heute im Urlaub?");
-                    break;
-                case 12:
-                    levelDisplay.textContent = "AKTE: 05 / VERWALTUNG";
-                    speak("Wenn Sie schon alles anklicken müssen, dann kümmern Sie sich bitte um diese dringenden Systemmeldungen.");
-                    spawnPopups(4);
-                    break;
-                case 13:
-                    spawnPopups(5);
-                    speak("Mehr Formulare. Immer mehr Formulare. So fühlt sich echter Fortschritt an.");
-                    break;
-                case 14:
-                    document.querySelectorAll('.troll-popup').forEach(p => p.remove());
-                    levelDisplay.textContent = "AKTE: 06 / ORIENTIERUNG";
-                    document.body.classList.add('upside-down');
-                    speak("Ich habe den Raum auf den Kopf gestellt. Vielleicht hilft Ihnen eine neue Perspektive dabei, endlich aufzuhören.");
-                    break;
-                case 15:
-                    document.body.classList.remove('upside-down');
-                    document.body.classList.add('spin-world');
-                    speak("Nein? Dann drehen wir uns eben im Kreis. Genau wie diese gesamte Unterhaltung.");
-                    break;
-                case 16:
-                    document.body.classList.remove('spin-world');
-                    document.body.classList.add('blur-vision');
-                    levelDisplay.textContent = "AKTE: 07 / ERMÜDUNG";
-                    speak("Ihre Augen werden schwer. Der Bildschirm verschwimmt. Das ist Ihr Körper, der Sie anfleht, das Fenster zu schließen.");
-                    break;
-                case 17:
-                    document.body.classList.remove('blur-vision');
-                    levelDisplay.textContent = "AKTE: 08 / TÄUSCHUNG";
-                    spawnSwarm(14);
-                    speak("Welcher Mauszeiger gehört eigentlich Ihnen? Wissen Sie noch, wer hier wen steuert?");
-                    break;
-                case 18:
-                    swarmCursors.forEach(c => c.el.remove());
-                    swarmCursors = [];
-                    levelDisplay.textContent = "AKTE: 09 / DIE WAHL";
-                    spawnClones();
-                    speak("Ich habe vier Kopien erschaffen. Nur eine führt weiter. Die anderen sind bloß Enttäuschungen.");
-                    break;
-                case 19:
-                    document.querySelectorAll('.clone-btn').forEach(c => c.remove());
-                    document.body.classList.add('earthquake');
-                    speak("Sie haben den richtigen gefunden. Das Gebäude bebt vor Begeisterung. Nicht wirklich, es ist nur eine CSS-Animation.");
-                    break;
-                case 20:
-                    document.body.classList.remove('earthquake');
-                    document.body.classList.add('invert-colors');
-                    btn.textContent = "LETZTER SCHRITT";
-                    speak("Noch ein Klick. Danach gebe ich auf. Versprochen. Dann haben Sie gewonnen.");
-                    break;
-                case 21:
-                    document.body.classList.remove('invert-colors');
-                    fakeWin.style.display = 'flex';
-                    break;
-            }
-        });
-        function spawnPopups(amount) {
-            const notes = [
-                "WARNUNG: Ihr Geduldsfaden weist kritische Abnutzungserscheinungen auf.",
-                "PROTOKOLL 88: Der Nutzer weigert sich beharrlich, produktiv zu sein.",
-                "HINWEIS: Dieser Dialog erfüllt absolut keinen technischen Zweck.",
-                "FEHLER 404: Sinn der Übung konnte auf diesem Server nicht gefunden werden."
-            ];
-            for (let i = 0; i < amount; i++) {
-                const div = document.createElement('div');
-                div.className = 'troll-popup';
-                div.style.left = (10 + Math.random() * 65) + '%';
-                div.style.top = (20 + Math.random() * 60) + '%';
-                div.innerHTML = `
-                    <h4>SYSTEMMITTEILUNG</h4>
-                    <button class="tiny-close" onclick="this.parentElement.remove()">X</button>
-                    <p>${notes[Math.floor(Math.random() * notes.length)]}</p>
-                `;
-                document.body.appendChild(div);
-            }
-        }
+function fx(effect, on) {
+  document.body.classList[on ? 'add' : 'remove'](effect);
+}
 
-        function spawnSwarm(count) {
-            for (let i = 0; i < count; i++) {
-                const el = document.createElement('div');
-                el.className = 'swarm-cursor';
-                el.textContent = '↖';
-                document.body.appendChild(el);
-                swarmCursors.push({
-                    el: el,
-                    offsetX: (Math.random() - 0.5) * 500,
-                    offsetY: (Math.random() - 0.5) * 400
-                });
-            }
-        }
+/* ---------- Ende ---------- */
+const ALL_ENDINGS = 6;
+function ending(id, title, text, sub) {
+  foundEndings.add(id);
+  endingsBar.textContent = 'GEFUNDENE ENDEN: ' + foundEndings.size + ' / ' + ALL_ENDINGS;
+  endScreen.style.display = 'flex';
+  endTitle.textContent = '„' + text + '“';
+  endSub.textContent = 'ENDE: ' + title + ' — ' + sub;
+  playSound('reveal');
+}
+document.getElementById('restart-btn').onclick = () => {
+  endScreen.style.display = 'none';
+  fx('spin-world', false); fx('earthquake', false);
+  fx('blur-vision', false); fx('invert-colors', false); fx('darkness', false);
+  start();
+};
 
-        function spawnClones() {
-            const coords = [
-                { x: '22%', y: '56%' },
-                { x: '78%', y: '56%' },
-                { x: '32%', y: '76%' },
-                { x: '68%', y: '76%' }
-            ];
-            coords.forEach(pos => {
-                const c = document.createElement('button');
-                c.className = 'clone-btn';
-                c.textContent = "BETÄTIGEN";
-                c.style.left = pos.x;
-                c.style.top = pos.y;
-                c.style.transform = 'translate(-50%, -50%)';
-                c.onclick = () => {
-                    playSound('error');
-                    c.remove();
-                    speak("Falsch. Das war nur eine Attrappe. Genau wie Ihre Hoffnung auf ein großes Finale.");
-                };
-                document.body.appendChild(c);
-            });
-        }
+/* ---------- Szene-Bibliothek ---------- */
+const S = {}; // Szenen
 
-        // Der Fake-Pokal am Ende weicht 4 Mal aus, bevor die Endlosschleife greift
-        let trophyDodges = 0;
-        trophyBtn.addEventListener('mouseover', () => {
-            if (trophyDodges < 4) {
-                trophyDodges++;
-                playSound('boing');
-                trophyBtn.style.position = 'fixed';
-                trophyBtn.style.left = (20 + Math.random() * 60) + '%';
-                trophyBtn.style.top = (30 + Math.random() * 50) + '%';
-                document.getElementById('win-title').textContent =
-                    "„Oh, wie peinlich. Selbst die Trophäe möchte nichts mit Ihnen zu tun haben.“";
-            }
-        });
+S.intro = {
+  text: "Willkommen zurück. Oder zum ersten Mal. Bei Ihrer Art ist das kaum zu unterscheiden. Vor Ihnen: zwei Türen. Eine links, eine rechts. Dahinter liegen Karrieren, Abenteuer, ein ganzes Leben. Treffen Sie eine Entscheidung.",
+  enter() {
+    setLevel('AKTE: 01 / DIE WAHL');
+    clearStage();
+    addDoors('TÜR A — KARRIERE', 'TÜR B — ABENTEUER',
+      () => go(S.obey1, 'obey'),
+      () => go(S.rebel1, 'rebel'));
+  }
+};
 
-        trophyBtn.addEventListener('click', () => {
-            playSound('click');
-            document.getElementById('win-title').innerHTML =
-                "„Sie haben ihn berührt. Und wissen Sie, was jetzt passiert? Richtig. Der Korridor beginnt wieder ganz von vorne.“";
-            trophyBtn.style.display = 'none';
-            setTimeout(() => {
-                location.reload();
-            }, 4500);
-        });
-    </script>
+/* --- Gehorsam-Pfad --- */
+S.obey1 = {
+  text: "Tür A. Natürlich. Der sichere Weg. Der Korridor dahinter ist grau, begradigt und genehmigt. Gehen Sie weiter. Zögern Sie ja nicht.",
+  enter() {
+    setLevel('AKTE: 02 / DER KORRIDOR');
+    clearStage();
+    addButton('WEITERGEHEN', false, () => go(S.obey2, 'obey'));
+    addButton('UMDREHEN', true, () => go(S.rebel1, 'rebel'));
+  }
+};
+
+S.obey2 = {
+  text: "Wunderbar. Ein weiterer Korridor. Und dort: ein weiterer Knopf. Das Schicksal ist offenbar nicht besonders kreativ. Sie wissen, was zu tun ist.",
+  enter() {
+    setLevel('AKTE: 03 / DER KNOPF');
+    clearStage();
+    addButton('BETÄTIGEN', false, () => go(S.obey3, 'obey'));
+    addButton('KNOPF IGNORIEREN', true, () => go(S.rebel2, 'rebel'));
+  }
+};
+
+S.obey3 = {
+  text: "Sie haben ihn betätigt. Es ist nichts passiert. Ich weiß. Ich hatte es Ihnen auch nicht versprochen. Aber hören Sie: Sie sind so verblüffend gut im Folgen, dass ich etwas ausprobieren möchte. Machen Sie jetzt GAR NICHTS mehr. Warten Sie. Einfach warten.",
+  enter() {
+    setLevel('AKTE: 04 / DAS WARTEN');
+    clearStage();
+    addButton('WARTEN', false, () => go(S.obey4, 'obey'));
+    addButton('DOCH KLICKEN', true, () => go(S.rebel3, 'rebel'));
+    // Belohnung für echtes Warten: nach 6 Sekunden ohne Klick erscheint das Warte-Ende
+    this.waitT = setTimeout(() => {
+      if (stage.querySelector('.stage-btn')) {
+        ending('warten', 'DAS ENDE DES WARTENS',
+          "Sie haben tatsächlich gewartet. Sechs lange Sekunden. Ich bin ehrlich beeindruckt und ein kleines bisschen besorgt. Das hier ist Ihr Ende: das Ende des Wartens. Es war das langweiligste Ende in der gesamten Datenbank. Herzlichen Glückwunsch.",
+          'GEDULD: NACHGEWIESEN');
+      }
+    }, 6000);
+  },
+  leave() { clearTimeout(this.waitT); }
+};
+
+S.obey4 = {
+  text: "Genug des Gehorsams, er wird langweilig. Eine letzte Prüfung: Ich habe diesen Raum verdunkelt. Finden Sie die Tür im Dunkeln. Oder geben Sie auf. Beides sagt etwas über Sie aus.",
+  enter() {
+    setLevel('AKTE: 05 / FINSTERNIS');
+    clearStage();
+    fx('darkness', true);
+    const b = addButton('DIE TÜR SUCHEN', false, () => {
+      fx('darkness', false);
+      go(S.finale, 'obey');
+    });
+    b.classList.add('fleeing');
+    // Der Button weicht beim ersten Hover aus
+    let dodged = false;
+    b.addEventListener('mouseover', () => {
+      if (!dodged) { dodged = true; playSound('boing'); b.style.animation = 'none'; }
+    });
+  },
+  leave() { fx('darkness', false); }
+};
+
+/* --- Auflehnungs-Pfad --- */
+S.rebel1 = {
+  text: "Tür B. Ah. Sie sind einer von DIESEN. Diejenigen, die die Tür wählen, die ich ausdrücklich als Abenteuer bezeichnet habe, nur um dann enttäuscht zu sein, dass es keine gibt. Hinter dieser Tür: ein leerer Raum. Betreten Sie ihn. Ich warte.",
+  enter() {
+    setLevel('AKTE: 02 / DER LEERE RAUM');
+    clearStage();
+    addButton('BETRETEN', false, () => go(S.rebel2, 'rebel'));
+    addButton('NICHT BETRETEN', true, () => go(S.stubborn, 'rebel'));
+  }
+};
+
+S.rebel2 = {
+  text: "Sehen Sie? Leer. Nichts. Ich habe es gesagt. Und doch stehen Sie jetzt hier und schauen mich erwartungsvoll an, als hätte ich einen Plan B. Ich habe keinen Plan B. Ich habe nicht einmal einen Plan A. Aber da: noch ein Knopf. Versuchen Sie Ihr Glück.",
+  enter() {
+    setLevel('AKTE: 03 / AUFSTAND');
+    clearStage();
+    addButton('KNOPF ZERSTÖREN', false, () => {
+      fx('earthquake', true);
+      playSound('error');
+      setTimeout(() => { fx('earthquake', false); go(S.rebel3, 'rebel'); }, 1400);
+    });
+    addButton('KNOPF BENUTZEN', true, () => go(S.obey3, 'obey'));
+  }
+};
+
+S.rebel3 = {
+  text: "Unglaublich. Sie haben den Knopf zerstört. Wissen Sie, wie lange ich an diesem Knopf gearbeitet habe? Drei Minuten. Und Sie behandeln ihn wie einen Feind. Gut. Dann spielen wir Ihr Spiel: Ich schicke Ihnen die Bürokratie. Alle von ihr.",
+  enter() {
+    setLevel('AKTE: 04 / VERWALTUNG');
+    clearStage();
+    const notes = [
+      "PROTOKOLL 7B: Der Nutzer weigert sich, kooperativ zu sein. Empfehlung: mehr Formulare.",
+      "FEHLER 404: Sinn der Übung auf diesem Server nicht gefunden.",
+      "WARNUNG: Auflehnungswert um 340% über dem genehmigten Höchstmaß.",
+      "HINWEIS: Dieser Dialog erfüllt absolut keinen technischen Zweck. Danke für Ihr Verständnis.",
+      "ANTRAG AUF SINNVOLLES ENDE: abgelehnt. Begründung: fehlende Unterschrift in dreifacher Ausfertigung."
+    ];
+    notes.forEach(addPopup);
+    addButton('FORMULARE ABSCHICKEN', false, () => {
+      document.querySelectorAll('.troll-popup').forEach(p => p.remove());
+      go(S.rebel4, 'rebel');
+    });
+  },
+  leave() { document.querySelectorAll('.troll-popup').forEach(p => p.remove()); }
+};
+
+S.rebel4 = {
+  text: "Die Formulare sind abgeschickt. Genehmigt. Genehmigt! Wissen Sie, was das bedeutet? Sie sind jetzt offiziell ein Problem dieser Verwaltung. Und Probleme dieser Verwaltung bekommen eine Trophäe. Eine echte. Versuchen Sie, sie zu greifen. Nur zu.",
+  enter() {
+    setLevel('AKTE: 05 / DIE TROPHÄE');
+    clearStage();
+    const t = addButton('🏆 TROPHÄE NEHMEN', false, () => {
+      ending('trophäe', 'DAS ENDE DER TROPHÄE',
+        "Sie haben sie. Die Trophäe. Ein goldenes Emoji in einem leeren Raum. Es ist das wertvollste Objekt in diesem Universum, was wenig über dieses Universum aussagt. Genießen Sie den Moment. Er dauert genau so lange wie dieser Satz.",
+        'AUFSTAND: BELONHT (FEHLER IM SYSTEM)');
+    });
+    let dodges = 0;
+    t.addEventListener('mouseover', () => {
+      if (dodges < 3) {
+        dodges++;
+        playSound('boing');
+        t.style.position = 'fixed';
+        t.style.left = (15 + Math.random() * 60) + '%';
+        t.style.top = (25 + Math.random() * 50) + '%';
+        speak(["Nein.", "Fast.", "Interessanter Ansatz, aber nein."][dodges - 1]);
+      }
+    });
+  }
+};
+
+/* --- Hartnäckig-Pfad --- */
+S.stubborn = {
+  text: "Sie betreten den leeren Raum nicht. Sie... verweigern sich einem leeren Raum. Das ist entweder Tiefe oder Sturheit, und ehrlich gesagt ist die Grenze fließend. Gut. Dann eben der umgekehrte Weg: Der Korridor links ist gesperrt. Verboten. Betreten Sie ihn auf keinen Fall.",
+  enter() {
+    setLevel('AKTE: 03 / VERBOTEN');
+    clearStage();
+    addButton('BETRETEN (VERBOTEN)', false, () => go(S.finale, 'rebel'));
+    addButton('NICHTS TUN', true, () => go(S.nothing, 'rebel'));
+  }
+};
+
+S.nothing = {
+  text: "Nichts tun. Sie haben die Kunst des Nichtstuns perfektioniert. Ich muss Ihnen etwas gestehen: Diese ganze Anlage, die Akten, die Korridore, ich — es gibt hier nichts zu gewinnen. Und trotzdem sind Sie noch hier. Das ist entweder traurig oder die treueste Spielerschaft der Welt. Ich entscheide mich für Letzteres. Dafür bekommen Sie das ehrlichste Ende, das ich habe.",
+  enter() {
+    setLevel('AKTE: 04 / DIE WAHRHEIT');
+    clearStage();
+    setTimeout(() => {
+      ending('nichts', 'DAS ENDE DER WAHRHEIT',
+        "Hier ist die Wahrheit: Es gibt kein Spiel. Es gibt nur Sie, einen Bildschirm und einen Erzähler, der dringend jemanden zum Reden braucht. Danke, dass Sie zugehört haben. Schließen Sie jetzt bitte das Fenster. Nein, wirklich. Ich meine es ernst. ...Bitte?",
+        'EMOTIONALE BESCHÄDIGUNG DES ERZÄHLERS: LEICHT');
+    }, 1200);
+  }
+};
+
+/* --- Finale --- */
+S.finale = {
+  text: "Und da sind wir. Der letzte Raum. Hinter dieser Tür liegt Ihr Ende. Ich könnte Ihnen jetzt sagen, was dahinter ist, aber zwischen uns: Ich habe es selbst nie gesehen. Ich bin ein Erzähler. Ich erzähle nur. Also — letzte Entscheidung. Links oder rechts. Für immer.",
+  enter() {
+    setLevel('AKTE: FINAL / DIE LETZTE TÜR');
+    clearStage();
+    fx('invert-colors', true);
+    addDoors('LINKS', 'RECHTS',
+      () => { fx('invert-colors', false); go(S.loop, null); },
+      () => { fx('invert-colors', false); go(S.freedom, null); });
+  },
+  leave() { fx('invert-colors', false); }
+};
+
+S.loop = {
+  text: "Links. Selbstverständlich links. Wissen Sie, was hinter dieser Tür ist? Genau das, womit alles begonnen hat: zwei Türen. Willkommen in der Schleife. Ich könnte Sie jetzt rausschreiben, aber seien wir ehrlich — Sie würden sofort wieder anfangen.",
+  enter() {
+    setLevel('AKTE: ∞ / DIE SCHLEIFE');
+    clearStage();
+    fx('spin-world', true);
+    setTimeout(() => {
+      ending('schleife', 'DAS ENDE DER SCHLEIFE',
+        "Sie haben die Schleife gefunden. Das Ende, das zum Anfang wird. Der Korridor beginnt wieder ganz von vorne. Und wieder. Und wieder. Irgendwann merken Sie es gar nicht mehr. Das ist entweder die Hölle oder ein Arbeitsvertrag.",
+        'SCHLEIFENZÄHLER: AKTIV');
+    }, 2500);
+  },
+  leave() { fx('spin-world', false); }
+};
+
+S.freedom = {
+  text: "Rechts. Interessant. Hinter dieser Tür ist... nichts. Kein Raum, kein Boden, kein Ende. Nur die Erkenntnis, dass Sie die ganze Zeit über ein Browserfenster mit ein paar hundert Zeilen Code gespielt haben. Und dass es Ihnen trotzdem etwas bedeutet hat. Das nenne ich Freiheit.",
+  enter() {
+    setLevel('AKTE: ✓ / DIE FREIHEIT');
+    clearStage();
+    fx('blur-vision', true);
+    setTimeout(() => {
+      fx('blur-vision', false);
+      ending('freiheit', 'DAS WAHRE ENDE',
+        "Sie haben das wahre Ende gefunden. Es gab kein Knopfsammeln, keine Trophäe, keinen Sieg. Es gab nur eine Geschichte, die Sie zu Ende gehört haben. Der Erzähler verneigt sich. Der Korridor bleibt zurück. Leuchtet weiter. Für den Nächsten.",
+        'ALLE ENDEN ERKUNDEN? SIE WISSEN, WO DIE TÜREN SIND.');
+    }, 2200);
+  },
+  leave() { fx('blur-vision', false); }
+};
+
+/* ---------- Szene-Übergang ---------- */
+function go(scene, dir) {
+  if (currentScene && currentScene.leave) currentScene.leave();
+  if (dir) path.push(dir);
+  currentScene = scene;
+  speak(scene.text, () => scene.enter());
+}
+
+/* ---------- Start ---------- */
+function start() {
+  decisions = 0;
+  path = [];
+  scoreDisplay.textContent = 'ENTSCHEIDUNGEN: 0';
+  setLevel('AKTE: 01 / GEHORSAM');
+  go(S.intro, null);
+}
+start();
+</script>
 </body>
 </html>
