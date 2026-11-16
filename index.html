@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitte nicht drücken.</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --text-color: #f0f0f0;
+            --btn-color: #e63946;
+            --btn-shadow: #9b1b26;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        #narrator-box {
+            position: fixed;
+            top: 12%;
+            width: 80%;
+            max-width: 700px;
+            text-align: center;
+            font-size: 1.5rem;
+            line-height: 1.5;
+            min-height: 100px;
+            z-index: 10;
+            pointer-events: none;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+
+        #counter {
+            position: fixed;
+            bottom: 20px;
+            right: 25px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        #the-button {
+            position: absolute;
+            padding: 25px 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            font-family: inherit;
+            color: white;
+            background-color: var(--btn-color);
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 0 var(--btn-shadow), 0 15px 25px rgba(0,0,0,0.6);
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s, top 0.25s ease-out, left 0.25s ease-out, width 0.2s, height 0.2s, font-size 0.2s;
+            z-index: 5;
+        }
+
+        #the-button:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 var(--btn-shadow), 0 5px 10px rgba(0,0,0,0.6);
+        }
+
+        #fake-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #e0e0e0;
+            color: #111;
+            border: 3px solid #888;
+            box-shadow: 10px 10px 0px #000;
+            padding: 20px;
+            width: 350px;
+            z-index: 100;
+            font-family: Arial, sans-serif;
+        }
+
+        #fake-modal h3 {
+            margin-top: 0;
+            background: #000080;
+            color: white;
+            padding: 5px 10px;
+            font-size: 1rem;
+        }
+
+        .modal-btns {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-btns button {
+            padding: 5px 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .decoy {
+            position: absolute;
+            padding: 20px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            font-family: inherit;
+            color: white;
+            background-color: var(--btn-color);
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 6px 0 var(--btn-shadow);
+            cursor: pointer;
+            z-index: 4;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(2px, 2px) rotate(0deg); }
+            20% { transform: translate(-4px, -2px) rotate(-1deg); }
+            40% { transform: translate(4px, 3px) rotate(1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            80% { transform: translate(3px, -3px) rotate(1deg); }
+            100% { transform: translate(0px, 0px) rotate(0deg); }
+        }
+
+        .shake-screen {
+            animation: shake 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="narrator-box">Hallo. Bitte drücke diesen Knopf nicht.</div>
+    
+    <button id="the-button">NICHT DRÜCKEN</button>
+
+    <div id="counter">Ungehorsam-Level: 0</div>
+
+    <div id="fake-modal">
+        <h3>Systemwarnung</h3>
+        <p id="modal-text">Bist du sicher, dass du die Lebenszeit des Entwicklers verschwenden möchtest?</p>
+        <div class="modal-btns">
+            <button id="modal-yes">Ja, ich bin stur</button>
+            <button id="modal-no">Abbrechen</button>
+        </div>
+    </div>
+    <script>
+        const btn = document.getElementById('the-button');
+        const narrator = document.getElementById('narrator-box');
+        const counterDisplay = document.getElementById('counter');
+        const fakeModal = document.getElementById('fake-modal');
+        const modalYes = document.getElementById('modal-yes');
+        const modalNo = document.getElementById('modal-no');
+
+        let clicks = 0;
+        let dodges = 0;
+        let isDodging = false;
+        let typewriterTimeout;
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playTone(freq, type, duration, slideTo = null) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            if (slideTo) {
+                osc.frequency.exponentialRampToValueAtTime(slideTo, audioCtx.currentTime + duration);
+            }
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function say(text) {
+            clearTimeout(typewriterTimeout);
+            narrator.innerHTML = "";
+            let i = 0;
+            function type() {
+                if (i < text.length) {
+                    narrator.innerHTML += text.charAt(i);
+                    if (i % 2 === 0) playTone(300 + Math.random() * 100, 'triangle', 0.03);
+                    i++;
+                    typewriterTimeout = setTimeout(type, 28);
+                }
+            }
+            type();
+        }
+
+        function moveButtonRandomly() {
+            const maxX = window.innerWidth - btn.offsetWidth - 40;
+            const maxY = window.innerHeight - btn.offsetHeight - 40;
+            const randX = Math.max(20, Math.floor(Math.random() * maxX));
+            const randY = Math.max(150, Math.floor(Math.random() * maxY));
+            btn.style.left = randX + 'px';
+            btn.style.top = randY + 'px';
+        }
+
+        function shakeScreen() {
+            document.body.classList.remove('shake-screen');
+            void document.body.offsetWidth;
+            document.body.classList.add('shake-screen');
+        }
+
+        function spawnDecoys(count) {
+            for (let i = 0; i < count; i++) {
+                const decoy = document.createElement('button');
+                decoy.className = 'decoy';
+                decoy.innerText = 'NICHT DRÜCKEN';
+                decoy.style.left = Math.random() * (window.innerWidth - 200) + 'px';
+                decoy.style.top = (150 + Math.random() * (window.innerHeight - 250)) + 'px';
+                decoy.onclick = () => {
+                    playTone(120, 'sawtooth', 0.3, 60);
+                    decoy.innerText = 'FALSCHER KNOPF!';
+                    decoy.style.backgroundColor = '#333';
+                    say("Haha! Das war nur eine billige Kopie. Such weiter.");
+                    setTimeout(() => decoy.remove(), 1000);
+                };
+                document.body.appendChild(decoy);
+            }
+        }
+
+        btn.addEventListener('click', () => {
+            clicks++;
+            counterDisplay.innerText = `Ungehorsam-Level: ${clicks}`;
+            playTone(220, 'square', 0.1, 110);
+
+            switch (clicks) {
+                case 1:
+                    say("Ernsthaft? Da steht 'NICHT DRÜCKEN'. Eine einzige Regel.");
+                    break;
+                case 2:
+                    say("Okay, vielleicht war das ein Versehen. Deine Maus ist ausgerutscht. Passiert. Hör jetzt auf.");
+                    break;
+                case 3:
+                    shakeScreen();
+                    playTone(100, 'sawtooth', 0.4);
+                    say("HÖR AUF DAMIT. Ich meine es ernst. Hier gibt es nichts zu gewinnen.");
+                    btn.innerText = "LASS ES!";
+                    break;
+                case 4:
+                    say("Weißt du was? Wenn du dich nicht beherrschen kannst, nehme ich ihn dir weg.");
+                    isDodging = true;
+                    moveButtonRandomly();
+                    break;
+                case 5:
+                    isDodging = false;
+                    btn.style.left = '50%';
+                    btn.style.top = '50%';
+                    btn.style.transform = 'translate(-50%, -50%)';
+                    say("Beeindruckend. Du hast Reflexe wie eine Katze. Und das Gehirn einer Stubenfliege.");
+                    btn.innerText = "DRÜCK MICH NICHT";
+                    break;
+                case 6:
+                    say("Vielleicht verstehst du die Sprache nicht. Ich mache ihn kleiner.");
+                    btn.style.padding = "8px 16px";
+                    btn.style.fontSize = "0.7rem";
+                    moveButtonRandomly();
+                    break;
+                case 7:
+                    btn.style.padding = "25px 50px";
+                    btn.style.fontSize = "1.5rem";
+                    say("Argh! Fine! Dann verstecke ich ihn eben zwischen diesen hier.");
+                    spawnDecoys(12);
+                    moveButtonRandomly();
+                    break;
+                case 8:
+                    document.querySelectorAll('.decoy').forEach(d => d.remove());
+                    fakeModal.style.display = 'block';
+                    playTone(440, 'sine', 0.2);
+                    say("Ich habe eine offizielle Beschwerde eingereicht.");
+                    break;
+                case 9:
+                    say("Du hast das Fenster geschlossen?! Du bist ein Monster. Ein komplettes Monster.");
+                    document.body.style.backgroundColor = "#3a0000";
+                    shakeScreen();
+                    break;
+                case 10:
+                    say("Okay. Ich gebe auf. Drück ihn so oft du willst. Es passiert absolut gar nichts mehr.");
+                    document.body.style.backgroundColor = "#121212";
+                    btn.style.backgroundColor = "#444";
+                    btn.style.boxShadow = "0 8px 0 #222";
+                    btn.innerText = "Mir egal";
+                    break;
+                case 15:
+                    say("...Du drückst immer noch? Du bist jetzt bei 15 Klicks. Geh mal an die frische Luft.");
+                    break;
+                case 20:
+                    say("Herzlichen Glückwunsch. Du hast die Webseite kaputt gemacht. Zufrieden?");
+                    btn.style.transition = "transform 1.5s ease-in, top 1.5s ease-in";
+                    btn.style.top = "120vh";
+                    btn.style.transform = "rotate(720deg)";
+                    playTone(400, 'sawtooth', 1.2, 50);
+                    setTimeout(() => {
+                        say("Endlich Ruhe. Tschüss.");
+                    }, 1800);
+                    break;
+                default:
+                    if (clicks > 10 && clicks < 15) {
+                        say("...");
+                    } else if (clicks > 15 && clicks < 20) {
+                        say(`Klick ${clicks}. Dein Leben wird dadurch nicht besser.`);
+                    }
+                    break;
+            }
+        });
+
+        btn.addEventListener('mouseover', () => {
+            if (isDodging && dodges < 6) {
+                dodges++;
+                playTone(500, 'sine', 0.08, 800);
+                moveButtonRandomly();
+                if (dodges === 3) say("Zu langsam!");
+                if (dodges === 5) say("Haha, daneben! Gib einfach auf.");
+            }
+        });
+
+        modalYes.addEventListener('click', () => {
+            fakeModal.style.display = 'none';
+            say("Wenigstens bist du ehrlich. Und jetzt verschwinde.");
+        });
+
+        modalNo.addEventListener('click', () => {
+            playTone(150, 'sawtooth', 0.2);
+            document.getElementById('modal-text').innerText = "FEHLER: 'Abbrechen' wurde abgebrochen. Drücke 'Ja'.";
+        });
+    </script>
+</body>
+</html>
