@@ -625,19 +625,55 @@ function updateTTSToggle() {
 }
 
 function hasBrowserVoice() {
-  return typeof speechSynthesis !== 'undefined' && speechSynthesis.getSpeakers().length > 0;
+  try {
+    if (typeof speechSynthesis === 'undefined') return false;
+    if (speechSynthesis.getVoices().length > 0) return true;
+    /* Manche Browser liefern die Stimmliste erst nach dem ersten getVoices()
+       plus kurzer Wartezeit. Wir prüfen es einmal aktiv nach. */
+    speechSynthesis.getVoices();
+    return speechSynthesis.getVoices().length > 0;
+  } catch (e) { return false; }
 }
 
 function pickFallbackVoice() {
-  if (typeof speechSynthesis === 'undefined') return null;
-  const voices = speechSynthesis.getVoices();
-  if (!voices.length) return null;
-  return voices.find(v => v.lang && v.lang.toLowerCase().startsWith('de')) || voices[0];
+  try {
+    if (typeof speechSynthesis === 'undefined') return null;
+    let voices = speechSynthesis.getVoices();
+    if (!voices.length) {
+      /* Erster Aufruf triggert oft das Nachladen der Stimmliste. */
+      speechSynthesis.getVoices();
+      voices = speechSynthesis.getVoices();
+    }
+    if (!voices.length) return null;
+    return voices.find(v => v.lang && v.lang.toLowerCase().indexOf('de') === 0) || voices[0];
+  } catch (e) { return null; }
 }
 
 if (typeof speechSynthesis !== 'undefined') {
-  speechSynthesis.onvoiceschanged = () => { fallbackVoice = pickFallbackVoice(); updateTTSToggle(); };
+  try {
+    speechSynthesis.onvoiceschanged = () => { fallbackVoice = pickFallbackVoice(); updateTTSToggle(); };
+    /* Sofortiges Anstoßen der Stimmliste (Chrome liefert sie sonst erst verzögert). */
+    speechSynthesis.getVoices();
+  } catch (e) {}
 }
+
+/* Browser verlangen eine Nutzeraktion, bevor Audio beginnen darf.
+   Die erste Interaktion "wärmt" die Sprachausgabe daher an. */
+let voiceWarmedUp = false;
+function warmUpVoice() {
+  if (voiceWarmedUp) return;
+  voiceWarmedUp = true;
+  try {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    if (typeof speechSynthesis !== 'undefined' && !speechSynthesis.speaking) {
+      const u = new SpeechSynthesisUtterance(' ');
+      u.volume = 0;
+      speechSynthesis.speak(u);
+    }
+  } catch (e) {}
+}
+['click', 'keydown', 'touchstart'].forEach(ev =>
+  document.addEventListener(ev, warmUpVoice, { once: false }));
 
 function stopTTS() {
   if (currentAudio) {
@@ -650,12 +686,11 @@ function stopTTS() {
 /* Browserstimme: funktioniert immer, braucht keinen Schlüssel. */
 function speakBrowser(text) {
   if (typeof speechSynthesis === 'undefined') return false;
-  const v = fallbackVoice || pickFallbackVoice();
-  if (!v) return false;
   try {
     const u = new SpeechSynthesisUtterance(text);
-    u.voice = v;
-    u.lang = v.lang;
+    const v = fallbackVoice || pickFallbackVoice();
+    if (v) { u.voice = v; u.lang = v.lang; }
+    else { u.lang = 'de-DE'; }
     u.rate = 1.02;
     u.pitch = 0.9;
     u.volume = Math.min(1, masterGain.gain.value + 0.2);
