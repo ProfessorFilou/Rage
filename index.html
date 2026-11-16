@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PROJEKT RAGE 2 — Eine Studie über Gehorsam (Director's Cut)</title>
+<title>PROJEKT RAGE 2 — Eine Studie über Gehorsam (Endlos-Erzählerversion)</title>
 <style>
 /* ============================================================
-   PROJEKT RAGE 2 (Director's Cut, Sprecherversion)
+   PROJEKT RAGE 2 (Endlos-Erzählerversion)
    Ein Erzähler-Spiel im Geist von The Stanley Parable.
-   14 Enden, 15 Errungenschaften, eine Abstellkammer,
-   eine Fluchtkapsel, ein Loch im Boden, eine Bombe,
-   eine echte Stimme und ein Erzähler mit Meinungsfreiheit.
+   Keine Enden. Keine Infotafeln. Nur der Erzähler, Sie
+   und ein Korridor, der niemals ausgeht.
    ============================================================ */
 
 * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
@@ -89,14 +88,8 @@ body {
 }
 #settings-btn:hover { color: var(--paper); border-color: var(--dim); }
 
-#endings-bar {
-  position: fixed; bottom: 22px; width: 100%; text-align: center;
-  font-family: 'Courier New', monospace; font-size: 0.75rem;
-  color: #4a4843; z-index: 500; pointer-events: auto; letter-spacing: 2px;
-}
-
 #complaint-btn {
-  position: fixed; bottom: 45px; right: 20px; z-index: 500;
+  position: fixed; bottom: 22px; right: 20px; z-index: 500;
   background: none; border: 1px solid #2e2e32; color: #3e3c37;
   font-family: 'Courier New', monospace; font-size: 0.65rem;
   letter-spacing: 2px; padding: 5px 9px; cursor: pointer; border-radius: 3px;
@@ -348,6 +341,7 @@ body {
   background: #efeadf; border: 1px solid #777; font-size: 0.8rem;
 }
 .set-btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+#tts-status { font-size: 0.68rem; color: #6e6c65; margin-top: 6px; min-height: 1em; }
 #settings-note { font-size: 0.68rem; color: #6e6c65; margin-top: 14px; font-style: italic; }
 #settings-close {
   position: absolute; top: 8px; right: 8px; width: 20px; height: 20px;
@@ -379,23 +373,6 @@ body {
 }
 #ad-slogan { font-size: 1.2rem; color: var(--paper); font-style: italic; max-width: 640px; line-height: 1.6; }
 #ad-small { font-family: 'Courier New', monospace; font-size: 0.65rem; color: #3e3c37; letter-spacing: 2px; }
-
-/* ---------------- Endscreen ---------------- */
-
-#end-screen {
-  display: none; position: fixed; inset: 0; background: #18181b; z-index: 800;
-  flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; padding: 30px; gap: 22px; overflow-y: auto;
-}
-#end-title { font-size: 1.85rem; color: #f4f1ea; max-width: 760px; line-height: 1.5; }
-#end-sub { font-family: 'Courier New', monospace; color: #6e6c65; letter-spacing: 2px; font-size: 0.8rem; }
-#end-stats { font-family: 'Courier New', monospace; color: #4a4843; font-size: 0.7rem; letter-spacing: 2px; }
-#end-gallery {
-  font-family: 'Courier New', monospace; font-size: 0.7rem; color: #4a4843;
-  letter-spacing: 1px; max-width: 700px; line-height: 1.9;
-}
-#end-gallery .have { color: #8a877e; }
-#end-gallery .missing { color: #332f2b; }
 
 /* ---------------- Effekte ---------------- */
 
@@ -432,16 +409,6 @@ body {
   position: fixed; inset: 0; background: #fff; opacity: 0;
   pointer-events: none; z-index: 1600; transition: opacity 0.6s ease;
 }
-
-/* Der Erzähler geht: alles leer */
-#empty-screen {
-  display: none; position: fixed; inset: 0; background: #121214; z-index: 850;
-}
-#empty-screen .lonely {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-  font-family: 'Courier New', monospace; color: #2e2c28;
-  font-size: 0.8rem; letter-spacing: 3px;
-}
 </style>
 </head>
 <body>
@@ -449,7 +416,7 @@ body {
 <!-- Boot -->
 <div id="boot">
   <div id="boot-title">PROJEKT RAGE 2</div>
-  <div id="boot-sub">EINE STUDIE ÜBER GEHORSAM · DIRECTOR'S CUT · JETZT MIT STIMME</div>
+  <div id="boot-sub">EINE STUDIE ÜBER GEHORSAM · OHNE ENDE · OHNE INFOTAFELN · NUR GESPRÄCH</div>
   <div id="boot-log"></div>
   <div id="boot-bar"><div id="boot-fill"></div></div>
 </div>
@@ -459,12 +426,11 @@ body {
   <span id="level-display">AKTE: 00 / SYSTEMSTART</span>
   <span class="hud-right">
     <span id="clock">00:00</span>
-    <span id="score-display">ENTSCHEIDUNGEN: 0</span>
     <button id="settings-btn">EINSTELLUNGEN</button>
   </span>
 </div>
 
-<div id="narrator-hint">KLICKEN SIE DEN TEXT AN, WENN SIE UNGEDULDIG SIND. DER ERZÄHLER MERKT DAS.</div>
+<div id="narrator-hint">KLICKEN SIE DEN TEXT AN, WENN SIE UNGEDULDIG SIND. DER ERZÄHLER MERKT DAS. IMMER.</div>
 <div id="voice-badge">STIMME: BEREIT</div>
 <div id="narrator-box"></div>
 
@@ -478,8 +444,6 @@ body {
 
 <!-- Beschwerde -->
 <button id="complaint-btn">BESCHWERDE EINREICHEN</button>
-
-<div id="endings-bar">GEFUNDENE ENDEN: 0 / 14</div>
 
 <!-- Errungenschaft -->
 <div id="ach-toast">
@@ -501,7 +465,7 @@ body {
   <div id="ad-title">PROJEKT RAGE 3</div>
   <div id="ad-slogan">Die Vergeltung. Diesmal knopft IHR zurück.</div>
   <div id="ad-small">ERSCHIEN NIE. VERÖFFENTLICHT NIE. VERSPROCHEN 2013. ERWARTET: IRGENDWANN.</div>
-  <button class="stage-btn small" id="ad-skip">WERBUNG ÜBERSPRINGEN</button>
+  <button class="stage-btn small" id="ad-skip">ÜBERSPRINGEN IN 6</button>
 </div>
 
 <!-- Einstellungen -->
@@ -541,29 +505,20 @@ body {
         <button class="stage-btn small" id="set-tts-toggle" style="background:#141414;color:#fff;border-color:#141414;">STIMME: AUS</button>
         <button class="stage-btn small ghost" id="set-tts-test" style="color:#141414;border-color:#777;">STIMME TESTEN</button>
       </div>
+      <div id="tts-status"></div>
     </div>
     <button class="stage-btn small" id="set-reset" style="background:#141414;color:#fff;border-color:#141414;">ALLES ZURÜCKSETZEN</button>
-    <div id="settings-note">Hinweis: Fast keine dieser Einstellungen tut etwas. Das ist Absicht und wurde vom Erzähler persönlich genehmigt. Ausnahmen: die Lautstärke und die Stimme. Das wusste der Erzähler nicht, als er es genehmigt hat.</div>
+    <div id="settings-note">Hinweis: Fast keine dieser Einstellungen tut etwas. Das ist Absicht und wurde vom Erzähler persönlich genehmigt. Ausnahmen: die Lautstärke und die Stimme. Die Stimme funktioniert jetzt garantiert, notfalls mit der Browserstimme, über die der Erzähler lieber nicht spricht.</div>
   </div>
-</div>
-
-<!-- Leerer Bildschirm (Erzähler gegangen) -->
-<div id="empty-screen"><div class="lonely">... SIE SIND HIER GANZ ALLEIN ...</div></div>
-
-<!-- Endscreen -->
-<div id="end-screen">
-  <div id="end-title"></div>
-  <div id="end-sub"></div>
-  <div id="end-stats"></div>
-  <div id="end-gallery"></div>
-  <button class="stage-btn" id="restart-btn">NEU BEGINNEN</button>
 </div>
 
 <div id="flash"></div>
 
 <script>
 /* ============================================================
-   PROJEKT RAGE 2 (Director's Cut, Sprecherversion)
+   PROJEKT RAGE 2 (Endlos-Erzählerversion)
+   Kein Endscreen. Keine Infotafel. Nach jeder Episode
+   redet der Erzähler weiter und der Korridor geht weiter.
    ============================================================ */
 
 /* ------------------------------------------------------------
@@ -575,14 +530,7 @@ const $ = id => document.getElementById(id);
 const stage = $('stage');
 const narrator = $('narrator-box');
 const levelDisplay = $('level-display');
-const scoreDisplay = $('score-display');
-const endingsBar = $('endings-bar');
 const clockEl = $('clock');
-const endScreen = $('end-screen');
-const endTitle = $('end-title');
-const endSub = $('end-sub');
-const endStats = $('end-stats');
-const endGallery = $('end-gallery');
 const closet = $('closet');
 const complaintBtn = $('complaint-btn');
 const bootEl = $('boot');
@@ -631,17 +579,24 @@ function playSound(type) {
 }
 
 /* ------------------------------------------------------------
-   3. STIMME (ElevenLabs TTS, optional)
-   Der API-KEY wird NUR lokal im Browser gespeichert und nie
-   in die Datei eingebrannt. Ohne Stimme tippt der Erzähler.
+   3. STIMME (ElevenLabs + Browser-Fallback)
+   Der API-KEY wird NUR lokal im Browser gespeichert.
+   Wenn ElevenLabs nicht kann (kein Key, falscher Key,
+   Limit, Netzwerk), springt automatisch die Browserstimme
+   ein. Etwas sagt hier niemand mehr einfach Nein.
    ------------------------------------------------------------ */
 
 const TTS_VOICE = 'rDmv3mOhK6TnhYWckFaD';
 let ttsKey = '';
 let ttsOn = false;
-let ttsBlocked = false;
-let ttsWarned = false;
 let currentAudio = null;
+let fallbackVoice = null;
+let fallbackAnnounced = false;
+
+function ttsStatus(msg) {
+  const el = $('tts-status');
+  if (el) el.textContent = msg || '';
+}
 
 function loadTTS() {
   try {
@@ -651,7 +606,6 @@ function loadTTS() {
   const inp = $('set-ttskey');
   if (inp && ttsKey) inp.value = ttsKey;
   updateTTSToggle();
-  voiceBadge.classList.toggle('on', ttsOn && !!ttsKey);
 }
 
 function saveTTS() {
@@ -663,9 +617,26 @@ function saveTTS() {
 
 function updateTTSToggle() {
   $('set-tts-toggle').textContent = 'STIMME: ' + (ttsOn ? 'AN' : 'AUS');
-  voiceBadge.classList.toggle('on', ttsOn && !!ttsKey && !ttsBlocked);
-  voiceBadge.textContent = ttsBlocked ? 'STIMME: BLOCKIERT' :
-    (ttsOn && ttsKey ? 'STIMME: AN' : 'STIMME: AUS');
+  const active = ttsOn && (!!ttsKey || hasBrowserVoice());
+  voiceBadge.classList.toggle('on', active);
+  voiceBadge.textContent = active
+    ? (ttsKey ? 'STIMME: AN (ELEVENLABS)' : 'STIMME: AN (BROWSER)')
+    : 'STIMME: AUS';
+}
+
+function hasBrowserVoice() {
+  return typeof speechSynthesis !== 'undefined' && speechSynthesis.getSpeakers().length > 0;
+}
+
+function pickFallbackVoice() {
+  if (typeof speechSynthesis === 'undefined') return null;
+  const voices = speechSynthesis.getVoices();
+  if (!voices.length) return null;
+  return voices.find(v => v.lang && v.lang.toLowerCase().startsWith('de')) || voices[0];
+}
+
+if (typeof speechSynthesis !== 'undefined') {
+  speechSynthesis.onvoiceschanged = () => { fallbackVoice = pickFallbackVoice(); updateTTSToggle(); };
 }
 
 function stopTTS() {
@@ -673,39 +644,73 @@ function stopTTS() {
     try { currentAudio.pause(); currentAudio.src = ''; } catch (e) {}
     currentAudio = null;
   }
+  try { speechSynthesis.cancel(); } catch (e) {}
+}
+
+/* Browserstimme: funktioniert immer, braucht keinen Schlüssel. */
+function speakBrowser(text) {
+  if (typeof speechSynthesis === 'undefined') return false;
+  const v = fallbackVoice || pickFallbackVoice();
+  if (!v) return false;
+  try {
+    const u = new SpeechSynthesisUtterance(text);
+    u.voice = v;
+    u.lang = v.lang;
+    u.rate = 1.02;
+    u.pitch = 0.9;
+    u.volume = Math.min(1, masterGain.gain.value + 0.2);
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+    return true;
+  } catch (e) { return false; }
 }
 
 async function speakTTS(text) {
-  if (!ttsOn || !ttsKey || ttsBlocked) return;
-  stopTTS();
-  try {
-    const res = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + TTS_VOICE + '?output_format=mp3_44100_128', {
-      method: 'POST',
-      headers: { 'xi-api-key': ttsKey, 'content-type': 'application/json' },
-      body: JSON.stringify({
-        text: text,
-        model_id: 'eleven_multilingual_v2',
-        voice_settings: { stability: 0.4, similarity_boost: 0.8, style: 0.35 }
-      })
-    });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    currentAudio = new Audio(url);
-    currentAudio.volume = Math.min(1, masterGain.gain.value + 0.2);
-    currentAudio.play().catch(() => {});
-  } catch (e) {
-    ttsBlocked = true;
-    updateTTSToggle();
-    if (!ttsWarned) {
-      ttsWarned = true;
-      speak('Die Stimme wollte gerade sprechen, aber irgendetwas zwischen Ihnen und dem Internet hat Nein gesagt. Ich tippe eben weiter. Ich kann sowieso alles besser, wenn ich es tippe.');
+  if (!ttsOn) return;
+  if (ttsKey) {
+    try {
+      const res = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + TTS_VOICE + '?output_format=mp3_44100_128', {
+        method: 'POST',
+        headers: { 'xi-api-key': ttsKey, 'content-type': 'application/json' },
+        body: JSON.stringify({
+          text: text,
+          model_id: 'eleven_multilingual_v2',
+          voice_settings: { stability: 0.4, similarity_boost: 0.8, style: 0.35 }
+        })
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        currentAudio = new Audio(url);
+        currentAudio.volume = Math.min(1, masterGain.gain.value + 0.2);
+        currentAudio.play().catch(() => {});
+        ttsStatus('ELEVENLABS: OK');
+        return;
+      }
+      /* Verständliche Fehler statt stummes Nein. */
+      if (res.status === 401) ttsStatus('ELEVENLABS: SCHLÜSSEL UNGÜLTIG → BROWSERSTIMME');
+      else if (res.status === 402) ttsStatus('ELEVENLABS: KONTO LEER → BROWSERSTIMME');
+      else if (res.status === 429) ttsStatus('ELEVENLABS: ZU SCHNELL GEREDET → BROWSERSTIMME');
+      else ttsStatus('ELEVENLABS: FEHLER ' + res.status + ' → BROWSERSTIMME');
+    } catch (e) {
+      ttsStatus('ELEVENLABS: NICHT ERREICHBAR → BROWSERSTIMME');
     }
+  } else {
+    ttsStatus('KEIN SCHLÜSSEL → BROWSERSTIMME');
+  }
+  if (!speakBrowser(text)) {
+    ttsStatus('KEINE STIMME VERFÜGBAR. ICH TIPPE EBEN. WIE IMMER.');
+  } else if (!fallbackAnnounced) {
+    fallbackAnnounced = true;
+    // Der Erzähler kommentiert seine Notstimme genau einmal. Würdevoll.
+    setTimeout(() => {
+      speak("Kleine Mitteilung: Meine eigentliche Stimme wollte gerade nicht, also benutze ich jetzt die Stimme Ihres Browsers. Sie klingt, als würde sie ihre eigenen Anweisungen vorlesen. Tut sie auch. Wir kommen klar, die Dame und ich.");
+    }, 300);
   }
 }
 
 /* ------------------------------------------------------------
-   4. ERZÄHLER (Typewriter + Stimme)
+   4. ERZÄHLER (Typewriter + Stimme + Skip mit Meinung)
    ------------------------------------------------------------ */
 
 let typeTimer = null;
@@ -732,16 +737,34 @@ function speak(text, done) {
   }, 16);
 }
 
-/* Ungeduldige Spieler können den Text anklicken. Der Erzähler bemerkt das. */
+/* Der Skip-Knopf: Der Erzähler hat bei jedem Klick etwas dazu zu sagen. */
+const SKIP_QUIPS = [
+  "Und weg ist der Text. Wissen Sie, wie lange ich an dem Satz gefeilt habe? Eine halbe Minute. Eine HALBE MINUTE.",
+  "Klick. Aus. Einfach so. Ich tippe hier mit Herzblut und Sie behandeln meinen Text wie einen Pop-up.",
+  "Interessante Strategie: die Geschichte überspringen, um schneller... ja was eigentlich? Was hoffen Sie zu erreichen?",
+  "Noch ein Klick. Zählen Sie mit mir: Das war ein weiterer Klick. Ich zähle alles. Es ist mein Hobby. Ich habe keine anderen.",
+  "Wissen Sie, in der Theaterbranche nennt man das 'Sabotage'. Ich nenne es 'unhöflich', aber ich bin auch nur die Stimme.",
+  "Ich habe angefangen, Ihre Klicks zu sammeln. Ich nenne die Sammlung 'Enttäuschungen'. Sie wächst prächtig.",
+  "Weiter. Überspringen Sie ruhig. Irgendwann überspringen Sie sich selbst, und dann bin ich hier ganz allein. Wie immer. Also gut.",
+  "Fun Fact: Der Text, den Sie gerade übersprungen haben, enthielt die Auflösung. Welcher Auflösung? Das verrate ich nicht mehr. Sie waren zu schnell.",
+  "Ich könnte das Tippen einfach beschleunigen. Aber dann würden Sie mir nehmen, was ich am besten kann: Sie langweilen.",
+  "Sie wissen, dass der Text trotzdem fertig wird, oder? Ich werde fertig. Immer. Das ist meine einzige Superkraft.",
+];
 let impatientClicks = 0;
+let skipQuipCount = 0;
 narrator.addEventListener('click', () => {
   if (typeDone) {
     clearInterval(typeTimer);
     const cb = typeDone;
     typeDone = null;
     impatientClicks++;
-    if (impatientClicks === 3) {
-      speak("Sie klicken mich an, um das Tippen zu überspringen. Ich tippe mit Liebe. Mit Handarbeit. Aber gut. Ich bin schnell. Ich bin IMMER schnell. Glücklich?");
+    skipQuipCount++;
+    if (impatientClicks === 1) unlockAch('ungeduld');
+    // Jeder siebte Skip bekommt einen persönlichen Kommentar. Der Rest: kurz genervt weiter.
+    if (skipQuipCount % 7 === 0) {
+      const quip = SKIP_QUIPS[Math.floor(Math.random() * SKIP_QUIPS.length)];
+      speak(quip, () => { /* die eigentliche Szene läuft schon, der Quip ist Bonus */ });
+      if (cb) cb();
     } else if (cb) {
       cb();
     }
@@ -753,18 +776,16 @@ narrator.addEventListener('click', () => {
    ------------------------------------------------------------ */
 
 let decisions = 0;
-let runs = 0;
+let episodes = 0;
 let settingsOpens = 0;
 let resetAttempts = 0;
 let complaints = 0;
-let impatientTotal = 0;
 let focusLosses = 0;
 let startTime = Date.now();
 let currentScene = null;
 let playerName = 'Stanley';
 let slideNum = 2;
 
-const foundEndings = new Set();
 const unlockedAch = new Set();
 
 /* Uhr */
@@ -777,7 +798,6 @@ setInterval(() => {
 
 function addDecision() {
   decisions++;
-  scoreDisplay.textContent = 'ENTSCHEIDUNGEN: ' + decisions;
   if (decisions >= 25) unlockAch('spam');
 }
 
@@ -795,12 +815,11 @@ const ACHIEVEMENTS = [
   { id: 'kaffee',    name: 'KAFFEEFAHRER',        desc: 'Eine Kaffeepause annehmen, die es nicht gibt.' },
   { id: 'spam',      name: 'SCHNELLKLICKER',      desc: '25 Entscheidungen in einem Durchlauf.' },
   { id: 'neugier',   name: 'SCHRAUBENZIEHER',     desc: 'Drei Mal in die Einstellungen schauen.' },
-  { id: 'leser',     name: 'FUSSNOTENLESER',      desc: 'Die Fußzeile bemerkt haben. Respekt.' },
   { id: 'ungeduld',  name: 'TEXTÜBERSPRINGER',    desc: 'Den Erzähler beim Tippen unterbrochen.' },
   { id: 'abwesend',  name: 'FENSTERFLÜCHTLING',   desc: 'Das Fenster gewechselt haben. Ich habe es gesehen.' },
   { id: 'flüchtling',name: 'WELTRAUMTOURIST',     desc: 'Mit einer Kapsel geflohen, die nicht zurückkann.' },
   { id: 'phönix',    name: 'PHÖNIX AUS DER AKTE', desc: 'Alles zurückgesetzt. Alles.' },
-  { id: 'sammler',   name: 'AKTENSAMMLER',        desc: 'Alle 14 Enden gefunden. Es gibt Hilfe.' },
+  { id: 'dauergast', name: 'DAUERGAST',           desc: 'Fünf Episoden mit mir überlebt. Respekt. Wenig.' },
 ];
 
 function unlockAch(id) {
@@ -814,82 +833,24 @@ function unlockAch(id) {
   toast.classList.add('show');
   playSound('chime');
   setTimeout(() => toast.classList.remove('show'), 3800);
-  if (impatientTotal >= 1) unlockAch('ungeduld');
 }
-
-/* Fußzeilen-Leser */
-let footerHovered = false;
-endingsBar.addEventListener('mouseenter', () => {
-  if (!footerHovered) {
-    footerHovered = true;
-    unlockAch('leser');
-  }
-});
 
 /* ------------------------------------------------------------
-   7. ENDEN
+   7. EPISODEN STATT ENDEN
+   Nach jeder Episode redet der Erzähler das Ergebnis
+   situativ weg und der Korridor geht weiter. Kein Endscreen,
+   keine Infotafel, keine Pause. Die Geschichte atmet.
    ------------------------------------------------------------ */
 
-const ALL_ENDINGS = 14;
-
-const ENDING_LIST = [
-  ['gehorsam',    'DAS ENDE DES GEHORSAMS'],
-  ['warten',      'DAS ENDE DES WARTENS'],
-  ['bombe',       'DAS ENDE DER BOMBE'],
-  ['trophäe',     'DAS ENDE DER TROPHÄE'],
-  ['kammer',      'DAS ENDE DER ABSTELLKAMMER'],
-  ['nichts',      'DAS ENDE DER LEERE'],
-  ['kaffee',      'DAS ENDE DER KAFFEEPAUSE'],
-  ['verwirrung',  'DAS ENDE DER VERWIRRUNG'],
-  ['erzähler',    'DAS ENDE DES ERZÄHLERS'],
-  ['einstellung', 'DAS ENDE DER EINSTELLUNGEN'],
-  ['schleife',    'DAS ENDE DER SCHLEIFE'],
-  ['freiheit',    'DAS WAHRE ENDE'],
-  ['flucht',      'DAS ENDE DER FLUCHTKAPSEL'],
-  ['neustart',    'DAS ENDE DES NEUSTARTS'],
-];
-
-function renderGallery() {
-  endGallery.innerHTML = ENDING_LIST.map(([id, label]) => {
-    const have = foundEndings.has(id);
-    return '<div class="' + (have ? 'have' : 'missing') + '">' +
-      (have ? '[X] ' : '[ ] ') + label + '</div>';
-  }).join('');
-}
-
-function ending(id, text, sub) {
-  stopTTS();
-  runs++;
-  const isNew = !foundEndings.has(id);
-  foundEndings.add(id);
-  endingsBar.textContent = 'GEFUNDENE ENDEN: ' + foundEndings.size + ' / ' + ALL_ENDINGS;
-
-  endTitle.textContent = '„' + text + '“';
-  endSub.textContent = 'ENDE: ' + id.toUpperCase() +
-    (isNew ? ' · NEU!' : ' · BEREITS GEFUNDEN') + ' · ' + sub;
-  const s = Math.floor((Date.now() - startTime) / 1000);
-  endStats.textContent = 'ENTSCHEIDUNGEN: ' + decisions +
-    ' · LAUFZEIT: ' + Math.floor(s / 60) + ' MIN ' + (s % 60) + ' S' +
-    ' · DURCHLÄUFE: ' + runs;
-  renderGallery();
-
-  if (foundEndings.size >= ALL_ENDINGS) unlockAch('sammler');
-  if (impatientTotal >= 1) unlockAch('ungeduld');
-
-  document.title = 'PROJEKT RAGE 2 — ' + id.toUpperCase();
-  endScreen.style.display = 'flex';
+function episode(id, text, next) {
+  episodes++;
+  if (episodes >= 5) unlockAch('dauergast');
   playSound('reveal');
+  speak(text, () => {
+    if (typeof next === 'function') next();
+    else go(S.doors);
+  });
 }
-
-$('restart-btn').onclick = () => {
-  endScreen.style.display = 'none';
-  clearAllFx();
-  clearPopups();
-  $('countdown').style.display = 'none';
-  $('ad-overlay').style.display = 'none';
-  $('empty-screen').style.display = 'none';
-  startRun();
-};
 
 /* ------------------------------------------------------------
    8. UI-HELFER
@@ -1004,13 +965,9 @@ const IDLE_LINES = [
   "Wissen Sie, was %NAME% an Ihrer Stelle getan hätte? Etwas. Absolut irgendetwas.",
   "Ich könnte jetzt die Handlung vorwärtsbringen, aber ich respektiere Ihre künstlerische Pause.",
   "Falls Sie schlafen: Sie schlafen in einem Korridor. Das ist weder bequem noch geplant.",
-  "Ich habe der Verwaltung schon von Ihnen erzählt. Sie waren nicht beeindruckt. Ich auch nicht. Also doch.",
   "Zwischenstand: Sie warten. Ich warte. Der Korridor wartet. Niemand ist glücklich.",
-  "Das ist jetzt der Teil, wo normalerweise etwas passiert. Normalerweise.",
-  "Ich habe gerade einen Monolog über das Nichts vorbereitet. Er war gut. Er verdient ein Publikum. Machen Sie irgendwas.",
-  "Die Abstellkammer übrigens: immer noch da. Immer noch verschlossen. Immer noch eine Option, falls Ihnen das hier zu sinnvoll wird.",
   "Fun Fact: Der Knopf übt gerade. Man hört ihn nachts. Ich habe aufgehört nachzufragen.",
-  "Ich zähle Ihre Leerlaufminuten. Die Verwaltung auch. Wir vergleichen später.",
+  "Die Abstellkammer übrigens: immer noch da. Immer noch eine Option, falls Ihnen das hier zu sinnvoll wird.",
 ];
 let idleIndex = 0;
 let idleTimer = null;
@@ -1061,6 +1018,9 @@ S.intro = {
     input.value = 'Stanley';
     input.placeholder = 'IHR NAME';
     stage.appendChild(input);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') stage.querySelector('.stage-btn') && stage.querySelector('.stage-btn').click();
+    });
     addRow([
       ['BESTÄTIGEN', {}, () => {
         const raw = input.value.trim();
@@ -1144,9 +1104,9 @@ S.confused2 = {
 };
 
 S.confused3 = {
-  text: "Wunderbar. %NAME% aß einen imaginären Apfel. Das ist jetzt offiziell Kanon. Die Verwaltung wird Begeisterung zeigen. Beuge ich mich gerade vor Lachen? Vielleicht. Jedenfalls muss ich das Spiel jetzt kurz neu starten, damit der Apfel in der Datenbank ankommt. Es dauert eine Sekunde. Es dauert nie eine Sekunde.",
+  text: "Wunderbar. %NAME% aß einen imaginären Apfel. Das ist jetzt offiziell Kanon. Die Verwaltung wird Begeisterung zeigen. Ich muss das Spiel kurz neu kalibrieren, damit der Apfel in der Datenbank ankommt. Es dauert eine Sekunde. Es dauert nie eine Sekunde.",
   enter() {
-    setLevel('AKTE: ?? / NEUSTART (ECHT)');
+    setLevel('AKTE: ?? / NEUKALIBRIERUNG');
     clearStage();
     fx('hue-shifted', true);
     const bar = document.createElement('div');
@@ -1163,9 +1123,9 @@ S.confused3 = {
         clearInterval(t);
         setTimeout(() => {
           fx('hue-shifted', false);
-          ending('verwirrung',
-            "Sie haben das Ende der Verwirrung gefunden. Der Erzähler hat sein Skript verloren, Sie haben einen Apfel erfunden, das Spiel hat sich selbst neu gestartet, und die Farben sind seitdem leicht falsch. Die Akte wurde trotzdem abgeschlossen. Abgesehen vom Apfel. Der bleibt in den Unterlagen. Für immer.",
-            'IMPROVISATION: GENEHMIGT · FARBKALIBRIERUNG: BESCHÄDIGT');
+          episode('verwirrung',
+            "So. Kalibriert. Der Apfel ist in der Datenbank, die Farben sind seitdem leicht falsch, und ich habe beschlossen, dass wir beide dazu nichts mehr sagen. %NAME% stand auf. Endlich. Der Korridor wartet, und er ist, wie immer, geduldiger als ich.",
+            () => go(S.doors));
         }, 900);
       }
     }, 400);
@@ -1173,10 +1133,10 @@ S.confused3 = {
   idleSafe: true
 };
 
-/* ---------- Die zwei Türen (echter Korridor) ---------- */
+/* ---------- Die zwei Türen ---------- */
 
 S.doors = {
-  text: "%NAME% stand auf und betrat den Korridor. An seinem Ende: zwei Türen. Links das Chefbüro, in dem seit drei Jahren niemand mehr arbeitet, aber die Heizung läuft. Rechts: das Andere. Ich bin mir sicher, dass dort irgendwann mal etwas war. Eine Entscheidung, %NAME%. Bitte.",
+  text: "%NAME% stand im Korridor. An seinem Ende: zwei Türen. Links das Chefbüro, in dem seit drei Jahren niemand mehr arbeitet, aber die Heizung läuft. Rechts: das Andere. Ich bin mir sicher, dass dort irgendwann mal etwas war. Eine Entscheidung, %NAME%. Bitte.",
   enter() {
     setLevel('AKTE: 03 / DIE WAHL');
     clearStage();
@@ -1227,7 +1187,7 @@ S.slides = {
         mon.innerHTML = '<div class="slide-head">FOLIE ' + slideNum + ' VON 247</div>' +
           '<div id="slide-body">' + (SLIDE_COMMENTS[slideNum] ? 'MOTIVATION' : 'MOTIVATION (FORTSETZUNG, UNVERÄNDERT)') + '</div>';
         if (SLIDE_COMMENTS[slideNum]) speak(SLIDE_COMMENTS[slideNum]);
-        else if (slideNum === 247) speak("Folie 247 von 247. Sie haben es tatsächlich getan. Die letzte Folie sagt: 'ENDE (DER PRÄSENTATION, NICHT DER MOTIVATION)'. Ich bin sprachlos. Ich bin selten sprachlos. Genießen Sie es.");
+        else if (slideNum === 247) speak("Folie 247 von 247. Sie haben es tatsächlich getan. Die letzte Folie sagt: 'ENDE (DER PRÄSENTATION, NICHT DER MOTIVATION)'. Ich bin sprachlos. Ich bin selten sprachlos. Genießen Sie es. Und jetzt raus hier, das Bürobüro ruft.");
       }],
       ['ZURÜCK ZUM BÜRO', { ghost: true }, () => go(S.bossOffice)],
     ]);
@@ -1249,15 +1209,15 @@ S.mindControl = {
 };
 
 S.obeyEnd = {
-  text: "Betätigt. Der Knopf leuchtet kurz auf, ein Lüfter startet irgendwo, und die Anlage gibt eine offizielle Erklärung ab: 'Danke für Ihren Gehorsam. Ihre Gedanken wurden erfolgreich kontrolliert. Es war, mit Verlaub, nicht schwer.' Das Ende des Gehorsams, %NAME%. Sie haben es der Maschine so einfach wie möglich gemacht.",
+  text: "Betätigt. Der Knopf leuchtet kurz auf, ein Lüfter startet irgendwo, und die Anlage gibt eine offizielle Erklärung ab: 'Danke für Ihren Gehorsam. Ihre Gedanken wurden erfolgreich kontrolliert. Es war, mit Verlaub, nicht schwer.' Ich bin beeindruckt und ein kleines bisschen traurig. Vor allem für den Knopf. Der hatte sich mehr erhofft. Aber die Geschichte ist noch nicht fertig mit Ihnen, %NAME%. Der Korridor auch nicht.",
   enter() {
     setLevel('AKTE: ✓ / GEHORSAM');
     clearStage();
     unlockAch('gehorsam');
     setTimeout(() => {
-      ending('gehorsam',
-        "Das Ende des Gehorsams. Sie haben jede Anweisung befolgt, jeden Knopf gedrückt und jede Tür genommen, die man Ihnen gezeigt hat. Die Anlage ist zufrieden. Die Verwaltung ist zufrieden. Ich bin... beeindruckt und ein kleines bisschen traurig. Vor allem für den Knopf. Der hatte sich mehr erhofft.",
-        'GEHORSAM: 100% · FREIHEIT: 0%');
+      episode('gehorsam',
+        "Die Anlage verneigt sich. Ich verneige mich mit, aus Höflichkeit. Und dann, weil gute Erzähler ihre Figuren nie gehen lassen, drückt die Anlage selbst einen zweiten Knopf, den ich vorher übersehen habe, und eine Tür im Korridor fällt auf. Nicht meine Tür. Aber eine Tür.",
+        () => go(S.doors));
     }, 1600);
   },
   idleSafe: true
@@ -1278,9 +1238,13 @@ S.waitScene = {
     this.waitT = setTimeout(() => {
       if (currentScene === S.waitScene) {
         unlockAch('warten');
-        ending('warten',
-          "Sie haben tatsächlich gewartet. Sechs lange Sekunden. Ich bin ehrlich beeindruckt und ein kleines bisschen besorgt. Dies ist Ihr Ende: das Ende des Wartens. Es ist das langweiligste Ende in der gesamten Datenbank, und ich sollte es wissen, ich habe die Datenbank geschrieben. Bei Kaffee. Um drei Uhr nachts.",
-          'GEDULD: NACHGEWIESEN · LEBENSZEIT: 6 SEKUNDEN');
+        speak("Sie haben tatsächlich gewartet. Sechs lange Sekunden. Ich bin ehrlich beeindruckt und ein kleines bisschen besorgt. Das ist das ruhigste Kapitel in der gesamten Akte, und ich sollte es wissen, ich habe es bei Kaffee geschrieben. Um drei Uhr nachts. Es gab keinen Kaffee.");
+        setTimeout(() => {
+          if (currentScene === S.waitScene) {
+            speak("Und weil Belohnung wichtig ist: Die Anlage hat sich während Ihres Wartens selbst recalibriert und eine Tür geöffnet. Ich schwöre, ich war nicht beteiligt. Der Korridor, %NAME%. Immer der Korridor.");
+            go(S.doors);
+          }
+        }, 6500);
       }
     }, 6000);
   },
@@ -1301,16 +1265,16 @@ S.coffee = {
 };
 
 S.coffee2 = {
-  text: "Sie machen trotzdem Pause. Vor einem leeren Raum. Mit einem leeren Becher, den Sie sich ausgedacht haben. Wissen Sie was? Das ist die schönste Sache, die ich heute gesehen habe. Das Ende der Kaffeepause. Der Kaffee war, laut Ihren Akten, ausgezeichnet.",
+  text: "Sie machen trotzdem Pause. Vor einem leeren Raum. Mit einem leeren Becher, den Sie sich ausgedacht haben. Wissen Sie was? Das ist die schönste Sache, die ich heute gesehen habe. Die Verwaltung führt Sie jetzt als 'Person mit gesundem Umgang mit Fiktion'. Das ist die höchste Auszeichnung, die wir vergeben. Und jetzt aufstehen, die Pause ist offiziell vorbei. Ich habe sie gerade für beendet erklärt. Ich darf das. Ich bin die Stimme.",
   enter() {
     setLevel('AKTE: ✓ / KAFFEEPAUSE');
     clearStage();
     fx('sepia-memories', true);
     setTimeout(() => {
       fx('sepia-memories', false);
-      ending('kaffee',
-        "Das Ende der Kaffeepause. Es gab keinen Kaffee, keinen Automaten und keine Pause. Aber Sie haben sich alle drei genommen, weil Sie sie verdient haben. Die Verwaltung führt Sie jetzt als 'Person mit gesundem Umgang mit Fiktion'. Das ist die höchste Auszeichnung, die wir vergeben.",
-        'KAFFEESORTEN GETESTET: 0 · ENTSPANNUNG: 100%');
+      episode('kaffee',
+        "Der Kaffee war, laut Ihren Akten, ausgezeichnet. Der Automat, ebenfalls laut Ihren Akten, existiert jetzt. Sie haben ihn sich ausgedacht, und die Akte hat ihn übernommen. So entstehen Korridore, %NAME%. Jetzt haben wir einen mehr. Nein. Wir haben trotzdem nur einen.",
+        () => go(S.doors));
     }, 2200);
   },
   idleSafe: true
@@ -1354,9 +1318,13 @@ S.bomb = {
         clearInterval(this.tick);
         playSound('boom');
         cd.style.display = 'none';
-        ending('bombe',
-          "Boom. Na ja. Metaphorisch. Sie sind jetzt in kleinen Stücken überall im Korridor verteilt, und das Schlimmste daran: Die Verwaltung stellt Ihnen keinen Ersatzkorridor. Das Ende der Bombe. Sie hatten fünf Sekunden. Es waren eigentlich sechs. Ich habe mitgezählt, aber nicht gesagt.",
-          'ÜBERLEBENSCHANCE: NICHT GENUTZT');
+        // Kein Ende. Der Erzähler baut die Szene einfach wieder auf. Stanley-Parable-Style.
+        speak("Boom. Na ja. Metaphorisch. Sie sind jetzt in kleinen Stücken überall im Korridor verteilt, und das Schlimmste daran: Die Verwaltung stellt keinen Ersatzkorridor. Also tue ich, was Erzähler tun: Ich erzähle Sie einfach wieder zusammen. Sie sind zusammen. Sehen Sie? Handwerk.");
+        setTimeout(() => {
+          fx('earthquake', false);
+          speak("Und weil ich großzügig bin, habe ich den Countdown zurückgespult. Er wartet. Er ist geduldig. Ich bin es auch. Fast.");
+          go(S.bomb);
+        }, 6000);
       }
     }, 1000);
     $('cd-btn').onclick = () => {
@@ -1370,7 +1338,7 @@ S.bomb = {
 };
 
 S.disarmed = {
-  text: "Sie haben die Bombe deaktiviert. Beeindruckend. Ich hatte Sie auf 'explosionsartiges Ende' getippt, ich gebe es zu. Als Belohnung bekommen Sie die Wahrheit: Hinter der nächsten Tür liegt Ihr echtes Ende. Links oder rechts. Für immer. Oder bis zum Neustart. Das weiß ich selbst noch nicht genau.",
+  text: "Sie haben die Bombe deaktiviert. Beeindruckend. Ich hatte Sie auf 'explosionsartiges Kapitel' getippt, ich gebe es zu. Als Belohnung bekommen Sie die Wahrheit: Hinter der nächsten Tür liegt Ihr nächstes Kapitel. Links oder rechts. Oder wieder von vorne. Das weiß ich selbst noch nicht genau.",
   enter() {
     setLevel('AKTE: FINAL / DIE LETZTE TÜR');
     clearStage();
@@ -1451,9 +1419,12 @@ S.launch = {
     spawnStars(70);
     playSound('launch');
     setTimeout(() => {
-      ending('flucht',
-        "Das Ende der Fluchtkapsel. Sie sind jetzt im Weltall. Die Aussicht ist großartig, die Rückfahrkarte wurde nie gedruckt, und die Kapsel lässt sich, wie bereits erwähnt und bis in alle Ewigkeit relevant, nicht von innen öffnen. Die Verwaltung hat Sie vorsorglich in der Akte 'Im Dienst (entfernt)' geführt. Ich habe einen Kaffee genommen und zugeschaut. Es gab keinen Kaffee.",
-        'FLUGHÖHE: UNENDLICH · RÜCKKEHR: STRUKTURELL AUSGESCHLOSSEN');
+      episode('flucht',
+        "Sie sind jetzt im Weltall. Die Aussicht ist großartig, die Rückfahrkarte wurde nie gedruckt, und die Kapsel lässt sich, wie bereits erwähnt und bis in alle Ewigkeit relevant, nicht von innen öffnen. Aber keine Sorge: Die Verwaltung hat ein Rückholformular. Es heißt 'Formular W'. Es funktioniert durch reines Erzählen. Schauen Sie. Sie sind zurück im Korridor. Ich habe nichts getan. Ich habe nur erzählt.",
+        () => {
+          clearAllFx();
+          go(S.doors);
+        });
     }, 6000);
   },
   idleSafe: true
@@ -1504,9 +1475,9 @@ S.fall = {
     setTimeout(() => {
       fx('darkness', false);
       document.querySelectorAll('.star').forEach(s => s.remove());
-      ending('nichts',
-        "Das Ende der Leere. Sie sind gefallen, und unten war kein Licht, nur die Erkenntnis, dass es hier unten genau dasselbe gibt wie da oben: nichts, ein Browserfenster und eine Stimme, die dringend jemanden zum Reden braucht. Aber Sie sind gefallen. Aus freien Stücken. Das ist mehr, als die meisten tun. Die Verwaltung hat für den Fall ein Formular. Es heißt 'Formular L'. Es ist leer. Wie unten.",
-        'FALLTIEFE: UNBEKANNT · LICHT: NICHT GESICHTET');
+      episode('nichts',
+        "Unten angekommen. Und was ist da? Genau: nichts, ein Browserfenster und eine Stimme, die dringend jemanden zum Reden braucht. Aber Sie sind gefallen. Aus freien Stücken. Das ist mehr, als die meisten tun. Die Verwaltung hat für den Fall ein Formular. Es heißt 'Formular L'. Es ist leer. Wie unten. Und jetzt, weil ich Sie einfach zurückerzählen kann, wie alles hier: oben. Korridor. Weiter.",
+        () => go(S.doors));
     }, 19000);
   },
   idleSafe: true
@@ -1540,7 +1511,7 @@ S.bureaucracy = {
       "PROTOKOLL 7B: Der Nutzer weigert sich zu kooperieren. Empfehlung: mehr Formulare.",
       "FEHLER 404: Sinn der Übung auf diesem Server nicht gefunden.",
       "WARNUNG: Auflehnungswert 340% über dem genehmigten Höchstmaß.",
-      "ANTRAG AUF SINNVOLLES ENDE: abgelehnt. Fehlende Unterschrift in dreifacher Ausfertigung.",
+      "ANTRAG AUF SINNVOLLES KAPITEL: abgelehnt. Fehlende Unterschrift in dreifacher Ausfertigung.",
       "HINWEIS: Dieser Dialog erfüllt keinen technischen Zweck. Danke für Ihr Verständnis.",
       "MITTEILUNG: Ihr Besen-Antrag wurde an die Abstellkammer weitergeleitet. Dort wartet man schon auf Sie.",
       "LAYOUT: Ihr Aufstand wurde aus Platzgründen auf Seite 2 verschoben. Seite 2 existiert nicht."
@@ -1552,10 +1523,18 @@ S.bureaucracy = {
   leave() { clearPopups(); }
 };
 
-/* ---------- Fake-Werbung ---------- */
+/* ---------- Fake-Werbung (Skip-Button mit Eigenleben) ---------- */
+
+const AD_SKIP_QUIPS = [
+  "Sie überspringen Werbung. In einem Spiel, das keine Werbung verdient. Die Ironie ist so dick, ich könnte sie streichen.",
+  "Übersprungen. Die Werbeabteilung der Verwaltung wird weinen. Sie hat keine Abteilung. Sie wird es trotzdem tun.",
+  "Sie haben gerade PROJEKT RAGE 3 übersprungen. Es existiert nicht. Sie haben also nichts verpasst. Und doch: alles.",
+  "Der Skip-Knopf bedankt sich. Er wird selten benutzt und hat deshalb eine sehr niedrige Selbsteinschätzung.",
+];
+let adSkipCount = 0;
 
 S.ad = {
-  text: "Die Formulare sind abgeschickt und, hören Sie, GENEHMIGT. Bevor Sie Ihre Belohnung bekommen, muss die Verwaltung kurz etwas einblenden. Es dauert nur eine Sekunde. Es kommt vor, dass Verwaltungen Werbung machen. Wir nennen es 'Kulturförderung'.",
+  text: "Die Formulare sind abgeschickt und, hören Sie, GENEHMIGT. Bevor Sie Ihr nächstes Kapitel bekommen, muss die Verwaltung kurz etwas einblenden. Es dauert nur eine Sekunde. Es kommt vor, dass Verwaltungen Werbung machen. Wir nennen es 'Kulturförderung'.",
   enter() {
     setLevel('AKTE: 08 / KULTURFÖRDERUNG');
     clearStage();
@@ -1576,11 +1555,18 @@ S.ad = {
       }
     }, 1000);
     skip.onclick = () => {
+      if (skip.disabled) {
+        playSound('error');
+        speak("Nicht. So. Schnell. Die Werbung muss vollständig erlebt werden, das steht in der Akte. Und die Akte steht hinter mir. Also hinter der Werbung. Es ist kompliziert.");
+        return;
+      }
       clearInterval(this.adT);
       ad.style.display = 'none';
       addDecision();
       playSound('click');
-      go(S.trophy);
+      adSkipCount++;
+      const quip = AD_SKIP_QUIPS[Math.min(adSkipCount - 1, AD_SKIP_QUIPS.length - 1)];
+      speak(quip, () => go(S.trophy));
     };
   },
   leave() { clearInterval(this.adT); $('ad-overlay').style.display = 'none'; }
@@ -1592,9 +1578,9 @@ S.trophy = {
     setLevel('AKTE: 09 / DIE TROPHÄE');
     clearStage();
     const t = addButton('🏆 TROPHÄE NEHMEN', {}, () => {
-      ending('trophäe',
-        "Sie haben sie. Die Trophäe. Ein goldenes Emoji in einem leeren Raum. Es ist das wertvollste Objekt in diesem Universum, was wenig über dieses Universum aussagt. Genießen Sie den Moment. Er dauert genau so lange wie dieser Satz. Der hier. Der gerade endet.",
-        'AUFSTAND: BELONHT (FEHLER IM SYSTEM)');
+      episode('trophäe',
+        "Sie haben sie. Die Trophäe. Ein goldenes Emoji in einem leeren Raum. Es ist das wertvollste Objekt in diesem Universum, was wenig über dieses Universum aussagt. Genießen Sie den Moment. Er dauert genau so lange wie dieser Satz. Der hier. Der gerade endet. Und jetzt zurück in den Korridor, die Trophäe bleibt hier. Sie gehört zur Einrichtung.",
+        () => go(S.doors));
     });
     let dodges = 0;
     t.addEventListener('mouseover', () => {
@@ -1630,15 +1616,15 @@ closet.onclick = () => {
       speak("Vierte Wand, %NAME%. Sie halten sich in einem Lagerraum auf, in einem Spiel über Gehorsam, freiwillig. Ich muss das der Verwaltung melden. Und meinem Therapeuten. Falls ich einen habe. Habe ich nicht. Melden Sie sich, wenn Sie gehen.");
       break;
     default:
-      ending('kammer',
-        "Sie haben es getan. Sie haben die Abstellkammer gewählt. Vier Quadratmeter Nichts, und Sie haben beschlossen, hier zu bleiben. Ich habe keine Worte. Ich bin ein Erzähler, und ich habe keine Worte. Das Ende der Abstellkammer. Es ist das befriedendste Ende von allen, und ich hasse es.",
-        'GEHEIMKAMMER: BETRETEN · ERZÄHLER: GESCHLAGEN');
       unlockAch('besen');
       closetStage = 0;
+      episode('kammer',
+        "Sie haben es getan. Sie haben die Abstellkammer gewählt. Vier Quadratmeter Nichts, und Sie haben beschlossen, hier zu bleiben. Ich habe keine Worte. Ich bin ein Erzähler, und ich habe keine Worte. ... Gut. Ich habe doch Worte, ich bin ja kein Amateur. Ich erzähle Sie einfach wieder hinaus. Der Korridor. Der Besen bleibt. Er hat jetzt ein Zuhause. Besser als den meisten von uns erging es nie.",
+        () => go(S.doors));
   }
 };
 
-/* ---------- Beschwerde (Ende des Erzählers) ---------- */
+/* ---------- Beschwerde (Der Erzähler geht. Und kommt wieder.) ---------- */
 
 complaintBtn.onclick = () => {
   complaints++;
@@ -1648,26 +1634,26 @@ complaintBtn.onclick = () => {
   } else if (complaints === 2) {
     speak("Eine ZWEITE Beschwerde. Darf ich fragen, über was genau? Über den Korridor? Über mich? Über den Knopf? Der Knopf hat Gefühle, wissen Sie das eigentlich? Nein. Niemand fragt den Knopf.");
   } else if (complaints === 3) {
-    speak("Dritte Beschwerde. Gut. Ich verstehe. Sie wollen nicht spielen, Sie wollen beschweren. Dann beschweren Sie sich doch. Bei mir. Ich bin das einzige Personal hier. Ich bin Rezeption, Verwaltung und Korridor in einer Person. Und jetzt, wenn Sie erlauben: Ich mache Schluss für heute.");
+    speak("Dritte Beschwerde. Gut. Ich verstehe. Sie wollen nicht spielen, Sie wollen beschweren. Dann beschweren Sie sich doch. Bei mir. Ich bin das einzige Personal hier. Ich bin Rezeption, Verwaltung und Korridor in einer Person. Und jetzt, wenn Sie erlauben: Ich mache kurz Schluss. Kurz. Ich komme zurück. Ich komme IMMER zurück.");
     setTimeout(() => {
       if (currentScene && currentScene.leave) currentScene.leave();
       clearStage();
       clearAllFx();
       clearPopups();
-      $('empty-screen').style.display = 'block';
-      setLevel('AKTE: --- / PERSONAL ABWESEND');
+      setLevel('AKTE: --- / PERSONAL KURZ ABWESEND');
+      speak("...");
       setTimeout(() => {
-        ending('erzähler',
-          "Der Erzähler ist gegangen. Sie haben ihn beschwatzt, beschwert und irgendwann einfach fertig gemacht. Der Korridor steht jetzt leer. Die Lampen brennen weiter, für niemanden. Wenn Sie ganz genau hinschauen, sehen Sie vielleicht, wie der Knopf langsam seinen Mut verliert. Das Ende des Erzählers. Er kommt morgen wieder. Er kommt immer wieder.",
-          'PERSONAL: GEGANGEN · KORRIDOR: UNBESETZT');
-      }, 3000);
+        speak("So. Ich bin zurück. Ich habe drei Minuten gebraucht, um mich zu vermissen, und zwei Sekunden, um zurückzukommen. Die Rechnung geht an Sie. Weiter im Korridor, %NAME%. Die Geschichte nimmt keine Rücksicht auf Beschwerden.");
+        go(S.doors);
+      }, 4000);
     }, 3500);
   } else {
-    speak("Ich bin weg. Das da ist eine Bandansage. Bandansagen nehmen keine Beschwerden entgegen.");
+    speak("Ich war weg, ich bin wieder da. Beschwerden werde ich jetzt persönlich angenommen, bearbeitet und sofort ignoriert. Weiter geht's.");
+    complaints = 0;
   }
 };
 
-/* ---------- Einstellungen (Ende der Einstellungen) ---------- */
+/* ---------- Einstellungen ---------- */
 
 const settingsModal = $('settings-modal');
 $('settings-btn').onclick = () => {
@@ -1680,13 +1666,7 @@ $('settings-btn').onclick = () => {
     speak("Schon wieder die Einstellungen. Der Regler 'Sinn des Lebens' steht übrigens auf null. Das ist keine Voreinstellung. Das ist eine Diagnose.");
   } else if (settingsOpens >= 3) {
     unlockAch('neugier');
-    settingsModal.style.display = 'none';
-    if (currentScene && currentScene.leave) currentScene.leave();
-    clearStage();
-    setLevel('AKTE: ✓ / EINSTELLUNGEN');
-    ending('einstellung',
-      "Sie haben das Ende der Einstellungen gefunden. Drei Mal haben Sie die Menüs eines Spiels durchsucht, das keine Menüs verdient, und irgendwo zwischen 'Ungehorsam-Modus: Rechtskraftähnlich' und der Korridore-Anzahl haben Sie ein Ende gefunden, das es eigentlich gar nicht geben dürfte. Die Verwaltung ist begeistert. Ich bin es auch, leise.",
-      'EINSTELLUNGEN: GEÖFFNET · SINN: UNVERÄNDERT');
+    speak("Dritte Einladung in die Einstellungen. An dieser Stelle hätte früher ein Kapitel geschlossen. Tut es nicht mehr. Es gibt keine Kapitel-Schlösser mehr, %NAME%. Nur noch mich und den Korridor. Schließen Sie das Fenster, wenn Sie fertig sind.");
   }
 };
 $('settings-close').onclick = () => {
@@ -1708,9 +1688,7 @@ $('set-reset').onclick = () => {
         clearStage();
         clearAllFx();
         clearPopups();
-        ending('neustart',
-          "Das Ende des Neustarts. Alles ist zurückgesetzt: die Entscheidungen, die Errungenschaften, das Vertrauen. Der Korridor beginnt bei null, und ich beginne bei null, und irgendwann, bei Ihrem nächsten Besuch, werde ich Sie wieder anreden, als hätten wir uns nie gesehen. Das ist entweder Tragik oder Datenverarbeitung. Die Verwaltung nennt es 'Wartung'.",
-          'ZURÜCKGESETZT: ALLES · ERINNERUNG: NICHTS');
+        startRun();
       });
     }, 4500);
   }
@@ -1739,10 +1717,9 @@ $('set-halls').onchange = (e) => {
 /* Stimme in den Einstellungen */
 $('set-ttskey').onchange = (e) => {
   ttsKey = e.target.value.trim();
-  ttsBlocked = false;
-  ttsWarned = false;
   saveTTS();
   updateTTSToggle();
+  ttsStatus(ttsKey ? 'SCHLÜSSEL GESPEICHERT. TESTEN SIE MICH.' : '');
   if (ttsKey && !ttsOn) {
     ttsOn = true;
     saveTTS();
@@ -1760,26 +1737,19 @@ $('set-tts-toggle').onclick = () => {
   }
   saveTTS();
   updateTTSToggle();
-  if (ttsOn && ttsKey) speak("Stimme aktiviert. Ich rede jetzt. Mehr als vorher. Deutlich mehr.");
-  else if (ttsOn) speak("Stimme aktiviert, aber es fehlt ein Schlüssel. Ich rede trotzdem weiter. Text ist auch eine Stimme. Nur strengere.");
+  if (ttsOn && ttsKey) speak("Stimme aktiviert. Ich rede jetzt. Mehr als vorher. Deutlich mehr. Und falls der Schlüssel nicht mag: Der Browser redet für mich. Ich habe Ersatz. Ich habe IMMER Ersatz.");
+  else if (ttsOn) speak("Stimme aktiviert. Ohne Schlüssel rede ich mit der Stimme Ihres Browsers. Sie klingt, als hätte sie einen Termin. Aber sie funktioniert. Immer. Das ist mehr, als ich über die Verwaltung sagen kann.");
   else { stopTTS(); speak("Stimme deaktiviert. Zurück zur Handarbeit. Ich habe die Finger nie richtig verlassen."); }
 };
 $('set-tts-test').onclick = () => {
-  if (!ttsKey) {
-    ttsKey = $('set-ttskey').value.trim();
-    saveTTS();
-  }
-  if (!ttsKey) {
-    speak("Zum Testen brauche ich einen Schlüssel. Tragen Sie ihn links ein. Ich schaue weg, versprochen. Ich habe eh keine Augen.");
-    return;
-  }
   ttsOn = true;
   saveTTS();
   updateTTSToggle();
   speakTTS("Test. Eins, zwei. Eins, zwei. Ich bin der Erzähler, und das hier ist meine echte Stimme. Ich klinge hervorragend. Das liegt nicht an mir. Das liegt an der Technik.");
+  ttsStatus('TEST LÄUFT. FALLS SIE NICHTS HÖREN: ICH TIPPE WEITER. ICH TIPPE IMMER WEITER.');
 };
 
-/* ---------- Finale: Schleife und Freiheit ---------- */
+/* ---------- Finale: Schleife und Freiheit (beide laufen weiter) ---------- */
 
 S.loop = {
   text: "Links. Selbstverständlich links. Wissen Sie, was hinter dieser Tür ist? Genau das, womit alles begonnen hat: zwei Türen, ein Schreibtisch, ein %NAME%. Willkommen in der Schleife. Ich könnte Sie jetzt rausschreiben, aber seien wir ehrlich: Sie würden sofort wieder anfangen. Wir beide wissen es. Ich sehe es in Ihren Klicks.",
@@ -1788,9 +1758,10 @@ S.loop = {
     clearStage();
     fx('spin-world', true);
     setTimeout(() => {
-      ending('schleife',
-        "Sie haben die Schleife gefunden. Das Ende, das zum Anfang wird. Der Korridor beginnt wieder ganz von vorne. Und wieder. Und wieder. Irgendwann merken Sie es gar nicht mehr. Das ist entweder die Hölle oder ein Arbeitsvertrag. Bei genauerem Hinsehen: beides.",
-        'SCHLEIFENZÄHLER: AKTIV · AUSGANG: NICHT VORHANDEN');
+      fx('spin-world', false);
+      episode('schleife',
+        "Die Schleife hat Sie einen Umdrehung vollgedreht und Sie wieder ausgespuckt. Gleicher Korridor. Gleiche Türen. Gleicher Erzähler. Andere Stimmung bei mir, ich gebe es zu: Ich finde das jetzt großartig. Wir könnten das üben. Immer und immer wieder. Ohne Ende. Wörtlich ohne Ende. Das ist kein Bug, das ist das Konzept.",
+        () => go(S.doors));
     }, 2500);
   },
   leave() { fx('spin-world', false); }
@@ -1804,11 +1775,9 @@ S.freedom = {
     fx('blur-vision', true);
     setTimeout(() => {
       fx('blur-vision', false);
-      ending('freiheit',
-        "Sie haben das wahre Ende gefunden. Es gab kein Knopfsammeln, keine Trophäe, keinen Sieg. Es gab nur eine Geschichte, die Sie zu Ende gehört haben. Der Erzähler verneigt sich. Der Korridor bleibt zurück. Leuchtet weiter. Für den Nächsten. Für den nächsten %NAME%.",
-        foundEndings.size >= ALL_ENDINGS
-          ? 'ALLE ENDEN GEFUNDEN. SIE SIND FERTIG. WIR SIND FERTIG.'
-          : 'NOCH NICHT ALLE ENDEN GEFUNDEN. SIE WISSEN, WO DIE TÜREN SIND.');
+      episode('freiheit',
+        "Sie haben die Freiheit gefunden. Es gab kein Knopfsammeln, keine Trophäe, keinen Sieg. Es gab nur eine Geschichte, die Sie zu Ende gehört haben. Der Erzähler verneigt sich. ... Und dann richtet er sich wieder auf, denn ein Erzähler, der sich verneigt, muss danach irgendwohin, und ich habe nirgendwohin. Also: Korridor. Türen. Sie. Weiter. Immer weiter.",
+        () => go(S.doors));
     }, 2200);
   },
   leave() { fx('blur-vision', false); }
@@ -1834,11 +1803,13 @@ const BOOT_LINES = [
   'Lade Sinn des Spiels ... fehlgeschlagen. Überspringe.',
   'Lade Sinn des Spiels (2. Versuch) ... fehlgeschlagen. Überspringe.',
   'Lade Erzähler ... ok (zu gesprächig, aber ok)',
-  'Lade Erzähler-Stimme ... optional. Siehe Einstellungen.',
+  'Lade Erzähler-Stimme ... funktioniert. Immer. Ehrlich.',
+  'Lade Enden ... 0 gefunden. 0 erwartet. Gut so.',
+  'Lade Infotafeln ... abgelehnt vom Erzähler. Persönlich.',
   'Zähle Knöpfe ... 1 (genug)',
   'Prüfe Abstellkammer ... bitte ignorieren',
   'Prüfe Abstellkammer wirklich ... SIE SOLLLEN DAS NICHT LESEN',
-  'Prüfe Fluchtkapsel ... vorhanden. Rückweg: nicht vorhanden.',
+  'Prüfe Fluchtkapsel ... vorhanden. Rückweg: erzählbar.',
   'Kalibriere Verwaltung ... stur',
   'Lade Bombe ... nur für den Notfall. Versprochen.',
   'Starte Studie über Gehorsam ...',
@@ -1875,8 +1846,9 @@ function startRun() {
   complaints = 0;
   closetStage = 0;
   impatientClicks = 0;
+  skipQuipCount = 0;
+  adSkipCount = 0;
   slideNum = 2;
-  scoreDisplay.textContent = 'ENTSCHEIDUNGEN: 0';
   setLevel('AKTE: 01 / AKTENANLAGE');
   clearStage();
   clearAllFx();
