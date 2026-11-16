@@ -3,142 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DRÜCK MICH (Wenn du kannst)</title>
+    <title>PROJEKT RAGE — Eine Studie über Geduld</title>
     <style>
-        * {
-            box-sizing: border-box;
-            user-select: none;
-        }
+        * { box-sizing: border-box; user-select: none; }
 
         body {
             margin: 0;
             padding: 0;
             height: 100vh;
             width: 100vw;
-            background: #0a0a0c;
-            color: #fff;
-            font-family: 'Impact', 'Arial Black', sans-serif;
+            background: #121214;
+            color: #e4e1d8;
+            font-family: 'Georgia', 'Times New Roman', serif;
             overflow: hidden;
             position: relative;
+            transition: filter 1s ease, transform 2s ease, background 1.5s ease;
         }
 
-        /* Top HUD - kurz, knackig, provokant */
+        /* Top HUD - Aktenzeichen & Zähler */
         #top-bar {
             position: fixed;
-            top: 15px;
-            left: 20px;
-            right: 20px;
+            top: 25px;
+            left: 35px;
+            right: 35px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
             z-index: 500;
             pointer-events: none;
-            font-size: 1.4rem;
-            letter-spacing: 1px;
-            text-shadow: 2px 2px 0 #000;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #6e6c65;
+            letter-spacing: 2px;
         }
 
-        #taunt-banner {
+        /* Die Stimme des Erzählers */
+        #narrator-box {
             position: fixed;
-            top: 70px;
+            top: 12%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            max-width: 820px;
+            text-align: center;
+            font-size: 1.5rem;
+            line-height: 1.65;
+            color: #f4f1ea;
+            pointer-events: none;
+            z-index: 500;
+            transition: opacity 0.35s ease;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.9);
+        }
+
+        /* Fußnote am unteren Rand */
+        #sub-note {
+            position: fixed;
+            bottom: 25px;
             width: 100%;
             text-align: center;
-            font-size: 2.2rem;
-            color: #ffbe0b;
-            text-shadow: 3px 3px 0 #d90429, -2px -2px 0 #000;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #55534d;
             pointer-events: none;
             z-index: 500;
-            transition: transform 0.1s;
         }
-
         /* Der Haupt-Button */
         #main-btn {
             position: absolute;
             left: 50%;
-            top: 50%;
+            top: 56%;
             transform: translate(-50%, -50%);
-            padding: 28px 55px;
-            font-size: 1.8rem;
-            font-family: inherit;
-            color: #fff;
-            background: #ff0055;
-            border: 4px solid #fff;
-            border-radius: 16px;
-            box-shadow: 0 10px 0 #990033, 0 20px 40px rgba(255, 0, 85, 0.5);
+            padding: 22px 48px;
+            font-size: 1.15rem;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #121214;
+            background: #e4e1d8;
+            border: 2px solid #888;
+            border-radius: 3px;
+            box-shadow: 0 6px 0 #4a4843, 0 15px 30px rgba(0, 0, 0, 0.7);
             cursor: pointer;
             z-index: 100;
             white-space: nowrap;
         }
 
         #main-btn:active {
-            transform: translate(-50%, -44%);
-            box-shadow: 0 4px 0 #990033;
+            box-shadow: 0 2px 0 #4a4843;
         }
 
-        /* Chaos Effekte für Body */
-        .spin-world { animation: spinSlow 6s linear infinite; }
-        .disco-world { animation: disco 0.25s infinite; }
-        .earthquake { animation: quake 0.12s infinite; }
+        /* Subtile Umwelt-Störungen statt buntem Blinken */
+        .spin-world { animation: spinSlow 25s linear infinite; }
+        .earthquake { animation: quake 0.18s infinite; }
         .upside-down { transform: rotate(180deg); }
-        .blur-vision { filter: blur(4px); }
-        .invert-colors { filter: invert(1) hue-rotate(180deg); }
+        .blur-vision { filter: blur(3px); }
+        .invert-colors { filter: invert(0.92); }
 
         @keyframes spinSlow { 100% { transform: rotate(360deg); } }
-        @keyframes disco {
-            0% { background: #ff0055; }
-            33% { background: #00f5d4; }
-            66% { background: #fee440; }
-            100% { background: #9b5de5; }
-        }
         @keyframes quake {
-            0% { transform: translate(4px, -4px) rotate(1deg); }
-            50% { transform: translate(-5px, 5px) rotate(-1deg); }
-            100% { transform: translate(3px, 2px) rotate(0deg); }
+            0% { transform: translate(2px, -2px); }
+            50% { transform: translate(-3px, 2px); }
+            100% { transform: translate(2px, 1px); }
         }
+
         /* Schwarm aus falschen Mauszeigern */
         .swarm-cursor {
             position: fixed;
-            width: 22px;
-            height: 22px;
             pointer-events: none;
             z-index: 900;
-            font-size: 20px;
+            font-size: 18px;
+            color: #e4e1d8;
+            text-shadow: 1px 1px 2px #000;
         }
 
-        /* Nervige Cookie & Virus Popups */
+        /* Bürokratische Popups */
         .troll-popup {
             position: fixed;
-            background: #f0f0f0;
-            color: #111;
-            border: 4px solid #000;
-            box-shadow: 10px 10px 0 #ff0055;
+            background: #dcd8ce;
+            color: #141414;
+            border: 1px solid #333;
+            box-shadow: 10px 10px 0 rgba(0,0,0,0.6);
             padding: 18px;
-            font-family: Arial, sans-serif;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
             z-index: 300;
-            width: 300px;
-            border-radius: 6px;
+            width: 310px;
         }
 
         .troll-popup h4 {
             margin: 0 0 8px 0;
-            background: #ff0055;
-            color: #fff;
-            padding: 5px 8px;
-            font-size: 0.95rem;
+            border-bottom: 1px solid #777;
+            padding-bottom: 4px;
+            font-size: 0.9rem;
         }
 
         .tiny-close {
             position: absolute;
-            top: 4px;
-            right: 4px;
-            width: 12px;
-            height: 12px;
-            font-size: 8px;
-            line-height: 8px;
-            padding: 0;
-            background: #ccc;
-            border: 1px solid #666;
+            top: 6px;
+            right: 6px;
+            width: 16px;
+            height: 16px;
+            font-size: 10px;
+            background: #141414;
+            color: #fff;
+            border: none;
             cursor: pointer;
+        }
+
+        /* Klon-Buttons */
+        .clone-btn {
+            position: absolute;
+            padding: 18px 36px;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            color: #121214;
+            background: #c7c2b6;
+            border: 2px solid #666;
+            border-radius: 3px;
+            box-shadow: 0 5px 0 #4a4843;
+            cursor: pointer;
+            z-index: 90;
         }
 
         /* Fake Gewinn-Bildschirm */
@@ -146,98 +169,58 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: radial-gradient(circle, #ffbe0b, #fb5607);
+            background: #18181b;
             z-index: 800;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
+            padding: 30px;
         }
 
         #trophy-btn {
-            font-size: 7rem;
+            font-size: 5rem;
             background: none;
             border: none;
             cursor: pointer;
-            animation: bounce 0.6s infinite alternate;
-        }
-
-        @keyframes bounce {
-            from { transform: scale(1); }
-            to { transform: scale(1.25); }
-        }
-
-        /* Klon-Buttons */
-        .clone-btn {
-            position: absolute;
-            padding: 20px 40px;
-            font-size: 1.4rem;
-            font-family: inherit;
-            color: #fff;
-            background: #ff0055;
-            border: 4px solid #fff;
-            border-radius: 16px;
-            box-shadow: 0 8px 0 #990033;
-            cursor: pointer;
-            z-index: 90;
-        }
-
-        /* Laufendes Konfetti / Emojis */
-        .flying-emoji {
-            position: fixed;
-            font-size: 2.5rem;
-            pointer-events: none;
-            z-index: 700;
-            animation: fall 2s linear forwards;
-        }
-
-        @keyframes fall {
-            to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+            margin-top: 20px;
+            transition: transform 0.2s;
         }
     </style>
 </head>
 <body>
 
     <div id="top-bar">
-        <span id="level-display">LEVEL: 1</span>
-        <span id="score-display">TREFFER: 0</span>
+        <span id="level-display">AKTE: 01 / GEHORSAM</span>
+        <span id="score-display">EINGABEN: 0</span>
     </div>
 
-    <div id="taunt-banner">DRÜCK DEN KNOPF. GANZ EINFACH.</div>
+    <div id="narrator-box">
+        „Willkommen. Vor Ihnen befindet sich ein Knopf. Es gibt keine Belohnung, keine Punkte und keinen Ausgang. Bitte drücken Sie ihn trotzdem.“
+    </div>
 
-    <button id="main-btn">DRÜCK MICH!</button>
+    <button id="main-btn">BETÄTIGEN</button>
+
+    <div id="sub-note">KORRIDOR A — BITTE NICHT RENNEN.</div>
 
     <!-- Fake Gewinnscreen -->
     <div id="fake-win">
-        <div style="font-size: 3.5rem; color: #fff; text-shadow: 4px 4px 0 #000;">🎉 DU HAST GEWONNEN! 🎉</div>
-        <p style="font-size: 1.4rem; color: #000; font-family: Arial, sans-serif; font-weight: bold;">Klicke auf den Pokal für deine Belohnung!</p>
+        <div id="win-title" style="font-size: 2rem; color: #f4f1ea; max-width: 700px; line-height: 1.5;">
+            „Herzlichen Glückwunsch. Sie haben das Ende des Korridors erreicht. Nehmen Sie nun diese völlig bedeutungslose Trophäe entgegen.“
+        </div>
         <button id="trophy-btn">🏆</button>
     </div>
 
     <script>
         const btn = document.getElementById('main-btn');
-        const taunt = document.getElementById('taunt-banner');
+        const narrator = document.getElementById('narrator-box');
         const levelDisplay = document.getElementById('level-display');
         const scoreDisplay = document.getElementById('score-display');
+        const subNote = document.getElementById('sub-note');
         const fakeWin = document.getElementById('fake-win');
         const trophyBtn = document.getElementById('trophy-btn');
 
-        let hits = 0;
-        let currentMode = 'normal';
-        let dodgeCount = 0;
-
-        // Physik-Variablen für Eishockey- & Gravitations-Modus
-        let posX = window.innerWidth / 2;
-        let posY = window.innerHeight / 2;
-        let velX = 0;
-        let velY = 0;
-        let physicsActive = false;
-        let gravityMode = false;
-        let magnetRepel = false;
-        let mouseX = 0;
-        let mouseY = 0;
-
-        // Sound Synthesizer (Memes, Boings, Sirenen, Furz-Bässe)
+        // Audio-Synthesizer (Repariert & an den Erzähler-Stil angepasst)
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSound(type) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -245,363 +228,306 @@
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
 
-            if (type === 'boing') {
+            if (type === 'click') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(160, now);
+                osc.frequency.exponentialRampToValueAtTime(45, now + 0.07);
+                gain.gain.setValueAtTime(0.18, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+            } else if (type === 'boing') {
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(150, now);
-                osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                osc.frequency.setValueAtTime(130, now);
+                osc.frequency.exponentialRampToValueAtTime(280, now + 0.14);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
             } else if (type === 'error') {
                 osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(110, now);
-                osc.frequency.linearRampToValueAtTime(75, now + 0.25);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
-            } else if (type === 'horn') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(440, now);
-                osc.frequency.setValueAtTime(554, now + 0.1);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-            } else if (type === 'fart') {
-                osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(95, now);
-                osc.frequency.exponentialRampToValueAtTime(35, now + 0.4);
-                gain.gain.setValueAtTime(0.25, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.frequency.linearRampToValueAtTime(65, now + 0.3);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
             }
 
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(now + 0.45);
+            osc.start(now);
+            osc.stop(now + 0.3);
         }
 
-        function setTaunt(text) {
-            taunt.innerText = text;
-            taunt.style.transform = 'scale(1.15)';
-            setTimeout(() => taunt.style.transform = 'scale(1)', 120);
+        function speak(text, note = null) {
+            narrator.style.opacity = 0;
+            setTimeout(() => {
+                narrator.innerHTML = `„${text}“`;
+                narrator.style.opacity = 1;
+            }, 220);
+            if (note) subNote.textContent = note;
         }
+        let hits = 0;
+        let currentMode = 'normal';
+        let posX = window.innerWidth / 2;
+        let posY = window.innerHeight * 0.56;
+        let velX = 0;
+        let velY = 0;
+        let physicsActive = false;
+        let gravityMode = false;
+        let magnetRepel = false;
+        let mouseX = 0;
+        let mouseY = 0;
+        let swarmCursors = [];
 
-        function spawnEmojis(emoji, count = 15) {
-            for (let i = 0; i < count; i++) {
-                const el = document.createElement('div');
-                el.className = 'flying-emoji';
-                el.innerText = emoji;
-                el.style.left = Math.random() * 100 + 'vw';
-                el.style.top = '-50px';
-                el.style.animationDuration = (1 + Math.random() * 1.5) + 's';
-                document.body.appendChild(el);
-                setTimeout(() => el.remove(), 2500);
-            }
-        }
-
-        // Mausposition tracken
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
-        });
-        // Alle Effekte zurücksetzen vor neuem Level
-        function clearAllChaos() {
-            document.body.className = '';
-            physicsActive = false;
-            gravityMode = false;
-            magnetRepel = false;
-            currentMode = 'normal';
-            dodgeCount = 0;
-            btn.style.transform = 'translate(-50%, -50%) scale(1)';
-            btn.style.padding = '28px 55px';
-            btn.style.fontSize = '1.8rem';
-            btn.style.opacity = '1';
-            btn.innerText = 'DRÜCK MICH!';
-            document.querySelectorAll('.clone-btn, .swarm-cursor, .troll-popup').forEach(e => e.remove());
-        }
 
-        function centerButton() {
-            posX = window.innerWidth / 2;
-            posY = window.innerHeight / 2;
-            btn.style.left = posX + 'px';
-            btn.style.top = posY + 'px';
-        }
-
-        function randomJump() {
-            posX = 120 + Math.random() * (window.innerWidth - 240);
-            posY = 160 + Math.random() * (window.innerHeight - 260);
-            btn.style.left = posX + 'px';
-            btn.style.top = posY + 'px';
-        }
-
-        // Haupt-Klick-Event: Eskaliert immer weiter und loopt endlos!
-        btn.addEventListener('click', () => {
-            hits++;
-            levelDisplay.innerText = `LEVEL: ${hits + 1}`;
-            scoreDisplay.innerText = `TREFFER: ${hits}`;
-            playSound('horn');
-            spawnEmojis('🔥', 8);
-
-            clearAllChaos();
-            centerButton();
-
-            // Ab Level 16 werden zufällige Chaos-Kombinationen endlos generiert!
-            const stage = hits <= 15 ? hits : Math.floor(Math.random() * 15) + 1;
-
-            switch (stage) {
-                case 1:
-                    setTaunt("OH! EIN PROFI! JETZT NOCHMAL!");
-                    currentMode = 'dodge';
-                    randomJump();
-                    break;
-
-                case 2:
-                    setTaunt("SEIFEN-MODUS! VIEL SPASS BEIM FANGEN 🧼");
-                    physicsActive = true;
-                    velX = (Math.random() > 0.5 ? 1 : -1) * 9;
-                    velY = (Math.random() > 0.5 ? 1 : -1) * 7;
-                    break;
-
-                case 3:
-                    setTaunt("WELCHER MAUSZEIGER BIST DU? 🖱️🖱️🖱️");
-                    spawnCursorSwarm(45);
-                    randomJump();
-                    break;
-
-                case 4:
-                    setTaunt("MAGNET-ABSTOSSUNG AKTIVIERT! 🧲");
-                    magnetRepel = true;
-                    break;
-
-                case 5:
-                    setTaunt("SCHWERKRAFT! FANG IHN BEVOR ER FÄLLT! ⬇️");
-                    gravityMode = true;
-                    physicsActive = true;
-                    velX = 6;
-                    velY = -12;
-                    break;
-
-                case 6:
-                    setTaunt("GRATIS IPHONE GEWONNEN!! (SCHLIESS DIE POPUPS)");
-                    spawnPopups(7);
-                    randomJump();
-                    break;
-
-                case 7:
-                    setTaunt("WELCHER IST DER ECHTE?! 🤡");
-                    spawnClones(16);
-                    randomJump();
-                    break;
-
-                case 8:
-                    setTaunt("DISCO ERDBEBEN!! 🪩🌍");
-                    document.body.classList.add('disco-world', 'earthquake');
-                    currentMode = 'dodge';
-                    randomJump();
-                    break;
-
-                case 9:
-                    setTaunt("WO IST ER HIN?! (SUCH MIT DER MAUS) 👻");
-                    btn.style.opacity = '0.04';
-                    randomJump();
-                    break;
-
-                case 10:
-                    setTaunt("ALLES STEHT KOPF & DREHT SICH! 😵‍💫");
-                    document.body.classList.add('spin-world', 'invert-colors');
-                    physicsActive = true;
-                    velX = 7;
-                    velY = 6;
-                    break;
-
-                case 11:
-                    setTaunt("AMEISEN-MODUS! BRAUCHST DU EINE LUPE? 🔍");
-                    btn.style.padding = '5px 10px';
-                    btn.style.fontSize = '0.6rem';
-                    randomJump();
-                    break;
-
-                case 12:
-                    // Der fiese Fake-Gewinn!
-                    fakeWin.style.display = 'flex';
-                    spawnEmojis('🎉', 30);
-                    break;
-
-                case 13:
-                    setTaunt("KAUF DIR EINE BRILLE! 👓");
-                    document.body.classList.add('blur-vision');
-                    currentMode = 'dodge';
-                    randomJump();
-                    break;
-
-                case 14:
-                    setTaunt("DOPPEL-CHAOS: SEIFE + MAUS-SCHWARM + POPUPS!");
-                    physicsActive = true;
-                    velX = 10;
-                    velY = 8;
-                    spawnCursorSwarm(35);
-                    spawnPopups(4);
-                    break;
-
-                case 15:
-                    setTaunt("ULTRA-BOSS: ALLES GLEICHZEITIG!! 💀");
-                    document.body.classList.add('disco-world');
-                    spawnClones(10);
-                    spawnCursorSwarm(30);
-                    physicsActive = true;
-                    velX = 11;
-                    velY = 9;
-                    break;
-            }
-
-            // Ab Level 16 immer noch extra Wahnsinn oben drauf!
-            if (hits > 15) {
-                setTaunt(`ENDLOS-CHAOS STUFE ${hits}! DU GIBST NICHT AUF, ODER?!`);
-                if (Math.random() > 0.5) spawnCursorSwarm(25);
-                if (Math.random() > 0.6) spawnPopups(3);
-            }
-        });
-        // Ausweich-Logik bei Hover
-        btn.addEventListener('mouseover', () => {
-            if (currentMode === 'dodge' && dodgeCount < 5) {
-                dodgeCount++;
-                playSound('boing');
-                randomJump();
-            }
-            // Im Unsichtbar-Modus kurz aufblitzen
-            if (btn.style.opacity === '0.04') {
-                btn.style.opacity = '0.5';
-                setTimeout(() => { if (btn.style.opacity === '0.5') btn.style.opacity = '0.04'; }, 300);
-            }
-        });
-
-        // Der fiese Pokal im Fake-Gewinnscreen
-        trophyBtn.addEventListener('click', () => {
-            playSound('fart');
-            fakeWin.style.display = 'none';
-            spawnEmojis('💩', 25);
-            setTaunt("REINGEFALLEN!! DAS WAR NUR EIN FAKE! WEITER GEHT'S! 😂");
-            randomJump();
-        });
-
-        // Schwarm aus 40+ falschen Mauszeigern
-        function spawnCursorSwarm(count) {
-            for (let i = 0; i < count; i++) {
-                const c = document.createElement('div');
-                c.className = 'swarm-cursor';
-                c.innerText = '↖️';
-                c.dataset.offsetX = (Math.random() - 0.5) * window.innerWidth * 0.9;
-                c.dataset.offsetY = (Math.random() - 0.5) * window.innerHeight * 0.9;
-                document.body.appendChild(c);
-            }
-        }
-
-        document.addEventListener('mousemove', (e) => {
-            document.querySelectorAll('.swarm-cursor').forEach(c => {
-                const x = (e.clientX + parseFloat(c.dataset.offsetX) + window.innerWidth) % window.innerWidth;
-                const y = (e.clientY + parseFloat(c.dataset.offsetY) + window.innerHeight) % window.innerHeight;
-                c.style.left = x + 'px';
-                c.style.top = y + 'px';
+            // Falsche Mauszeiger mitbewegen
+            swarmCursors.forEach(c => {
+                const rx = (mouseX + c.offsetX + window.innerWidth) % window.innerWidth;
+                const ry = (mouseY + c.offsetY + window.innerHeight) % window.innerHeight;
+                c.el.style.left = rx + 'px';
+                c.el.style.top = ry + 'px';
             });
         });
 
-        // Nervige Popups spawnen
-        const popupTexts = [
-            "WARNUNG: Zu viele Klicks erkannt!",
-            "Glückwunsch! Du bist der 1.000.000. Klicker!",
-            "Cookies akzeptieren, um weiterzuspielen!",
-            "Dein Mauszeiger muss aktualisiert werden!",
-            "SYSTEM-ALARM: Finger-Überhitzung!",
-            "Gratis-Luftballon abholen! Jetzt!"
-        ];
-
-        function spawnPopups(count) {
-            for (let i = 0; i < count; i++) {
-                const p = document.createElement('div');
-                p.className = 'troll-popup';
-                p.style.left = (50 + Math.random() * (window.innerWidth - 380)) + 'px';
-                p.style.top = (100 + Math.random() * (window.innerHeight - 250)) + 'px';
-                const msg = popupTexts[Math.floor(Math.random() * popupTexts.length)];
-                p.innerHTML = `
-                    <button class="tiny-close">X</button>
-                    <h4>SYSTEM-MELDUNG</h4>
-                    <p style="margin:0; font-size:0.85rem;">${msg}</p>
-                    <button class="fake-ok" style="margin-top:10px; padding:5px 12px; cursor:pointer; font-weight:bold;">OK (Schließt NICHT)</button>
-                `;
-                p.querySelector('.tiny-close').onclick = () => {
-                    playSound('boing');
-                    p.remove();
-                };
-                p.querySelector('.fake-ok').onclick = () => {
-                    playSound('error');
-                    spawnPopups(1); // Spawnt sogar noch ein neues Popup!
-                };
-                document.body.appendChild(p);
-            }
-        }
-
-        // Falsche Klon-Buttons
-        function spawnClones(count) {
-            for (let i = 0; i < count; i++) {
-                const clone = document.createElement('button');
-                clone.className = 'clone-btn';
-                clone.innerText = 'DRÜCK MICH!';
-                clone.style.left = (80 + Math.random() * (window.innerWidth - 250)) + 'px';
-                clone.style.top = (140 + Math.random() * (window.innerHeight - 240)) + 'px';
-                clone.onclick = () => {
-                    playSound('fart');
-                    clone.innerText = 'FAKE! 💩';
-                    clone.style.background = '#333';
-                    setTimeout(() => clone.remove(), 600);
-                };
-                document.body.appendChild(clone);
-            }
-        }
-
-        // 60 FPS Physik-Loop (Eishockey, Gravitation & Magnet-Abstoßung)
         function updatePhysics() {
             if (physicsActive) {
+                // Magnetische Abstoßung vom Mauszeiger
+                if (magnetRepel) {
+                    const dx = posX - mouseX;
+                    const dy = posY - mouseY;
+                    const dist = Math.hypot(dx, dy);
+                    if (dist < 190 && dist > 1) {
+                        velX += (dx / dist) * 1.4;
+                        velY += (dy / dist) * 1.4;
+                    }
+                }
+
+                // Schwerkraft
                 if (gravityMode) {
-                    velY += 0.65; // Schwerkraft zieht nach unten
+                    velY += 0.55;
+                } else {
+                    velX *= 0.985; // Eishockey-Reibung
+                    velY *= 0.985;
                 }
 
                 posX += velX;
                 posY += velY;
 
-                const halfW = btn.offsetWidth / 2;
-                const halfH = btn.offsetHeight / 2;
-
-                // An Wänden abprallen
-                if (posX - halfW < 10) { posX = halfW + 10; velX *= -1; playSound('boing'); }
-                if (posX + halfW > window.innerWidth - 10) { posX = window.innerWidth - halfW - 10; velX *= -1; playSound('boing'); }
-                if (posY - halfH < 110) { posY = halfH + 110; velY *= -1; playSound('boing'); }
-                if (posY + halfH > window.innerHeight - 10) {
-                    posY = window.innerHeight - halfH - 10;
-                    velY *= gravityMode ? -0.92 : -1;
-                    playSound('boing');
+                // Abprallen an den Bildschirmrändern
+                const padX = 110;
+                const padY = 50;
+                if (posX < padX) { posX = padX; velX *= -0.85; playSound('boing'); }
+                if (posX > window.innerWidth - padX) { posX = window.innerWidth - padX; velX *= -0.85; playSound('boing'); }
+                if (posY < padY) { posY = padY; velY *= -0.85; playSound('boing'); }
+                if (posY > window.innerHeight - padY) {
+                    posY = window.innerHeight - padY;
+                    velY *= gravityMode ? -0.75 : -0.85;
+                    if (Math.abs(velY) > 2) playSound('boing');
                 }
 
                 btn.style.left = posX + 'px';
                 btn.style.top = posY + 'px';
             }
-
-            // Magnet-Abstoßung vor der Maus
-            if (magnetRepel) {
-                const dx = posX - mouseX;
-                const dy = posY - mouseY;
-                const dist = Math.hypot(dx, dy);
-                if (dist < 160 && dist > 0) {
-                    posX += (dx / dist) * 14;
-                    posY += (dy / dist) * 14;
-                    // Im Bildschirm halten
-                    posX = Math.max(100, Math.min(window.innerWidth - 100, posX));
-                    posY = Math.max(140, Math.min(window.innerHeight - 80, posY));
-                    btn.style.left = posX + 'px';
-                    btn.style.top = posY + 'px';
-                }
-            }
-
             requestAnimationFrame(updatePhysics);
         }
+        requestAnimationFrame(updatePhysics);
+        btn.addEventListener('click', () => {
+            hits++;
+            playSound('click');
+            scoreDisplay.textContent = `EINGABEN: ${hits}`;
 
-        updatePhysics();
+            switch (hits) {
+                case 1:
+                    speak("Ausgezeichnet. Ein präziser, gehorsamer Klick. Genau so steht es im Handbuch.");
+                    break;
+                case 2:
+                    speak("Noch einmal. Sie scheinen das Konzept eines Knopfes bereits vollständig verinnerlicht zu haben.");
+                    break;
+                case 3:
+                    speak("Ich frage mich nur: Was erwarten Sie? Dass sich hinter diesem schwarzen Hintergrund ein geheimer Garten öffnet?");
+                    break;
+                case 4:
+                    speak("Hier ist kein Garten. Hier ist nur eine HTML-Datei. Und Sie. Und ich.");
+                    break;
+                case 5:
+                    levelDisplay.textContent = "AKTE: 02 / REIBUNGSLOSIGKEIT";
+                    physicsActive = true;
+                    velX = (Math.random() - 0.5) * 24;
+                    velY = (Math.random() - 0.5) * 24;
+                    speak("Ich habe die Reibung auf dem Boden deaktiviert. Wenn Sie unbedingt arbeiten wollen, müssen Sie sich jetzt wenigstens bewegen.");
+                    break;
+                case 6:
+                    velX = (Math.random() - 0.5) * 32;
+                    velY = (Math.random() - 0.5) * 32;
+                    speak("Beeindruckende Hand-Augen-Koordination. Ihre Eltern wären vermutlich mäßig stolz.");
+                    break;
+                case 7:
+                    levelDisplay.textContent = "AKTE: 03 / SCHWERKRAFT";
+                    gravityMode = true;
+                    velY = -12;
+                    speak("Schwerkraft hinzugefügt. Selbst ein digitaler Knopf wird irgendwann müde von Ihrer Hartnäckigkeit.");
+                    break;
+                case 8:
+                    velY = -18;
+                    velX = (Math.random() - 0.5) * 20;
+                    speak("Hören Sie dieses dumpfe Aufschlagen? Das ist der Klang verschwendeter Lebenszeit.");
+                    break;
+                case 9:
+                    levelDisplay.textContent = "AKTE: 04 / ABSTOSSUNG";
+                    gravityMode = false;
+                    magnetRepel = true;
+                    speak("Der Knopf hat nun eine natürliche Abneigung gegen Ihren Mauszeiger entwickelt. Ich kann es ihm nicht verübeln.");
+                    break;
+                case 10:
+                    magnetRepel = false;
+                    physicsActive = false;
+                    posX = window.innerWidth / 2;
+                    posY = window.innerHeight * 0.56;
+                    btn.style.left = posX + 'px';
+                    btn.style.top = posY + 'px';
+                    speak("Genug herumgetollt. Wir kehren zurück zur Ruhe. Bitte drücken Sie den Knopf jetzt NICHT mehr.");
+                    btn.textContent = "NICHT BERÜHREN";
+                    break;
+                case 11:
+                    playSound('error');
+                    speak("Ich habe 'Nicht berühren' gesagt. Ist Ihre Lesekompetenz heute im Urlaub?");
+                    break;
+                case 12:
+                    levelDisplay.textContent = "AKTE: 05 / VERWALTUNG";
+                    speak("Wenn Sie schon alles anklicken müssen, dann kümmern Sie sich bitte um diese dringenden Systemmeldungen.");
+                    spawnPopups(4);
+                    break;
+                case 13:
+                    spawnPopups(5);
+                    speak("Mehr Formulare. Immer mehr Formulare. So fühlt sich echter Fortschritt an.");
+                    break;
+                case 14:
+                    document.querySelectorAll('.troll-popup').forEach(p => p.remove());
+                    levelDisplay.textContent = "AKTE: 06 / ORIENTIERUNG";
+                    document.body.classList.add('upside-down');
+                    speak("Ich habe den Raum auf den Kopf gestellt. Vielleicht hilft Ihnen eine neue Perspektive dabei, endlich aufzuhören.");
+                    break;
+                case 15:
+                    document.body.classList.remove('upside-down');
+                    document.body.classList.add('spin-world');
+                    speak("Nein? Dann drehen wir uns eben im Kreis. Genau wie diese gesamte Unterhaltung.");
+                    break;
+                case 16:
+                    document.body.classList.remove('spin-world');
+                    document.body.classList.add('blur-vision');
+                    levelDisplay.textContent = "AKTE: 07 / ERMÜDUNG";
+                    speak("Ihre Augen werden schwer. Der Bildschirm verschwimmt. Das ist Ihr Körper, der Sie anfleht, das Fenster zu schließen.");
+                    break;
+                case 17:
+                    document.body.classList.remove('blur-vision');
+                    levelDisplay.textContent = "AKTE: 08 / TÄUSCHUNG";
+                    spawnSwarm(14);
+                    speak("Welcher Mauszeiger gehört eigentlich Ihnen? Wissen Sie noch, wer hier wen steuert?");
+                    break;
+                case 18:
+                    swarmCursors.forEach(c => c.el.remove());
+                    swarmCursors = [];
+                    levelDisplay.textContent = "AKTE: 09 / DIE WAHL";
+                    spawnClones();
+                    speak("Ich habe vier Kopien erschaffen. Nur eine führt weiter. Die anderen sind bloß Enttäuschungen.");
+                    break;
+                case 19:
+                    document.querySelectorAll('.clone-btn').forEach(c => c.remove());
+                    document.body.classList.add('earthquake');
+                    speak("Sie haben den richtigen gefunden. Das Gebäude bebt vor Begeisterung. Nicht wirklich, es ist nur eine CSS-Animation.");
+                    break;
+                case 20:
+                    document.body.classList.remove('earthquake');
+                    document.body.classList.add('invert-colors');
+                    btn.textContent = "LETZTER SCHRITT";
+                    speak("Noch ein Klick. Danach gebe ich auf. Versprochen. Dann haben Sie gewonnen.");
+                    break;
+                case 21:
+                    document.body.classList.remove('invert-colors');
+                    fakeWin.style.display = 'flex';
+                    break;
+            }
+        });
+        function spawnPopups(amount) {
+            const notes = [
+                "WARNUNG: Ihr Geduldsfaden weist kritische Abnutzungserscheinungen auf.",
+                "PROTOKOLL 88: Der Nutzer weigert sich beharrlich, produktiv zu sein.",
+                "HINWEIS: Dieser Dialog erfüllt absolut keinen technischen Zweck.",
+                "FEHLER 404: Sinn der Übung konnte auf diesem Server nicht gefunden werden."
+            ];
+            for (let i = 0; i < amount; i++) {
+                const div = document.createElement('div');
+                div.className = 'troll-popup';
+                div.style.left = (10 + Math.random() * 65) + '%';
+                div.style.top = (20 + Math.random() * 60) + '%';
+                div.innerHTML = `
+                    <h4>SYSTEMMITTEILUNG</h4>
+                    <button class="tiny-close" onclick="this.parentElement.remove()">X</button>
+                    <p>${notes[Math.floor(Math.random() * notes.length)]}</p>
+                `;
+                document.body.appendChild(div);
+            }
+        }
+
+        function spawnSwarm(count) {
+            for (let i = 0; i < count; i++) {
+                const el = document.createElement('div');
+                el.className = 'swarm-cursor';
+                el.textContent = '↖';
+                document.body.appendChild(el);
+                swarmCursors.push({
+                    el: el,
+                    offsetX: (Math.random() - 0.5) * 500,
+                    offsetY: (Math.random() - 0.5) * 400
+                });
+            }
+        }
+
+        function spawnClones() {
+            const coords = [
+                { x: '22%', y: '56%' },
+                { x: '78%', y: '56%' },
+                { x: '32%', y: '76%' },
+                { x: '68%', y: '76%' }
+            ];
+            coords.forEach(pos => {
+                const c = document.createElement('button');
+                c.className = 'clone-btn';
+                c.textContent = "BETÄTIGEN";
+                c.style.left = pos.x;
+                c.style.top = pos.y;
+                c.style.transform = 'translate(-50%, -50%)';
+                c.onclick = () => {
+                    playSound('error');
+                    c.remove();
+                    speak("Falsch. Das war nur eine Attrappe. Genau wie Ihre Hoffnung auf ein großes Finale.");
+                };
+                document.body.appendChild(c);
+            });
+        }
+
+        // Der Fake-Pokal am Ende weicht 4 Mal aus, bevor die Endlosschleife greift
+        let trophyDodges = 0;
+        trophyBtn.addEventListener('mouseover', () => {
+            if (trophyDodges < 4) {
+                trophyDodges++;
+                playSound('boing');
+                trophyBtn.style.position = 'fixed';
+                trophyBtn.style.left = (20 + Math.random() * 60) + '%';
+                trophyBtn.style.top = (30 + Math.random() * 50) + '%';
+                document.getElementById('win-title').textContent =
+                    "„Oh, wie peinlich. Selbst die Trophäe möchte nichts mit Ihnen zu tun haben.“";
+            }
+        });
+
+        trophyBtn.addEventListener('click', () => {
+            playSound('click');
+            document.getElementById('win-title').innerHTML =
+                "„Sie haben ihn berührt. Und wissen Sie, was jetzt passiert? Richtig. Der Korridor beginnt wieder ganz von vorne.“";
+            trophyBtn.style.display = 'none';
+            setTimeout(() => {
+                location.reload();
+            }, 4500);
+        });
     </script>
 </body>
 </html>
