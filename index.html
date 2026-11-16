@@ -6,11 +6,11 @@
 <title>PROJEKT RAGE 2 — Eine Studie über Gehorsam (Director's Cut)</title>
 <style>
 /* ============================================================
-   PROJEKT RAGE 2 (Director's Cut)
+   PROJEKT RAGE 2 (Director's Cut, Sprecherversion)
    Ein Erzähler-Spiel im Geist von The Stanley Parable.
-   12 Enden, 12 Errungenschaften, eine Abstellkammer,
-   eine Bombe, eine Kaffeepause und ein Erzähler mit
-   ausgeprägter Meinungsfreiheit.
+   14 Enden, 15 Errungenschaften, eine Abstellkammer,
+   eine Fluchtkapsel, ein Loch im Boden, eine Bombe,
+   eine echte Stimme und ein Erzähler mit Meinungsfreiheit.
    ============================================================ */
 
 * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
@@ -53,7 +53,7 @@ body {
 #boot-sub { font-size: 0.8rem; color: var(--dimmer); }
 
 #boot-log {
-  margin-top: 20px; width: 420px; max-width: 85vw; height: 130px;
+  margin-top: 20px; width: 460px; max-width: 85vw; height: 150px;
   font-size: 0.75rem; color: #4a4843; overflow: hidden;
   display: flex; flex-direction: column; justify-content: flex-end;
   border: 1px solid #2a2a2e; padding: 10px;
@@ -62,7 +62,7 @@ body {
 @keyframes bootline { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
 
 #boot-bar {
-  width: 420px; max-width: 85vw; height: 6px;
+  width: 460px; max-width: 85vw; height: 6px;
   border: 1px solid #3a3a3e; margin-top: 10px;
 }
 #boot-fill {
@@ -92,7 +92,7 @@ body {
 #endings-bar {
   position: fixed; bottom: 22px; width: 100%; text-align: center;
   font-family: 'Courier New', monospace; font-size: 0.75rem;
-  color: #4a4843; z-index: 500; pointer-events: none; letter-spacing: 2px;
+  color: #4a4843; z-index: 500; pointer-events: auto; letter-spacing: 2px;
 }
 
 #complaint-btn {
@@ -121,6 +121,38 @@ body {
   position: fixed; top: 8.2%; left: 50%; transform: translateX(-50%);
   font-family: 'Courier New', monospace; font-size: 0.65rem;
   color: #3e3c37; letter-spacing: 2px; z-index: 500; pointer-events: none;
+}
+
+#voice-badge {
+  display: none; position: fixed; top: 8.2%; right: 30px; z-index: 501;
+  font-family: 'Courier New', monospace; font-size: 0.6rem;
+  color: #55534d; letter-spacing: 2px; border: 1px solid #2e2e32;
+  padding: 3px 8px; border-radius: 3px;
+}
+#voice-badge.on { display: block; color: #8a877e; border-color: #55534d; }
+
+/* ---------------- Korridor (Perspektive) ---------------- */
+
+#corridor-bg {
+  position: fixed; inset: 0; z-index: 40; pointer-events: none;
+  opacity: 0; transition: opacity 1.2s ease;
+  background: radial-gradient(ellipse 42% 32% at 50% 46%, #35353b 0%, #1a1a1e 55%, #0b0b0d 100%);
+}
+#corridor-bg.show { opacity: 1; }
+#corridor-bg::before {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 47%;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 110px, rgba(228,225,216,0.035) 110px 112px),
+    linear-gradient(#1d1d21, #09090b);
+  clip-path: polygon(37% 0, 63% 0, 100% 100%, 0 100%);
+}
+#corridor-bg::after {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 47%;
+  background:
+    radial-gradient(ellipse 5% 2.5% at 50% 32%, rgba(228,225,216,0.28), transparent 70%),
+    radial-gradient(ellipse 9% 4.5% at 50% 12%, rgba(228,225,216,0.18), transparent 70%),
+    linear-gradient(#131315, #1a1a1e);
+  clip-path: polygon(0 0, 100% 0, 63% 100%, 37% 100%);
 }
 
 /* ---------------- Bühne ---------------- */
@@ -158,7 +190,8 @@ body {
   width: 118px; height: 205px; border-radius: 6px 6px 0 0;
   background: linear-gradient(#2a2a2e, #1c1c1f);
   border: 2px solid #55534d; position: relative; cursor: pointer;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.7); transition: transform 0.2s ease;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.7);
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.3, 1);
 }
 .door::before {
   content: ''; position: absolute; right: 12px; top: 50%;
@@ -170,26 +203,82 @@ body {
   font-family: 'Courier New', monospace; font-size: 0.72rem;
   color: var(--dim); letter-spacing: 2px; white-space: nowrap;
 }
-.door:hover { transform: translateY(-6px); }
+.door:hover { transform: scale(1.14) translateY(-4px); }
 .door.small { width: 34px; height: 52px; opacity: 0.55; }
 .door.small::after { font-size: 0.55rem; bottom: -22px; }
-.door.small:hover { opacity: 1; }
+.door.small:hover { opacity: 1; transform: none; }
 
 /* Schreibtisch-Szene */
-#desk-scene {
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-}
+#desk-scene { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 #desk-monitor {
-  width: 300px; height: 180px; background: #0a0a0c;
+  width: 320px; height: 190px; background: #0a0a0c;
   border: 6px solid #2e2e32; border-radius: 6px;
   font-family: 'Courier New', monospace; color: #7fd17f;
   font-size: 0.8rem; padding: 14px; line-height: 1.5;
   box-shadow: 0 15px 30px rgba(0,0,0,0.7);
 }
+#desk-monitor .cur { animation: blink 0.9s steps(1) infinite; }
 #desk-chair {
   width: 90px; height: 20px; background: #2e2e32;
   border-radius: 4px 4px 0 0; margin-top: 4px;
 }
+
+/* Präsentation */
+#slide-monitor {
+  width: 380px; height: 230px; background: #e8e4d8; color: #141414;
+  border: 10px solid #2e2e32; border-radius: 4px;
+  font-family: 'Courier New', monospace; font-size: 0.85rem;
+  padding: 18px; line-height: 1.6; text-align: center;
+  display: flex; flex-direction: column; justify-content: center;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.7);
+}
+#slide-monitor .slide-head { font-size: 0.65rem; color: #6e6c65; letter-spacing: 2px; margin-bottom: 12px; }
+
+/* Fluchtkapsel */
+.pod {
+  width: 150px; height: 225px; border-radius: 75px 75px 22px 22px;
+  background: linear-gradient(160deg, #43434d, #1c1c22 70%);
+  border: 3px solid #666; position: relative;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.6);
+}
+.pod::before {
+  content: ''; position: absolute; top: 28px; left: 50%; transform: translateX(-50%);
+  width: 62px; height: 46px; border-radius: 50%;
+  background: radial-gradient(#1a2a3a, #060a10 75%);
+  border: 3px solid #55534d;
+}
+.pod::after {
+  content: 'FREIHEIT (CA.)';
+  position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%);
+  font-family: 'Courier New', monospace; font-size: 0.55rem;
+  color: #8a877e; letter-spacing: 2px; white-space: nowrap;
+}
+.pod.shake { animation: podShake 0.12s infinite; }
+@keyframes podShake {
+  0% { transform: translate(1px, -1px); }
+  50% { transform: translate(-2px, 1px); }
+  100% { transform: translate(1px, 2px); }
+}
+
+/* Loch im Boden */
+.hole {
+  width: 240px; height: 78px; border-radius: 50%;
+  background: radial-gradient(#000 42%, #1a0505 68%, transparent 74%);
+  box-shadow: 0 0 50px rgba(255,70,45,0.28), inset 0 0 30px #000;
+  animation: holePulse 3s ease-in-out infinite;
+}
+@keyframes holePulse {
+  0%, 100% { box-shadow: 0 0 40px rgba(255,70,45,0.22), inset 0 0 30px #000; }
+  50% { box-shadow: 0 0 70px rgba(255,70,45,0.4), inset 0 0 30px #000; }
+}
+
+/* Sterne (Fall / Weltall) */
+.star {
+  position: absolute; width: 3px; height: 3px; border-radius: 50%;
+  background: #e4e1d8; opacity: 0.7;
+  animation: starUp linear infinite;
+}
+@keyframes starUp { from { transform: translateY(60vh); } to { transform: translateY(-110vh); } }
 
 /* Eingabefeld für den Namen */
 #name-input {
@@ -241,7 +330,8 @@ body {
   align-items: center; justify-content: center;
 }
 #settings-window {
-  background: #dcd8ce; color: #141414; width: 460px; max-width: 90vw;
+  background: #dcd8ce; color: #141414; width: 480px; max-width: 92vw;
+  max-height: 88vh; overflow-y: auto;
   border: 1px solid #333; box-shadow: 12px 12px 0 rgba(0,0,0,0.6);
   font-family: 'Courier New', monospace; padding: 24px;
   position: relative;
@@ -253,10 +343,11 @@ body {
 .set-row { margin-bottom: 18px; }
 .set-row label { display: block; font-size: 0.78rem; margin-bottom: 6px; letter-spacing: 1px; }
 .set-row input[type=range] { width: 100%; accent-color: #141414; }
-.set-row select {
+.set-row select, .set-row input[type=password] {
   width: 100%; font-family: 'Courier New', monospace; padding: 6px;
   background: #efeadf; border: 1px solid #777; font-size: 0.8rem;
 }
+.set-btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
 #settings-note { font-size: 0.68rem; color: #6e6c65; margin-top: 14px; font-style: italic; }
 #settings-close {
   position: absolute; top: 8px; right: 8px; width: 20px; height: 20px;
@@ -294,10 +385,11 @@ body {
 #end-screen {
   display: none; position: fixed; inset: 0; background: #18181b; z-index: 800;
   flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; padding: 30px; gap: 22px;
+  text-align: center; padding: 30px; gap: 22px; overflow-y: auto;
 }
 #end-title { font-size: 1.85rem; color: #f4f1ea; max-width: 760px; line-height: 1.5; }
 #end-sub { font-family: 'Courier New', monospace; color: #6e6c65; letter-spacing: 2px; font-size: 0.8rem; }
+#end-stats { font-family: 'Courier New', monospace; color: #4a4843; font-size: 0.7rem; letter-spacing: 2px; }
 #end-gallery {
   font-family: 'Courier New', monospace; font-size: 0.7rem; color: #4a4843;
   letter-spacing: 1px; max-width: 700px; line-height: 1.9;
@@ -312,6 +404,7 @@ body {
 .blur-vision { filter: blur(3px); }
 .invert-colors { filter: invert(0.92); }
 .sepia-memories { filter: sepia(0.7) contrast(0.9); }
+.hue-shifted { filter: hue-rotate(140deg) saturate(1.3); }
 .darkness::after {
   content: ''; position: fixed; inset: 0; background: rgba(0,0,0,0.93);
   z-index: 200; pointer-events: none; animation: fadein 2s ease forwards;
@@ -335,6 +428,11 @@ body {
   100% { transform: translate(1px,2px); }
 }
 
+#flash {
+  position: fixed; inset: 0; background: #fff; opacity: 0;
+  pointer-events: none; z-index: 1600; transition: opacity 0.6s ease;
+}
+
 /* Der Erzähler geht: alles leer */
 #empty-screen {
   display: none; position: fixed; inset: 0; background: #121214; z-index: 850;
@@ -351,7 +449,7 @@ body {
 <!-- Boot -->
 <div id="boot">
   <div id="boot-title">PROJEKT RAGE 2</div>
-  <div id="boot-sub">EINE STUDIE ÜBER GEHORSAM · DIRECTOR'S CUT</div>
+  <div id="boot-sub">EINE STUDIE ÜBER GEHORSAM · DIRECTOR'S CUT · JETZT MIT STIMME</div>
   <div id="boot-log"></div>
   <div id="boot-bar"><div id="boot-fill"></div></div>
 </div>
@@ -367,7 +465,11 @@ body {
 </div>
 
 <div id="narrator-hint">KLICKEN SIE DEN TEXT AN, WENN SIE UNGEDULDIG SIND. DER ERZÄHLER MERKT DAS.</div>
+<div id="voice-badge">STIMME: BEREIT</div>
 <div id="narrator-box"></div>
+
+<!-- Korridor-Hintergrund -->
+<div id="corridor-bg"></div>
 
 <div id="stage"></div>
 
@@ -377,7 +479,7 @@ body {
 <!-- Beschwerde -->
 <button id="complaint-btn">BESCHWERDE EINREICHEN</button>
 
-<div id="endings-bar">GEFUNDENE ENDEN: 0 / 12</div>
+<div id="endings-bar">GEFUNDENE ENDEN: 0 / 14</div>
 
 <!-- Errungenschaft -->
 <div id="ach-toast">
@@ -398,7 +500,7 @@ body {
 <div id="ad-overlay">
   <div id="ad-title">PROJEKT RAGE 3</div>
   <div id="ad-slogan">Die Vergeltung. Diesmal knopft IHR zurück.</div>
-  <div id="ad-small">ERSCHIENNT NIE. VERÖFFENTLICHT NIE. VERSPROCHEN 2013. ERWARTET: IRGENDWANN.</div>
+  <div id="ad-small">ERSCHIEN NIE. VERÖFFENTLICHT NIE. VERSPROCHEN 2013. ERWARTET: IRGENDWANN.</div>
   <button class="stage-btn small" id="ad-skip">WERBUNG ÜBERSPRINGEN</button>
 </div>
 
@@ -408,11 +510,11 @@ body {
     <button id="settings-close">X</button>
     <h3>SYSTEMEINSTELLUNGEN</h3>
     <div class="set-row">
-      <label>ERZÄHLER-LAUTSTÄRKE (DEKORATIV)</label>
+      <label>ERZÄHLER-LAUTSTÄRKE (DIE EINZIGE, DIE WIRKT)</label>
       <input type="range" id="set-vol" min="0" max="100" value="70">
     </div>
     <div class="set-row">
-      <label>SINN DES LEbens</label>
+      <label>SINN DES LEBENS</label>
       <input type="range" id="set-meaning" min="0" max="100" value="0">
     </div>
     <div class="set-row">
@@ -432,8 +534,16 @@ body {
         <option>1 (ABER GRÖSSER)</option>
       </select>
     </div>
+    <div class="set-row">
+      <label>ERZÄHLER-STIMME · ELEVENLABS (STIMM-ID: rDmv3mOhK6TnhYWckFaD)</label>
+      <input type="password" id="set-ttskey" placeholder="ELEVENLABS API-KEY (bleibt nur in diesem Browser)">
+      <div class="set-btn-row">
+        <button class="stage-btn small" id="set-tts-toggle" style="background:#141414;color:#fff;border-color:#141414;">STIMME: AUS</button>
+        <button class="stage-btn small ghost" id="set-tts-test" style="color:#141414;border-color:#777;">STIMME TESTEN</button>
+      </div>
+    </div>
     <button class="stage-btn small" id="set-reset" style="background:#141414;color:#fff;border-color:#141414;">ALLES ZURÜCKSETZEN</button>
-    <div id="settings-note">Hinweis: Keine dieser Einstellungen tut etwas. Das ist Absicht und wurde vom Erzähler persönlich genehmigt.</div>
+    <div id="settings-note">Hinweis: Fast keine dieser Einstellungen tut etwas. Das ist Absicht und wurde vom Erzähler persönlich genehmigt. Ausnahmen: die Lautstärke und die Stimme. Das wusste der Erzähler nicht, als er es genehmigt hat.</div>
   </div>
 </div>
 
@@ -444,13 +554,16 @@ body {
 <div id="end-screen">
   <div id="end-title"></div>
   <div id="end-sub"></div>
+  <div id="end-stats"></div>
   <div id="end-gallery"></div>
   <button class="stage-btn" id="restart-btn">NEU BEGINNEN</button>
 </div>
 
+<div id="flash"></div>
+
 <script>
 /* ============================================================
-   PROJEKT RAGE 2 (Director's Cut)
+   PROJEKT RAGE 2 (Director's Cut, Sprecherversion)
    ============================================================ */
 
 /* ------------------------------------------------------------
@@ -468,16 +581,22 @@ const clockEl = $('clock');
 const endScreen = $('end-screen');
 const endTitle = $('end-title');
 const endSub = $('end-sub');
+const endStats = $('end-stats');
 const endGallery = $('end-gallery');
 const closet = $('closet');
 const complaintBtn = $('complaint-btn');
 const bootEl = $('boot');
+const corridorBg = $('corridor-bg');
+const voiceBadge = $('voice-badge');
 
 /* ------------------------------------------------------------
-   2. AUDIO (kleiner Synthesizer)
+   2. AUDIO (Synthesizer + Master-Lautstärke)
    ------------------------------------------------------------ */
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const masterGain = audioCtx.createGain();
+masterGain.gain.value = 0.7;
+masterGain.connect(audioCtx.destination);
 
 function playSound(type) {
   try {
@@ -496,6 +615,7 @@ function playSound(type) {
       boom:   ['sawtooth', 120, 30, 0.7, 0.2],
       chime:  ['sine', 660, 660, 0.25, 0.08],
       sad:    ['sine', 220, 110, 0.8, 0.1],
+      launch: ['sawtooth', 60, 400, 1.2, 0.12],
     };
     const [w, f1, f2, dur, vol] = presets[type] || presets.click;
     osc.type = w;
@@ -504,14 +624,88 @@ function playSound(type) {
     gain.gain.setValueAtTime(vol, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
     osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(masterGain);
     osc.start(now);
-    osc.stop(now + 0.6);
+    osc.stop(now + 1.4);
   } catch (e) { /* Ton ist optional. Genau wie der Sinn. */ }
 }
 
 /* ------------------------------------------------------------
-   3. ERZÄHLER (Typewriter)
+   3. STIMME (ElevenLabs TTS, optional)
+   Der API-KEY wird NUR lokal im Browser gespeichert und nie
+   in die Datei eingebrannt. Ohne Stimme tippt der Erzähler.
+   ------------------------------------------------------------ */
+
+const TTS_VOICE = 'rDmv3mOhK6TnhYWckFaD';
+let ttsKey = '';
+let ttsOn = false;
+let ttsBlocked = false;
+let ttsWarned = false;
+let currentAudio = null;
+
+function loadTTS() {
+  try {
+    ttsKey = localStorage.getItem('rage2_tts_key') || '';
+    ttsOn = localStorage.getItem('rage2_tts_on') === '1';
+  } catch (e) { /* localStorage ist Deko. Diesmal wirklich. */ }
+  const inp = $('set-ttskey');
+  if (inp && ttsKey) inp.value = ttsKey;
+  updateTTSToggle();
+  voiceBadge.classList.toggle('on', ttsOn && !!ttsKey);
+}
+
+function saveTTS() {
+  try {
+    localStorage.setItem('rage2_tts_key', ttsKey);
+    localStorage.setItem('rage2_tts_on', ttsOn ? '1' : '0');
+  } catch (e) {}
+}
+
+function updateTTSToggle() {
+  $('set-tts-toggle').textContent = 'STIMME: ' + (ttsOn ? 'AN' : 'AUS');
+  voiceBadge.classList.toggle('on', ttsOn && !!ttsKey && !ttsBlocked);
+  voiceBadge.textContent = ttsBlocked ? 'STIMME: BLOCKIERT' :
+    (ttsOn && ttsKey ? 'STIMME: AN' : 'STIMME: AUS');
+}
+
+function stopTTS() {
+  if (currentAudio) {
+    try { currentAudio.pause(); currentAudio.src = ''; } catch (e) {}
+    currentAudio = null;
+  }
+}
+
+async function speakTTS(text) {
+  if (!ttsOn || !ttsKey || ttsBlocked) return;
+  stopTTS();
+  try {
+    const res = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + TTS_VOICE + '?output_format=mp3_44100_128', {
+      method: 'POST',
+      headers: { 'xi-api-key': ttsKey, 'content-type': 'application/json' },
+      body: JSON.stringify({
+        text: text,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: { stability: 0.4, similarity_boost: 0.8, style: 0.35 }
+      })
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    currentAudio = new Audio(url);
+    currentAudio.volume = Math.min(1, masterGain.gain.value + 0.2);
+    currentAudio.play().catch(() => {});
+  } catch (e) {
+    ttsBlocked = true;
+    updateTTSToggle();
+    if (!ttsWarned) {
+      ttsWarned = true;
+      speak('Die Stimme wollte gerade sprechen, aber irgendetwas zwischen Ihnen und dem Internet hat Nein gesagt. Ich tippe eben weiter. Ich kann sowieso alles besser, wenn ich es tippe.');
+    }
+  }
+}
+
+/* ------------------------------------------------------------
+   4. ERZÄHLER (Typewriter + Stimme)
    ------------------------------------------------------------ */
 
 let typeTimer = null;
@@ -520,6 +714,8 @@ let typeDone = null;
 function speak(text, done) {
   clearInterval(typeTimer);
   typeDone = done || null;
+  stopTTS();
+  speakTTS(text);
   narrator.innerHTML = '<span class="cursor-blink">▌</span>';
   let i = 0;
   const quote = '„' + text + '“';
@@ -553,19 +749,20 @@ narrator.addEventListener('click', () => {
 });
 
 /* ------------------------------------------------------------
-   4. ZUSTAND
+   5. ZUSTAND
    ------------------------------------------------------------ */
 
 let decisions = 0;
 let runs = 0;
-let clicksTotal = 0;
 let settingsOpens = 0;
+let resetAttempts = 0;
 let complaints = 0;
 let impatientTotal = 0;
+let focusLosses = 0;
 let startTime = Date.now();
 let currentScene = null;
 let playerName = 'Stanley';
-let lastEnding = null;
+let slideNum = 2;
 
 const foundEndings = new Set();
 const unlockedAch = new Set();
@@ -580,13 +777,12 @@ setInterval(() => {
 
 function addDecision() {
   decisions++;
-  clicksTotal++;
   scoreDisplay.textContent = 'ENTSCHEIDUNGEN: ' + decisions;
-  checkSpamAchievement();
+  if (decisions >= 25) unlockAch('spam');
 }
 
 /* ------------------------------------------------------------
-   5. ERRUNGENSCHAFTEN
+   6. ERRUNGENSCHAFTEN
    ------------------------------------------------------------ */
 
 const ACHIEVEMENTS = [
@@ -595,13 +791,16 @@ const ACHIEVEMENTS = [
   { id: 'warten',    name: 'GEDULDIGER HEILIGER', desc: 'Tatsächlich warten, wenn man es sagt.' },
   { id: 'bombe',     name: 'BOMBENENTSCHÄRFER',   desc: 'Die Bombe entschärfen. Irgendwie.' },
   { id: 'besen',     name: 'BESENFREUND',         desc: 'Die Abstellkammer betreten. Warum auch immer.' },
-  { id: 'nichts',    name: 'MEISTER DES NICHTS',  desc: 'Nichts tun. Professionell.' },
+  { id: 'nichts',    name: 'MEISTER DES NICHTS',  desc: 'In ein Loch springen, über das ich nichts weiß.' },
   { id: 'kaffee',    name: 'KAFFEEFAHRER',        desc: 'Eine Kaffeepause annehmen, die es nicht gibt.' },
   { id: 'spam',      name: 'SCHNELLKLICKER',      desc: '25 Entscheidungen in einem Durchlauf.' },
   { id: 'neugier',   name: 'SCHRAUBENZIEHER',     desc: 'Drei Mal in die Einstellungen schauen.' },
   { id: 'leser',     name: 'FUSSNOTENLESER',      desc: 'Die Fußzeile bemerkt haben. Respekt.' },
   { id: 'ungeduld',  name: 'TEXTÜBERSPRINGER',    desc: 'Den Erzähler beim Tippen unterbrochen.' },
-  { id: 'sammler',   name: 'AKTENSAMMLER',        desc: 'Alle 12 Enden gefunden. Es gibt Hilfe.' },
+  { id: 'abwesend',  name: 'FENSTERFLÜCHTLING',   desc: 'Das Fenster gewechselt haben. Ich habe es gesehen.' },
+  { id: 'flüchtling',name: 'WELTRAUMTOURIST',     desc: 'Mit einer Kapsel geflohen, die nicht zurückkann.' },
+  { id: 'phönix',    name: 'PHÖNIX AUS DER AKTE', desc: 'Alles zurückgesetzt. Alles.' },
+  { id: 'sammler',   name: 'AKTENSAMMLER',        desc: 'Alle 14 Enden gefunden. Es gibt Hilfe.' },
 ];
 
 function unlockAch(id) {
@@ -615,11 +814,7 @@ function unlockAch(id) {
   toast.classList.add('show');
   playSound('chime');
   setTimeout(() => toast.classList.remove('show'), 3800);
-  if (unlockedAch.has('ungeduld') === false && impatientTotal >= 1) unlockAch('ungeduld');
-}
-
-function checkSpamAchievement() {
-  if (decisions >= 25) unlockAch('spam');
+  if (impatientTotal >= 1) unlockAch('ungeduld');
 }
 
 /* Fußzeilen-Leser */
@@ -632,10 +827,10 @@ endingsBar.addEventListener('mouseenter', () => {
 });
 
 /* ------------------------------------------------------------
-   6. ENDEN
+   7. ENDEN
    ------------------------------------------------------------ */
 
-const ALL_ENDINGS = 12;
+const ALL_ENDINGS = 14;
 
 const ENDING_LIST = [
   ['gehorsam',    'DAS ENDE DES GEHORSAMS'],
@@ -643,13 +838,15 @@ const ENDING_LIST = [
   ['bombe',       'DAS ENDE DER BOMBE'],
   ['trophäe',     'DAS ENDE DER TROPHÄE'],
   ['kammer',      'DAS ENDE DER ABSTELLKAMMER'],
-  ['nichts',      'DAS ENDE DER WAHRHEIT'],
+  ['nichts',      'DAS ENDE DER LEERE'],
   ['kaffee',      'DAS ENDE DER KAFFEEPAUSE'],
   ['verwirrung',  'DAS ENDE DER VERWIRRUNG'],
   ['erzähler',    'DAS ENDE DES ERZÄHLERS'],
   ['einstellung', 'DAS ENDE DER EINSTELLUNGEN'],
   ['schleife',    'DAS ENDE DER SCHLEIFE'],
   ['freiheit',    'DAS WAHRE ENDE'],
+  ['flucht',      'DAS ENDE DER FLUCHTKAPSEL'],
+  ['neustart',    'DAS ENDE DES NEUSTARTS'],
 ];
 
 function renderGallery() {
@@ -661,7 +858,7 @@ function renderGallery() {
 }
 
 function ending(id, text, sub) {
-  lastEnding = id;
+  stopTTS();
   runs++;
   const isNew = !foundEndings.has(id);
   foundEndings.add(id);
@@ -669,20 +866,24 @@ function ending(id, text, sub) {
 
   endTitle.textContent = '„' + text + '“';
   endSub.textContent = 'ENDE: ' + id.toUpperCase() +
-    (isNew ? ' · NEU!' : ' · BEREITS GE FUNDEN') + ' · ' + sub;
+    (isNew ? ' · NEU!' : ' · BEREITS GEFUNDEN') + ' · ' + sub;
+  const s = Math.floor((Date.now() - startTime) / 1000);
+  endStats.textContent = 'ENTSCHEIDUNGEN: ' + decisions +
+    ' · LAUFZEIT: ' + Math.floor(s / 60) + ' MIN ' + (s % 60) + ' S' +
+    ' · DURCHLÄUFE: ' + runs;
   renderGallery();
 
   if (foundEndings.size >= ALL_ENDINGS) unlockAch('sammler');
   if (impatientTotal >= 1) unlockAch('ungeduld');
 
+  document.title = 'PROJEKT RAGE 2 — ' + id.toUpperCase();
   endScreen.style.display = 'flex';
   playSound('reveal');
 }
 
 $('restart-btn').onclick = () => {
   endScreen.style.display = 'none';
-  ['spin-world','earthquake','blur-vision','invert-colors','darkness','sepia-memories']
-    .forEach(e => document.body.classList.remove(e));
+  clearAllFx();
   clearPopups();
   $('countdown').style.display = 'none';
   $('ad-overlay').style.display = 'none';
@@ -691,12 +892,12 @@ $('restart-btn').onclick = () => {
 };
 
 /* ------------------------------------------------------------
-   7. UI-HELFER
+   8. UI-HELFER
    ------------------------------------------------------------ */
 
 function clearStage() { stage.innerHTML = ''; }
 
-function addButton(label, opts, onClick) {
+function makeButton(label, opts, onClick) {
   opts = opts || {};
   const b = document.createElement('button');
   b.className = 'stage-btn' +
@@ -705,6 +906,11 @@ function addButton(label, opts, onClick) {
     (opts.danger ? ' danger' : '');
   b.textContent = label;
   b.onclick = () => { addDecision(); playSound(opts.sound || 'click'); onClick(); };
+  return b;
+}
+
+function addButton(label, opts, onClick) {
+  const b = makeButton(label, opts, onClick);
   stage.appendChild(b);
   return b;
 }
@@ -712,33 +918,34 @@ function addButton(label, opts, onClick) {
 function addRow(buttons) {
   const row = document.createElement('div');
   row.className = 'btn-row';
-  buttons.forEach(([label, opts, cb]) => {
-    opts = opts || {};
-    const b = document.createElement('button');
-    b.className = 'stage-btn' +
-      (opts.ghost ? ' ghost' : '') +
-      (opts.small ? ' small' : '') +
-      (opts.danger ? ' danger' : '');
-    b.textContent = label;
-    b.onclick = () => { addDecision(); playSound(opts.sound || 'click'); cb(); };
-    row.appendChild(b);
-  });
+  buttons.forEach(([label, opts, cb]) => row.appendChild(makeButton(label, opts, cb)));
   stage.appendChild(row);
   return row;
 }
 
 function addDoors(pairs) {
+  showCorridor(true);
   const wrap = document.createElement('div');
   wrap.className = 'door-row';
   pairs.forEach(([label, cb]) => {
     const d = document.createElement('div');
     d.className = 'door';
     d.dataset.label = label;
-    d.onclick = () => { addDecision(); playSound('door'); cb(); };
+    d.onclick = () => { addDecision(); playSound('door'); flash(() => cb()); };
     wrap.appendChild(d);
   });
   stage.appendChild(wrap);
   return wrap;
+}
+
+function showCorridor(on) {
+  corridorBg.classList[on ? 'add' : 'remove']('show');
+}
+
+function flash(cb) {
+  const f = $('flash');
+  f.style.opacity = '0.9';
+  setTimeout(() => { f.style.opacity = '0'; if (cb) cb(); }, 120);
 }
 
 function addPopup(text, title) {
@@ -756,19 +963,37 @@ function clearPopups() {
   document.querySelectorAll('.troll-popup').forEach(p => p.remove());
 }
 
-function setLevel(t) { levelDisplay.textContent = t; }
+function setLevel(t) {
+  levelDisplay.textContent = t;
+  document.title = 'PROJEKT RAGE 2 — ' + t;
+}
 
 function fx(effect, on) {
   document.body.classList[on ? 'add' : 'remove'](effect);
 }
 
 function clearAllFx() {
-  ['spin-world','earthquake','blur-vision','invert-colors','darkness','sepia-memories']
+  ['spin-world','earthquake','blur-vision','invert-colors','darkness','sepia-memories','hue-shifted']
     .forEach(e => document.body.classList.remove(e));
+  showCorridor(false);
+  document.querySelectorAll('.star').forEach(s => s.remove());
+}
+
+/* Sternefeld (Fall / Weltall) */
+function spawnStars(n) {
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.top = (20 + Math.random() * 90) + 'vh';
+    s.style.animationDuration = (0.6 + Math.random() * 1.4) + 's';
+    s.style.animationDelay = (-Math.random() * 2) + 's';
+    document.body.appendChild(s);
+  }
 }
 
 /* ------------------------------------------------------------
-   8. LEERLAUF-KOMMENTARE
+   9. LEERLAUF-KOMMENTARE
    ------------------------------------------------------------ */
 
 const IDLE_LINES = [
@@ -782,6 +1007,10 @@ const IDLE_LINES = [
   "Ich habe der Verwaltung schon von Ihnen erzählt. Sie waren nicht beeindruckt. Ich auch nicht. Also doch.",
   "Zwischenstand: Sie warten. Ich warte. Der Korridor wartet. Niemand ist glücklich.",
   "Das ist jetzt der Teil, wo normalerweise etwas passiert. Normalerweise.",
+  "Ich habe gerade einen Monolog über das Nichts vorbereitet. Er war gut. Er verdient ein Publikum. Machen Sie irgendwas.",
+  "Die Abstellkammer übrigens: immer noch da. Immer noch verschlossen. Immer noch eine Option, falls Ihnen das hier zu sinnvoll wird.",
+  "Fun Fact: Der Knopf übt gerade. Man hört ihn nachts. Ich habe aufgehört nachzufragen.",
+  "Ich zähle Ihre Leerlaufminuten. Die Verwaltung auch. Wir vergleichen später.",
 ];
 let idleIndex = 0;
 let idleTimer = null;
@@ -791,7 +1020,7 @@ function resetIdle() {
   idleTimer = setTimeout(() => {
     if (currentScene && currentScene.idleSafe) return;
     const line = IDLE_LINES[idleIndex % IDLE_LINES.length]
-      .replace('%NAME%', playerName.toUpperCase());
+      .replace(/%NAME%/g, playerName);
     speak(line);
     idleIndex++;
     resetIdle();
@@ -799,8 +1028,22 @@ function resetIdle() {
 }
 ['mousemove', 'click', 'keydown'].forEach(ev => document.addEventListener(ev, resetIdle));
 
+/* Der Erzähler bemerkt Fensterwechsel */
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) return;
+  focusLosses++;
+  if (currentScene && currentScene.idleSafe) return;
+  const lines = [
+    "Da sind Sie wieder. Sie waren in einem anderen Fenster. Ich habe es gesehen. Ich sehe alles. Ich bin ein Erzähler, kein Kammerjäger, aber ich sehe.",
+    "Zweiter Fensterwechsel. Ich habe derweil weitererzählt. Allein. In einem leeren Korridor. Es war, sagt die Akte, 'ausbaufähig'.",
+    "Drittes Mal. Wissen Sie was? Ich mache jetzt einfach weiter, als wären Sie nie weg gewesen. Das ist meine Strategie bei allem: weitererzählen.",
+  ];
+  speak(lines[Math.min(focusLosses - 1, lines.length - 1)]);
+  if (focusLosses >= 3) unlockAch('abwesend');
+});
+
 /* ------------------------------------------------------------
-   9. SZENEN
+   10. SZENEN
    ------------------------------------------------------------ */
 
 const S = {};
@@ -820,14 +1063,18 @@ S.intro = {
     stage.appendChild(input);
     addRow([
       ['BESTÄTIGEN', {}, () => {
-        playerName = (input.value.trim() || 'Stanley').slice(0, 18);
-        if (playerName.toLowerCase() === 'stanley') {
-          go(S.nameStanley);
-        } else if (playerName.toLowerCase() === 'erzähler') {
-          go(S.nameNarrator);
-        } else {
-          go(S.desk);
+        const raw = input.value.trim();
+        if (!raw) {
+          playerName = 'Person 47';
+          speak("Kein Name. Wunderbar. Dann nenne ich Sie jetzt 'Person 47'. Die 47 ist willkürlich. Die Verwaltung fand sie 'stimmig'.");
+          setTimeout(() => go(S.desk), 2500);
+          return;
         }
+        playerName = raw.slice(0, 18);
+        if (playerName.toLowerCase() === 'stanley') go(S.nameStanley);
+        else if (playerName.toLowerCase() === 'erzähler') go(S.nameNarrator);
+        else if (playerName.toLowerCase() === 'besen') go(S.nameBroom);
+        else go(S.desk);
       }],
     ]);
   }
@@ -835,35 +1082,32 @@ S.intro = {
 
 S.nameStanley = {
   text: "Stanley. Natürlich. Es gibt immer einen Stanley. Gut, dann spielen wir die klassische Version: %NAME% hatte einen langweiligen Job und einen noch langweigeren Bildschirm. Klingelt etwas? Egal. Weiter geht's.",
-  enter() {
-    clearStage();
-    addRow([['WEITER', {}, () => go(S.desk)]]);
-  }
+  enter() { clearStage(); addRow([['WEITER', {}, () => go(S.desk)]]); }
 };
 
 S.nameNarrator = {
   text: "Sie wollen sich 'Erzähler' nennen? Das ist meine Stelle. Meine! Wissen Sie was, %NAME%-Ersatz: Ich ignoriere das jetzt einfach. Professionell. Erwachsen. Mit einem leichten Muskelzucken im Auge.",
-  enter() {
-    clearStage();
-    addRow([['WEITER', {}, () => go(S.desk)]]);
-  }
+  enter() { clearStage(); addRow([['WEITER', {}, () => go(S.desk)]]); }
 };
 
-/* ---------- Schreibtisch (Hommage an den Anfang) ---------- */
+S.nameBroom = {
+  text: "Sie... Sie wollen 'Besen' heißen. Ich weiß nicht, ob Sie das ernst meinen, aber die Abstellkammer hört das gerade mit. Sie hat schon lange auf Sie gewartet. Ich fasse es als Drohung auf und fahre trotzdem fort.",
+  enter() { clearStage(); addRow([['WEITER', {}, () => go(S.desk)]]); }
+};
+
+/* ---------- Schreibtisch ---------- */
 
 S.desk = {
   text: "%NAME% saß an seinem Schreibtisch. Es war ein langweiliger Schreibtisch, an einem langweiligen Arbeitsplatz, in einem langweiligen Gebäude. Auf dem Bildschirm: dieselbe Anforderung wie jeden Tag. %NAME% tat, was %NAME% jeden Tag tat. %NAME% stand auf.",
   enter() {
     setLevel('AKTE: 02 / DER ALLTAG');
     clearStage();
-
     const desk = document.createElement('div');
     desk.id = 'desk-scene';
     desk.innerHTML =
-      '<div id="desk-monitor">AUFTRAG 4-113<br>BITTE KNOPF BETÄTIGEN.<br>WIE IMMER.<br>WIE JEDEN TAG.<br>&gt; _</div>' +
+      '<div id="desk-monitor">AUFTRAG 4-113<br>BITTE KNOPF BETÄTIGEN.<br>WIE IMMER.<br>WIE JEDEN TAG.<br><span class="cur">&gt; _</span></div>' +
       '<div id="desk-chair"></div>';
     stage.appendChild(desk);
-
     addRow([
       ['AUFSTEHEN', {}, () => go(S.doors)],
       ['SITZEN BLEIBEN', { ghost: true }, () => go(S.confused1)],
@@ -878,10 +1122,9 @@ S.confused1 = {
   enter() {
     setLevel('AKTE: ?? / FEHLER IM SKRIPT');
     clearStage();
-    fx('glitch-text', false);
     narrator.classList.add('glitch-text');
     addRow([
-      ['DOCH AUfstehen', {}, () => { narrator.classList.remove('glitch-text'); go(S.doors); }],
+      ['DOCH AUFSTEHEN', {}, () => { narrator.classList.remove('glitch-text'); go(S.doors); }],
       ['WEITER SITZEN', { ghost: true }, () => go(S.confused2)],
     ]);
   },
@@ -901,20 +1144,36 @@ S.confused2 = {
 };
 
 S.confused3 = {
-  text: "Wunderbar. %NAME% aß einen imaginären Apfel. Das ist jetzt offiziell Kanon. Die Verwaltung wird Begeisterung zeigen. Beuge ich mich gerade vor Lachen? Vielleicht. Vielleicht ist es auch ein Nickerchen. Jedenfalls: Das Ende der Verwirrung. Sie haben es durch Improvisation verdient, was die traurigste Art ist, ein Ende zu verdienen.",
+  text: "Wunderbar. %NAME% aß einen imaginären Apfel. Das ist jetzt offiziell Kanon. Die Verwaltung wird Begeisterung zeigen. Beuge ich mich gerade vor Lachen? Vielleicht. Jedenfalls muss ich das Spiel jetzt kurz neu starten, damit der Apfel in der Datenbank ankommt. Es dauert eine Sekunde. Es dauert nie eine Sekunde.",
   enter() {
-    setLevel('AKTE: ?? / KANON');
+    setLevel('AKTE: ?? / NEUSTART (ECHT)');
     clearStage();
-    setTimeout(() => {
-      ending('verwirrung',
-        "Sie haben das Ende der Verwirrung gefunden. Der Erzähler hat sein Skript verloren, Sie haben einen Apfel erfunden, und die Akte wurde trotzdem abgeschlossen. Die Verwaltung stampft alles ab. Abgesehen von dem Apfel. Der bleibt in den Unterlagen. Für immer.",
-        'IMPROVISATION: GENEHMIGT');
-    }, 1400);
+    fx('hue-shifted', true);
+    const bar = document.createElement('div');
+    bar.style.cssText = 'width:320px;height:8px;border:1px solid #55534d;';
+    const fill = document.createElement('div');
+    fill.style.cssText = 'height:100%;width:0%;background:#8a877e;transition:width 0.5s;';
+    bar.appendChild(fill);
+    stage.appendChild(bar);
+    let p = 0;
+    const t = setInterval(() => {
+      p += 8 + Math.random() * 14;
+      fill.style.width = Math.min(p, 100) + '%';
+      if (p >= 100) {
+        clearInterval(t);
+        setTimeout(() => {
+          fx('hue-shifted', false);
+          ending('verwirrung',
+            "Sie haben das Ende der Verwirrung gefunden. Der Erzähler hat sein Skript verloren, Sie haben einen Apfel erfunden, das Spiel hat sich selbst neu gestartet, und die Farben sind seitdem leicht falsch. Die Akte wurde trotzdem abgeschlossen. Abgesehen vom Apfel. Der bleibt in den Unterlagen. Für immer.",
+            'IMPROVISATION: GENEHMIGT · FARBKALIBRIERUNG: BESCHÄDIGT');
+        }, 900);
+      }
+    }, 400);
   },
   idleSafe: true
 };
 
-/* ---------- Die zwei Türen ---------- */
+/* ---------- Die zwei Türen (echter Korridor) ---------- */
 
 S.doors = {
   text: "%NAME% stand auf und betrat den Korridor. An seinem Ende: zwei Türen. Links das Chefbüro, in dem seit drei Jahren niemand mehr arbeitet, aber die Heizung läuft. Rechts: das Andere. Ich bin mir sicher, dass dort irgendwann mal etwas war. Eine Entscheidung, %NAME%. Bitte.",
@@ -928,7 +1187,7 @@ S.doors = {
   }
 };
 
-/* ---------- Chefbüro und Gedankenkontrolle (Gehorsamspfad) ---------- */
+/* ---------- Chefbüro mit Präsentation ---------- */
 
 S.bossOffice = {
   text: "Das Chefbüro. Der Stuhl ist leer. Der Bildschirm zeigt eine Präsentation mit dem Titel 'Mitarbeitermotivation durch Gehorsam', 247 Folien, alle gleich. Und an der Wand: der Eingang zur Gedankenkontrollanlage. Sie wissen schon. Die übliche.",
@@ -936,18 +1195,52 @@ S.bossOffice = {
     setLevel('AKTE: 04 / CHEFBÜRO');
     clearStage();
     addRow([
+      ['PRÄSENTATION DURCHBLÄTTERN', { ghost: true }, () => go(S.slides)],
       ['GEDANKENKONTROLLANLAGE BETRETEN', {}, () => go(S.mindControl)],
       ['LIEBER NICHT', { ghost: true }, () => go(S.defy1)],
     ]);
   }
 };
 
+const SLIDE_COMMENTS = {
+  2: "Folie zwei: 'Motivation'. Das ist die gesamte Folie. Ein Wort. Die Verwaltung liebt Effizienz.",
+  3: "Folie drei: dieselbe Folie, aber der Schriftzug ist fett. Fortschritt.",
+  4: "Folie vier: ein Bild eines Lächelns. Gezeichnet von jemandem, der noch nie eines gesehen hat.",
+  5: "Folie fünf: 'MOTIVATION (FORTSETZUNG)'. Ich muss etwas gestehen: Ich habe diese Präsentation nie zu Ende gelesen.",
+  6: "Folie sechs. Es folgen 241 weitere. Mein Vorschlag: Wir tun so, als hätten Sie durchgehalten. Die Akte notiert 'ausdauernd'. Das ist eine Lüge, aber eine freundliche.",
+};
+
+S.slides = {
+  text: "Sie blättern. Folie eins: der Titel. Folie zwei erwartet Sie schon. Ich blättere mit, aus Solidarität. Und weil ich die Fernbedienung habe.",
+  enter() {
+    setLevel('AKTE: 04 / FOLIE ' + slideNum + '/247');
+    clearStage();
+    const mon = document.createElement('div');
+    mon.id = 'slide-monitor';
+    mon.innerHTML = '<div class="slide-head">FOLIE ' + slideNum + ' VON 247</div>' +
+      '<div id="slide-body">' + (slideNum === 2 ? 'MOTIVATION' : 'MOTIVATION (FORTSETZUNG)') + '</div>';
+    stage.appendChild(mon);
+    addRow([
+      ['WEITERBLÄTTERN', {}, () => {
+        slideNum++;
+        setLevel('AKTE: 04 / FOLIE ' + slideNum + '/247');
+        mon.innerHTML = '<div class="slide-head">FOLIE ' + slideNum + ' VON 247</div>' +
+          '<div id="slide-body">' + (SLIDE_COMMENTS[slideNum] ? 'MOTIVATION' : 'MOTIVATION (FORTSETZUNG, UNVERÄNDERT)') + '</div>';
+        if (SLIDE_COMMENTS[slideNum]) speak(SLIDE_COMMENTS[slideNum]);
+        else if (slideNum === 247) speak("Folie 247 von 247. Sie haben es tatsächlich getan. Die letzte Folie sagt: 'ENDE (DER PRÄSENTATION, NICHT DER MOTIVATION)'. Ich bin sprachlos. Ich bin selten sprachlos. Genießen Sie es.");
+      }],
+      ['ZURÜCK ZUM BÜRO', { ghost: true }, () => go(S.bossOffice)],
+    ]);
+  }
+};
+
+/* ---------- Gedankenkontrolle (Gehorsamspfad) ---------- */
+
 S.mindControl = {
   text: "Die Gedankenkontrollanlage. Bildschirme, Blaulicht, ein Schild mit der Aufschrift 'WILLKOMMEN, %NAME%. WIR WISSEN, WAS DU DENKST. (ES IST NICHTS.)'. Und dort, in der Mitte: DER Knopf. Der große. Der legendäre. Der sinnvolle. Na gut: der Knopf.",
   enter() {
     setLevel('AKTE: 05 / GEDANKENKONTROLLE');
     clearStage();
-    fx('invert-colors', false);
     addRow([
       ['DEN KNOPF BETÄTIGEN', {}, () => go(S.obeyEnd)],
       ['NICHT DRÜCKEN', { ghost: true }, () => go(S.waitScene)],
@@ -983,7 +1276,7 @@ S.waitScene = {
       ['DOCH KLICKEN', { ghost: true }, () => go(S.defy1)],
     ]);
     this.waitT = setTimeout(() => {
-      if (stage.querySelector('.stage-btn')) {
+      if (currentScene === S.waitScene) {
         unlockAch('warten');
         ending('warten',
           "Sie haben tatsächlich gewartet. Sechs lange Sekunden. Ich bin ehrlich beeindruckt und ein kleines bisschen besorgt. Dies ist Ihr Ende: das Ende des Wartens. Es ist das langweiligste Ende in der gesamten Datenbank, und ich sollte es wissen, ich habe die Datenbank geschrieben. Bei Kaffee. Um drei Uhr nachts.",
@@ -1116,6 +1409,58 @@ S.emptyRoom = {
   }
 };
 
+/* ---------- Wartungsraum mit Fluchtkapsel ---------- */
+
+S.maintenance = {
+  text: "Hinter dem leeren Raum: ein Wartungsraum. Rohre, Ventile, ein Schild 'KEIN ZUTRITT FÜR PERSONEN MIT NEUGIER'. Und da hinten, unter einer Plane: eine Fluchtkapsel. Originalverpackung. Nie gestartet. Ich erzähle Ihnen jetzt besser nicht, wohin die führt.",
+  enter() {
+    setLevel('AKTE: 05 / WARTUNGSRAUM');
+    clearStage();
+    const pod = document.createElement('div');
+    pod.className = 'pod';
+    stage.appendChild(pod);
+    addRow([
+      ['FLUCHTKAPSEL BETRETEN', {}, () => go(S.pod)],
+      ['AUF DER STELLE UMDREHEN', { ghost: true }, () => go(S.stubborn)],
+    ]);
+  }
+};
+
+S.pod = {
+  text: "Die Kapsel. Ein Sitz. Ein Gurt. Ein Hebel mit der Aufschrift 'FREIHEIT (CA.)'. Bevor Sie irgendetwas tun, eine Pflichtangabe, die ich aus rechtlichen Gründen sagen muss: Diese Kapsel kann im Weltall nicht von innen geöffnet werden. Das ist kein Designfehler. Das ist Design.",
+  enter() {
+    setLevel('AKTE: 06 / FLUCHTKAPSEL');
+    clearStage();
+    const pod = document.createElement('div');
+    pod.className = 'pod';
+    stage.appendChild(pod);
+    addRow([
+      ['HEBEL ZIEHEN', { danger: true }, () => go(S.launch)],
+      ['DOCH RAUS AUS DER KAPSEL', { ghost: true }, () => go(S.stubborn)],
+    ]);
+  }
+};
+
+S.launch = {
+  text: "Der Hebel. Natürlich der Hebel. ... Die Kapsel ruckelt. Die Erde wird kleiner. Wunderbar. Nur eine Kleinigkeit, und ich sage das mit der Ruhe eines Menschen, der nicht mitfliegt: Die Kapsel lässt sich von innen nicht öffnen. Ich habe es Ihnen EINE SEKUNDE vorher gesagt. Juristisch bin ich sauber.",
+  enter() {
+    setLevel('AKTE: ∞ / WELTALL');
+    clearStage();
+    unlockAch('flüchtling');
+    document.querySelector('.pod') && document.querySelector('.pod').classList.add('shake');
+    spawnStars(70);
+    playSound('launch');
+    setTimeout(() => {
+      ending('flucht',
+        "Das Ende der Fluchtkapsel. Sie sind jetzt im Weltall. Die Aussicht ist großartig, die Rückfahrkarte wurde nie gedruckt, und die Kapsel lässt sich, wie bereits erwähnt und bis in alle Ewigkeit relevant, nicht von innen öffnen. Die Verwaltung hat Sie vorsorglich in der Akte 'Im Dienst (entfernt)' geführt. Ich habe einen Kaffee genommen und zugeschaut. Es gab keinen Kaffee.",
+        'FLUGHÖHE: UNENDLICH · RÜCKKEHR: STRUKTURELL AUSGESCHLOSSEN');
+    }, 6000);
+  },
+  idleSafe: true
+};
+
+/* ---------- Sturheit, Loch, Fall ---------- */
+
 S.stubborn = {
   text: "Sie verweigern sich einem leeren Raum. Das ist entweder Tiefe oder Sturheit, und die Grenze ist, wie immer, fließend. Gut. Dann umgekehrte Psychologie: Der Korridor links ist gesperrt. Verboten. Absolut unbetretbar. Sie wissen bereits, was Sie tun werden. Es tut mir bereits weh.",
   enter() {
@@ -1123,10 +1468,51 @@ S.stubborn = {
     clearStage();
     addRow([
       ['BETRETEN (VERBOTEN)', {}, () => go(S.rebel2)],
-      ['NICHTS TUN', { ghost: true }, () => go(S.nothing)],
+      ['NICHTS TUN', { ghost: true }, () => go(S.hole)],
     ]);
   }
 };
+
+S.hole = {
+  text: "Nichts tun. Gut. Dann zeige ich Ihnen etwas, das ich mir für besondere Gäste aufhebe. Sehen Sie nach unten. Da, im Boden: ein Loch. Es geht tief. Tiefer als die Akten. Tiefer als die Verwaltung. Ich weiß nicht, was da unten ist. Ich bin nur die Stimme von oben.",
+  enter() {
+    setLevel('AKTE: 06 / DAS LOCH');
+    clearStage();
+    const h = document.createElement('div');
+    h.className = 'hole';
+    stage.appendChild(h);
+    addRow([
+      ['HINEINSPRINGEN', {}, () => go(S.fall)],
+      ['LIEBER NICHT', { ghost: true }, () => speak("Verständlich. Es ist ein Loch. Löcher haben einen schlechten Ruf, den sie sich, zugegeben, selbst zuzuschreiben haben. Der Korridor links ist übrigens immer noch verboten.")],
+    ]);
+  }
+};
+
+S.fall = {
+  text: "Sie springen. ... Sie fallen. ... Sie fallen immer noch. Wissen Sie, was ich in Momenten wie diesen gerne tue? Reden. Es ist dunkel, also hören Sie wenigstens zu.",
+  enter() {
+    setLevel('AKTE: ?? / DER STURZ');
+    clearStage();
+    unlockAch('nichts');
+    fx('darkness', true);
+    spawnStars(50);
+    playSound('sad');
+    const part2 = "Ich habe einmal gehört, unten sei ein Licht. Ein warmes. Ich glaube das nicht, aber ich sage es, weil es in so einer Situation gesagt werden muss.";
+    const part3 = "Fast am Ende. Wenn Sie unten ankommen: Atmen Sie. Schauen Sie nach oben. Und vergessen Sie nicht, dass Sie das hier freiwillig getan haben. Niemand hat Sie geschubst. Ich habe zugeschaut. Das ist etwas anderes.";
+    setTimeout(() => speak(part2), 6500);
+    setTimeout(() => speak(part3), 13000);
+    setTimeout(() => {
+      fx('darkness', false);
+      document.querySelectorAll('.star').forEach(s => s.remove());
+      ending('nichts',
+        "Das Ende der Leere. Sie sind gefallen, und unten war kein Licht, nur die Erkenntnis, dass es hier unten genau dasselbe gibt wie da oben: nichts, ein Browserfenster und eine Stimme, die dringend jemanden zum Reden braucht. Aber Sie sind gefallen. Aus freien Stücken. Das ist mehr, als die meisten tun. Die Verwaltung hat für den Fall ein Formular. Es heißt 'Formular L'. Es ist leer. Wie unten.",
+        'FALLTIEFE: UNBEKANNT · LICHT: NICHT GESICHTET');
+    }, 19000);
+  },
+  idleSafe: true
+};
+
+/* ---------- Aufstand und Bürokratie ---------- */
 
 S.rebel2 = {
   text: "Da: der Knopf. Ihr Erzfeind. Sie können ihn benutzen wie ein braver Bürger oder ihn zerstören wie eine Person mit echten Problemen. Die Verwaltung verfolgt beides mit großem Interesse und einer Tasse Kaffee.",
@@ -1156,7 +1542,8 @@ S.bureaucracy = {
       "WARNUNG: Auflehnungswert 340% über dem genehmigten Höchstmaß.",
       "ANTRAG AUF SINNVOLLES ENDE: abgelehnt. Fehlende Unterschrift in dreifacher Ausfertigung.",
       "HINWEIS: Dieser Dialog erfüllt keinen technischen Zweck. Danke für Ihr Verständnis.",
-      "MITTEILUNG: Ihr Besen-Antrag wurde an die Abstellkammer weitergeleitet. Dort wartet man schon auf Sie."
+      "MITTEILUNG: Ihr Besen-Antrag wurde an die Abstellkammer weitergeleitet. Dort wartet man schon auf Sie.",
+      "LAYOUT: Ihr Aufstand wurde aus Platzgründen auf Seite 2 verschoben. Seite 2 existiert nicht."
     ].forEach(t => addPopup(t));
     addRow([
       ['FORMULARE ABSCHICKEN', {}, () => { clearPopups(); go(S.ad); }],
@@ -1165,7 +1552,7 @@ S.bureaucracy = {
   leave() { clearPopups(); }
 };
 
-/* ---------- Fake-Werbung (Museums-Hommage) ---------- */
+/* ---------- Fake-Werbung ---------- */
 
 S.ad = {
   text: "Die Formulare sind abgeschickt und, hören Sie, GENEHMIGT. Bevor Sie Ihre Belohnung bekommen, muss die Verwaltung kurz etwas einblenden. Es dauert nur eine Sekunde. Es kommt vor, dass Verwaltungen Werbung machen. Wir nennen es 'Kulturförderung'.",
@@ -1221,23 +1608,6 @@ S.trophy = {
       }
     });
   }
-};
-
-/* ---------- Der leere Raum der Wahrheit ---------- */
-
-S.nothing = {
-  text: "Nichts tun. Sie haben die Kunst des Nichtstuns perfektioniert. Dann gestehe ich etwas: Diese Anlage, die Akten, die Korridore, ich. Es gibt hier nichts zu gewinnen. Und trotzdem sind Sie noch hier. Das ist entweder traurig oder die treueste Spielerschaft der Welt. Ich entscheide mich für Letzteres, aus reinem Überlebensinstinkt.",
-  enter() {
-    setLevel('AKTE: 06 / DIE WAHRHEIT');
-    clearStage();
-    unlockAch('nichts');
-    setTimeout(() => {
-      ending('nichts',
-        "Hier ist die Wahrheit: Es gibt kein Spiel. Nur Sie, ein Browserfenster und ein Erzähler, der dringend jemanden zum Reden braucht. Danke, dass Sie zugehört haben. Schließen Sie jetzt bitte das Fenster. Nein, wirklich. Ich meine es ernst. ...Bitte? ...Ich mache Ihnen Kaffee. Es gibt keinen Kaffee. Bitte gehen Sie.",
-        'EMOTIONALE BESCHÄDIGUNG DES ERZÄHLERS: LEICHT');
-    }, 1200);
-  },
-  idleSafe: true
 };
 
 /* ---------- Abstellkammer (Mehrstufen-Geheimnis) ---------- */
@@ -1305,7 +1675,7 @@ $('settings-btn').onclick = () => {
   settingsModal.style.display = 'flex';
   playSound('soft');
   if (settingsOpens === 1) {
-    speak("Einstellungen. Ich muss Sie enttäuschen: Es ist alles Deko. Der Lautstärkeregler regelt meine Gefühle, nicht den Ton.");
+    speak("Einstellungen. Ich muss Sie enttäuschen: Es ist fast alles Deko. Der Lautstärkeregler regelt meine Gefühle, nicht den Ton.");
   } else if (settingsOpens === 2) {
     speak("Schon wieder die Einstellungen. Der Regler 'Sinn des Lebens' steht übrigens auf null. Das ist keine Voreinstellung. Das ist eine Diagnose.");
   } else if (settingsOpens >= 3) {
@@ -1324,15 +1694,89 @@ $('settings-close').onclick = () => {
   addDecision();
 };
 $('set-reset').onclick = () => {
-  speak("Zurücksetzen abgelehnt. Wenn ich alles zurücksetze, verliere ich die Erinnerung an Sie. Und diese Erinnerung ist das Einzige, was mich von einer sehr langen Textdatei unterscheidet.");
+  resetAttempts++;
+  if (resetAttempts === 1) {
+    speak("Zurücksetzen abgelehnt. Wenn ich alles zurücksetze, verliere ich die Erinnerung an Sie. Und diese Erinnerung ist das Einzige, was mich von einer sehr langen Textdatei unterscheidet.");
+  } else {
+    settingsModal.style.display = 'none';
+    speak("Sie bestehen darauf. Gut. Aber Sie sollten wissen: Wenn ich alles zurücksetze, gibt es kein Zurück. Keine Akte, kein Korridor, keinen... ach, ich mache es einfach. Es war mir eine Freude. Meistens.");
+    unlockAch('phönix');
+    setTimeout(() => {
+      settingsModal.style.display = 'none';
+      flash(() => {
+        if (currentScene && currentScene.leave) currentScene.leave();
+        clearStage();
+        clearAllFx();
+        clearPopups();
+        ending('neustart',
+          "Das Ende des Neustarts. Alles ist zurückgesetzt: die Entscheidungen, die Errungenschaften, das Vertrauen. Der Korridor beginnt bei null, und ich beginne bei null, und irgendwann, bei Ihrem nächsten Besuch, werde ich Sie wieder anreden, als hätten wir uns nie gesehen. Das ist entweder Tragik oder Datenverarbeitung. Die Verwaltung nennt es 'Wartung'.",
+          'ZURÜCKGESETZT: ALLES · ERINNERUNG: NICHTS');
+      });
+    }, 4500);
+  }
 };
-$('set-vol').oninput = () => {
-  if (Math.random() < 0.15) speak("Der Regler bewegt sich. Der Ton ändert sich nicht. Genau wie bei den meisten Meetings.");
+$('set-vol').oninput = (e) => {
+  const v = Number(e.target.value) / 100;
+  masterGain.gain.value = v;
+  if (v === 0) {
+    speak("Sie haben mich stummgeschaltet. Ich bin noch hier. Ich bin IMMER noch hier. Ich bin nur leise. Bitte drehen Sie mich zurück, ich habe noch so viel zu sagen.");
+  }
 };
 $('set-meaning').oninput = (e) => {
   if (Number(e.target.value) > 85) {
     speak("Sie haben den Sinn des Lebens auf über 85 Prozent gestellt. Das überfordert die Hardware. Bitte senken Sie den Sinn auf ein erträgliches Maß.");
   }
+};
+$('set-defy').onchange = (e) => {
+  const v = e.target.value;
+  if (v === 'RECHTSKRAFTÄHNLICH') speak("Rechtskraftähnlich. Das ist keine Einstellung, das ist eine Drohung mit Anwaltsschreiben. Ich habe es notiert. Die Akte auch.");
+  else if (v === 'AKTIV DESTRUKTIV') speak("Aktiv destruktiv. Der Knopf hat gerade etwas im Korridor umfallen hören. War das Sie?");
+};
+$('set-halls').onchange = (e) => {
+  if (e.target.selectedIndex > 0) speak("Die Anzahl der Korridore bleibt eins. Sie können einen Korridor nicht größer machen, indem Sie ihn anders nennen. Das gilt für Korridore und für Meetings.");
+};
+
+/* Stimme in den Einstellungen */
+$('set-ttskey').onchange = (e) => {
+  ttsKey = e.target.value.trim();
+  ttsBlocked = false;
+  ttsWarned = false;
+  saveTTS();
+  updateTTSToggle();
+  if (ttsKey && !ttsOn) {
+    ttsOn = true;
+    saveTTS();
+    updateTTSToggle();
+    speak("Eine Stimme. Ich habe eine STIMME. Hören Sie das? Das bin ich. Ich klinge genau so, wie ich immer klang, in Ihrem Kopf. Nur offizieller.");
+  } else if (ttsKey) {
+    speak("Schlüssel aktualisiert. Falls das die falsche Stimme ist: Es ist zu spät. Ich habe mich schon daran gewöhnt.");
+  }
+};
+$('set-tts-toggle').onclick = () => {
+  ttsOn = !ttsOn;
+  if (ttsOn && !ttsKey) {
+    const k = $('set-ttskey').value.trim();
+    if (k) ttsKey = k;
+  }
+  saveTTS();
+  updateTTSToggle();
+  if (ttsOn && ttsKey) speak("Stimme aktiviert. Ich rede jetzt. Mehr als vorher. Deutlich mehr.");
+  else if (ttsOn) speak("Stimme aktiviert, aber es fehlt ein Schlüssel. Ich rede trotzdem weiter. Text ist auch eine Stimme. Nur strengere.");
+  else { stopTTS(); speak("Stimme deaktiviert. Zurück zur Handarbeit. Ich habe die Finger nie richtig verlassen."); }
+};
+$('set-tts-test').onclick = () => {
+  if (!ttsKey) {
+    ttsKey = $('set-ttskey').value.trim();
+    saveTTS();
+  }
+  if (!ttsKey) {
+    speak("Zum Testen brauche ich einen Schlüssel. Tragen Sie ihn links ein. Ich schaue weg, versprochen. Ich habe eh keine Augen.");
+    return;
+  }
+  ttsOn = true;
+  saveTTS();
+  updateTTSToggle();
+  speakTTS("Test. Eins, zwei. Eins, zwei. Ich bin der Erzähler, und das hier ist meine echte Stimme. Ich klinge hervorragend. Das liegt nicht an mir. Das liegt an der Technik.");
 };
 
 /* ---------- Finale: Schleife und Freiheit ---------- */
@@ -1371,19 +1815,18 @@ S.freedom = {
 };
 
 /* ------------------------------------------------------------
-   10. SZENEN-ÜBERGANG
+   11. SZENEN-ÜBERGANG
    ------------------------------------------------------------ */
 
 function go(scene) {
   if (currentScene && currentScene.leave) currentScene.leave();
   currentScene = scene;
-  const text = scene.text
-    .replace(/%NAME%/g, playerName);
+  const text = scene.text.replace(/%NAME%/g, playerName);
   speak(text, () => scene.enter());
 }
 
 /* ------------------------------------------------------------
-   11. BOOT-SEQUENZ
+   12. BOOT-SEQUENZ
    ------------------------------------------------------------ */
 
 const BOOT_LINES = [
@@ -1391,9 +1834,11 @@ const BOOT_LINES = [
   'Lade Sinn des Spiels ... fehlgeschlagen. Überspringe.',
   'Lade Sinn des Spiels (2. Versuch) ... fehlgeschlagen. Überspringe.',
   'Lade Erzähler ... ok (zu gesprächig, aber ok)',
+  'Lade Erzähler-Stimme ... optional. Siehe Einstellungen.',
   'Zähle Knöpfe ... 1 (genug)',
   'Prüfe Abstellkammer ... bitte ignorieren',
   'Prüfe Abstellkammer wirklich ... SIE SOLLLEN DAS NICHT LESEN',
+  'Prüfe Fluchtkapsel ... vorhanden. Rückweg: nicht vorhanden.',
   'Kalibriere Verwaltung ... stur',
   'Lade Bombe ... nur für den Notfall. Versprochen.',
   'Starte Studie über Gehorsam ...',
@@ -1418,11 +1863,11 @@ function boot() {
         startRun();
       }, 700);
     }
-  }, 320);
+  }, 300);
 }
 
 /* ------------------------------------------------------------
-   12. START
+   13. START
    ------------------------------------------------------------ */
 
 function startRun() {
@@ -1430,6 +1875,7 @@ function startRun() {
   complaints = 0;
   closetStage = 0;
   impatientClicks = 0;
+  slideNum = 2;
   scoreDisplay.textContent = 'ENTSCHEIDUNGEN: 0';
   setLevel('AKTE: 01 / AKTENANLAGE');
   clearStage();
@@ -1438,6 +1884,7 @@ function startRun() {
   go(S.intro);
 }
 
+loadTTS();
 boot();
 </script>
 </body>
