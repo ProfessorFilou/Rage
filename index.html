@@ -728,7 +728,7 @@ async function speakTTS(text) {
       else if (res.status === 429) ttsStatus('ELEVENLABS: ZU SCHNELL GEREDET → BROWSERSTIMME');
       else ttsStatus('ELEVENLABS: FEHLER ' + res.status + ' → BROWSERSTIMME');
     } catch (e) {
-      ttsStatus('ELEVENLABS: NICHT ERREICHBAR → BROWSERSTIMME');
+      ttsStatus('ELEVENLABS: ' + (e && e.message ? ('FEHLER: ' + e.message) : 'NICHT ERREICHBAR') + ' → BROWSERSTIMME');
     }
   } else {
     ttsStatus('KEIN SCHLÜSSEL → BROWSERSTIMME');
