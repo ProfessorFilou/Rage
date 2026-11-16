@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitte nicht drücken.</title>
+    <title>Bitte nicht drücken. (Deluxe Edition)</title>
     <style>
         :root {
-            --bg-color: #121212;
-            --text-color: #f0f0f0;
+            --bg-color: #111111;
+            --text-color: #f2f2f2;
             --btn-color: #e63946;
             --btn-shadow: #9b1b26;
         }
@@ -30,29 +30,46 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            transition: background-color 0.3s, transform 0.1s;
+            transition: background-color 0.4s, filter 0.3s;
+        }
+
+        body.inverted {
+            filter: invert(1) hue-rotate(180deg);
+        }
+
+        body.upside-down {
+            transform: rotate(180deg);
         }
 
         #narrator-box {
             position: fixed;
-            top: 12%;
-            width: 80%;
-            max-width: 700px;
+            top: 8%;
+            width: 85%;
+            max-width: 780px;
             text-align: center;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             line-height: 1.5;
-            min-height: 100px;
-            z-index: 10;
+            min-height: 110px;
+            z-index: 20;
             pointer-events: none;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 1px solid #2a2a2a;
         }
 
-        #counter {
+        #hud {
             position: fixed;
-            bottom: 20px;
-            right: 25px;
-            font-size: 0.9rem;
-            color: #555;
+            bottom: 15px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #666;
+            pointer-events: none;
+            z-index: 20;
         }
 
         #the-button {
@@ -65,58 +82,127 @@
             background-color: var(--btn-color);
             border: none;
             border-radius: 12px;
-            box-shadow: 0 8px 0 var(--btn-shadow), 0 15px 25px rgba(0,0,0,0.6);
+            box-shadow: 0 8px 0 var(--btn-shadow), 0 15px 25px rgba(0,0,0,0.7);
             cursor: pointer;
-            transition: transform 0.1s, box-shadow 0.1s, top 0.25s ease-out, left 0.25s ease-out, width 0.2s, height 0.2s, font-size 0.2s;
-            z-index: 5;
+            transition: transform 0.1s, box-shadow 0.1s, top 0.2s ease-out, left 0.2s ease-out, padding 0.2s, font-size 0.2s;
+            z-index: 10;
         }
 
         #the-button:active {
             transform: translateY(6px);
-            box-shadow: 0 2px 0 var(--btn-shadow), 0 5px 10px rgba(0,0,0,0.6);
+            box-shadow: 0 2px 0 var(--btn-shadow);
         }
 
-        #fake-modal {
+        #fake-cursor {
             display: none;
             position: fixed;
+            width: 20px;
+            height: 20px;
+            background: yellow;
+            border: 2px solid black;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            box-shadow: 0 0 10px yellow;
+        }
+
+        #doors-container {
+            display: none;
+            gap: 60px;
+            z-index: 15;
+            margin-top: 80px;
+        }
+
+        .door {
+            width: 140px;
+            height: 220px;
+            background: #2b2d42;
+            border: 4px solid #8d99ae;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            position: relative;
+        }
+
+        .door:hover {
+            transform: scale(1.05);
+            background: #3a3d5c;
+        }
+
+        .door::after {
+            content: '';
+            position: absolute;
+            right: 15px;
             top: 50%;
+            width: 12px;
+            height: 12px;
+            background: gold;
+            border-radius: 50%;
+        }
+
+        #loader-container {
+            display: none;
+            width: 400px;
+            max-width: 85%;
+            background: #222;
+            border: 2px solid #555;
+            padding: 20px;
+            text-align: center;
+            z-index: 15;
+            margin-top: 60px;
+        }
+
+        #progress-bar-bg {
+            width: 100%;
+            height: 25px;
+            background: #000;
+            border: 1px solid #444;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        #progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #2a9d8f;
+            transition: width 0.2s;
+        }
+
+        #tos-modal {
+            display: none;
+            position: fixed;
+            top: 52%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: #e0e0e0;
+            width: 420px;
+            max-width: 90%;
+            background: #dcdcdc;
             color: #111;
-            border: 3px solid #888;
-            box-shadow: 10px 10px 0px #000;
-            padding: 20px;
-            width: 350px;
-            z-index: 100;
+            border: 3px solid #777;
+            box-shadow: 12px 12px 0 #000;
+            padding: 15px;
             font-family: Arial, sans-serif;
+            z-index: 50;
         }
 
-        #fake-modal h3 {
-            margin-top: 0;
-            background: #000080;
-            color: white;
-            padding: 5px 10px;
-            font-size: 1rem;
-        }
-
-        .modal-btns {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .modal-btns button {
-            padding: 5px 15px;
-            cursor: pointer;
-            font-weight: bold;
+        #tos-text {
+            height: 140px;
+            overflow-y: scroll;
+            background: #fff;
+            border: 1px solid #999;
+            padding: 10px;
+            font-size: 0.75rem;
+            margin: 10px 0;
         }
 
         .decoy {
             position: absolute;
-            padding: 20px 40px;
-            font-size: 1.2rem;
+            padding: 18px 36px;
+            font-size: 1.1rem;
             font-weight: bold;
             font-family: inherit;
             color: white;
@@ -125,64 +211,91 @@
             border-radius: 12px;
             box-shadow: 0 6px 0 var(--btn-shadow);
             cursor: pointer;
-            z-index: 4;
+            z-index: 8;
         }
 
         @keyframes shake {
-            0% { transform: translate(2px, 2px) rotate(0deg); }
-            20% { transform: translate(-4px, -2px) rotate(-1deg); }
-            40% { transform: translate(4px, 3px) rotate(1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            80% { transform: translate(3px, -3px) rotate(1deg); }
-            100% { transform: translate(0px, 0px) rotate(0deg); }
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-6px, 4px); }
+            50% { transform: translate(6px, -4px); }
+            75% { transform: translate(-4px, -6px); }
         }
 
         .shake-screen {
-            animation: shake 0.3s;
+            animation: shake 0.25s;
         }
     </style>
 </head>
 <body>
 
-    <div id="narrator-box">Hallo. Bitte drücke diesen Knopf nicht.</div>
+    <div id="fake-cursor"></div>
+
+    <div id="narrator-box">Willkommen. Deine einzige Aufgabe ist simpel: Drücke diesen Knopf nicht.</div>
     
     <button id="the-button">NICHT DRÜCKEN</button>
 
-    <div id="counter">Ungehorsam-Level: 0</div>
-
-    <div id="fake-modal">
-        <h3>Systemwarnung</h3>
-        <p id="modal-text">Bist du sicher, dass du die Lebenszeit des Entwicklers verschwenden möchtest?</p>
-        <div class="modal-btns">
-            <button id="modal-yes">Ja, ich bin stur</button>
-            <button id="modal-no">Abbrechen</button>
-        </div>
+    <div id="doors-container">
+        <div class="door" id="door-left"><strong>LINKE TÜR</strong><br><small>(Empfohlen)</small></div>
+        <div class="door" id="door-right"><strong>RECHTE TÜR</strong><br><small>(Verboten)</small></div>
     </div>
+
+    <div id="loader-container">
+        <div id="loader-label">Lösche deine Browser-Historie... 0%</div>
+        <div id="progress-bar-bg"><div id="progress-fill"></div></div>
+        <button id="pump-btn" style="padding: 8px 16px; cursor: pointer; font-weight: bold;">Manuell pumpen</button>
+    </div>
+
+    <div id="tos-modal">
+        <strong>Nutzungsbedingungen für Ungehorsame</strong>
+        <div id="tos-text">
+            §1 Der Nutzer gibt hiermit zu, zu viel Freizeit zu haben.<br><br>
+            §2 Der Erzähler hat immer recht. Auch wenn er falsch liegt, tritt automatisch §2 in Kraft.<br><br>
+            §3 Falls du das hier wirklich liest: Respekt. Aber hör auf zu klicken.<br><br>
+            §4 Dieser Text ist nur hier, damit du scrollen musst.<br><br>
+            §5 Fast geschafft...<br><br>
+            §6 Noch ein kleines Stück...<br><br>
+            §7 Okay, du darfst jetzt unten auf Akzeptieren drücken.
+        </div>
+        <button id="tos-accept" disabled style="padding: 6px 12px;">Erst komplett runterscrollen!</button>
+    </div>
+
+    <div id="hud">
+        <span id="status-text">Status: Noch brav</span>
+        <span id="counter">Ungehorsam: 0 | Geduld des Erzählers: 100%</span>
+    </div>
+
     <script>
         const btn = document.getElementById('the-button');
         const narrator = document.getElementById('narrator-box');
         const counterDisplay = document.getElementById('counter');
-        const fakeModal = document.getElementById('fake-modal');
-        const modalYes = document.getElementById('modal-yes');
-        const modalNo = document.getElementById('modal-no');
+        const statusText = document.getElementById('status-text');
+        const doorsContainer = document.getElementById('doors-container');
+        const loaderContainer = document.getElementById('loader-container');
+        const progressFill = document.getElementById('progress-fill');
+        const loaderLabel = document.getElementById('loader-label');
+        const pumpBtn = document.getElementById('pump-btn');
+        const tosModal = document.getElementById('tos-modal');
+        const tosText = document.getElementById('tos-text');
+        const tosAccept = document.getElementById('tos-accept');
+        const fakeCursor = document.getElementById('fake-cursor');
 
-        let clicks = 0;
+        let stage = 0;
         let dodges = 0;
         let isDodging = false;
+        let reverseControls = false;
+        let pumpProgress = 0;
         let typewriterTimeout;
+        let idleTimer;
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
         function playTone(freq, type, duration, slideTo = null) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = type;
             osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            if (slideTo) {
-                osc.frequency.exponentialRampToValueAtTime(slideTo, audioCtx.currentTime + duration);
-            }
-            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, audioCtx.currentTime + duration);
+            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
             osc.connect(gain);
             gain.connect(audioCtx.destination);
@@ -197,21 +310,31 @@
             function type() {
                 if (i < text.length) {
                     narrator.innerHTML += text.charAt(i);
-                    if (i % 2 === 0) playTone(300 + Math.random() * 100, 'triangle', 0.03);
+                    if (i % 2 === 0) playTone(260 + Math.random() * 90, 'triangle', 0.025);
                     i++;
-                    typewriterTimeout = setTimeout(type, 28);
+                    typewriterTimeout = setTimeout(type, 24);
                 }
             }
             type();
         }
 
+        function updateHUD() {
+            const patience = Math.max(0, 100 - stage * 4);
+            counterDisplay.innerText = `Ungehorsam: ${stage} | Geduld des Erzählers: ${patience}%`;
+        }
+
         function moveButtonRandomly() {
             const maxX = window.innerWidth - btn.offsetWidth - 40;
-            const maxY = window.innerHeight - btn.offsetHeight - 40;
-            const randX = Math.max(20, Math.floor(Math.random() * maxX));
-            const randY = Math.max(150, Math.floor(Math.random() * maxY));
-            btn.style.left = randX + 'px';
-            btn.style.top = randY + 'px';
+            const maxY = window.innerHeight - btn.offsetHeight - 60;
+            btn.style.left = Math.max(20, Math.floor(Math.random() * maxX)) + 'px';
+            btn.style.top = Math.max(180, Math.floor(Math.random() * maxY)) + 'px';
+            btn.style.transform = 'none';
+        }
+
+        function resetButtonCenter() {
+            btn.style.left = '50%';
+            btn.style.top = '55%';
+            btn.style.transform = 'translate(-50%, -50%)';
         }
 
         function shakeScreen() {
@@ -220,128 +343,241 @@
             document.body.classList.add('shake-screen');
         }
 
+        idleTimer = setTimeout(() => {
+            if (stage === 0) {
+                btn.style.display = 'none';
+                statusText.innerText = "Status: Absoluter Ehrenmensch";
+                playTone(523, 'sine', 0.5);
+                say("...Du hast tatsächlich 15 Sekunden gewartet, ohne zu drücken? Ich bin sprachlos. Du hast das 'Gute Ende' freigeschaltet. Geh in Frieden.");
+            }
+        }, 15000);
+        btn.addEventListener('click', () => {
+            clearTimeout(idleTimer);
+            stage++;
+            updateHUD();
+            playTone(200, 'square', 0.09, 100);
+
+            switch (stage) {
+                case 1:
+                    statusText.innerText = "Status: Leicht rebellisch";
+                    say("Da stand 'NICHT DRÜCKEN'. Hast du das 'NICHT' überlesen, oder ist dein Zeigefinger fremdgesteuert?");
+                    break;
+                case 2:
+                    say("Okay, zweiter Versuch. Stell dir vor, dieser Knopf löst einen weltweiten Koriander-Regen aus. Hör auf.");
+                    break;
+                case 3:
+                    shakeScreen();
+                    playTone(90, 'sawtooth', 0.4);
+                    say("REICHT JETZT! Ich schalte die Ausweich-Automatik ein. Viel Spaß beim Zielen.");
+                    isDodging = true;
+                    moveButtonRandomly();
+                    break;
+                case 4:
+                    isDodging = false;
+                    resetButtonCenter();
+                    say("Wie hast du den erwischt?! Egal. Dann verstecke ich ihn eben hinter Bürokratie.");
+                    btn.style.display = 'none';
+                    tosModal.style.display = 'block';
+                    break;
+                case 5:
+                    say("Du hast die AGBs tatsächlich durchgescrollt?! Du hast ernsthaft zu viel Zeit.");
+                    btn.innerText = "NICHT ANFASSEN";
+                    break;
+                case 6:
+                    say("Zeit für ein Experiment im Stil von 'The Stanley Parable'. Vor dir sind zwei Türen. Gehe durch die LINKE Tür.");
+                    btn.style.display = 'none';
+                    doorsContainer.style.display = 'flex';
+                    break;
+                case 7:
+                    say("Gut, der Knopf ist wieder da. Aber ich drehe jetzt einfach dein Licht um. Augenschmerzen inklusive.");
+                    document.body.classList.add('inverted');
+                    shakeScreen();
+                    break;
+                case 8:
+                    document.body.classList.remove('inverted');
+                    say("Immer noch nicht genug? Dann stelle ich eben deinen gesamten Monitor auf den Kopf!");
+                    document.body.classList.add('upside-down');
+                    break;
+                case 9:
+                    document.body.classList.remove('upside-down');
+                    say("Okay, ich starte einen System-Reset. Bitte warten und NICHTS tun.");
+                    btn.style.display = 'none';
+                    loaderContainer.style.display = 'block';
+                    startFakeLoader();
+                    break;
+                case 10:
+                    say("DU HAST DEN LADEBALKEN MANUELL AUF 100% GEPUMPT?! Wer bist du?!");
+                    btn.innerText = "STOPP!";
+                    break;
+                case 11:
+                    say("Schluss mit lustig. Ich klone den Knopf 18 Mal. 17 davon löschen deine Spielstände. (Vielleicht.)");
+                    spawnDecoys(17);
+                    moveButtonRandomly();
+                    break;
+                case 12:
+                    document.querySelectorAll('.decoy').forEach(d => d.remove());
+                    resetButtonCenter();
+                    say("Ab jetzt ist deine Maus spiegelverkehrt. Viel Erfolg beim Treffen, Genie.");
+                    enableReverseCursor();
+                    break;
+                case 13:
+                    disableReverseCursor();
+                    say("UNMÖGLICH! Du hast mit spiegelverkehrter Maus getroffen?! Ich schrumpfe ihn auf Mikroben-Größe.");
+                    btn.style.padding = "4px 8px";
+                    btn.style.fontSize = "0.55rem";
+                    moveButtonRandomly();
+                    break;
+                case 14:
+                    btn.style.padding = "25px 50px";
+                    btn.style.fontSize = "1.5rem";
+                    resetButtonCenter();
+                    say("Ich gebe auf. Wirklich. Drück ihn so oft du willst. Ich gehe mir einen Kaffee holen.");
+                    btn.style.backgroundColor = "#333";
+                    btn.style.boxShadow = "0 8px 0 #111";
+                    btn.innerText = "Mir doch egal";
+                    statusText.innerText = "Status: Erzähler hat gekündigt";
+                    break;
+                case 18:
+                    say("...Ich bin zurück mit meinem Kaffee und du klickst IMMER NOCH?!");
+                    break;
+                case 22:
+                    say("Das war's. Ich schmeiße den Knopf jetzt eigenhändig aus dem Fenster. Auf Nimmerwiedersehen.");
+                    btn.style.transition = "transform 1.4s ease-in, top 1.4s ease-in";
+                    btn.style.top = "130vh";
+                    btn.style.transform = "rotate(1080deg)";
+                    playTone(450, 'sawtooth', 1.2, 40);
+                    statusText.innerText = "Status: Knopf zerstört (Wahres Ende)";
+                    setTimeout(() => {
+                        say("Endlich Stille. Du kannst den Tab jetzt schließen. Wirklich. Hier kommt nichts mehr.");
+                    }, 1600);
+                    break;
+                default:
+                    if (stage > 14 && stage < 18) say("...");
+                    if (stage > 18 && stage < 22) say(`Klick ${stage}. Du verschwendest Strom.`);
+                    break;
+            }
+        });
+
+        btn.addEventListener('mouseover', () => {
+            if (isDodging && dodges < 7) {
+                dodges++;
+                playTone(550, 'sine', 0.07, 850);
+                moveButtonRandomly();
+                if (dodges === 2) say("Zu langsam!");
+                if (dodges === 5) say("Haha! Deine Hand-Augen-Koordination ist tragisch.");
+            }
+        });
+
+        tosText.addEventListener('scroll', () => {
+            if (tosText.scrollTop + tosText.clientHeight >= tosText.scrollHeight - 10) {
+                tosAccept.disabled = false;
+                tosAccept.innerText = "Zähneknirschend akzeptieren";
+            }
+        });
+
+        tosAccept.addEventListener('click', () => {
+            tosModal.style.display = 'none';
+            btn.style.display = 'block';
+            resetButtonCenter();
+        });
+
+        document.getElementById('door-left').addEventListener('click', () => {
+            doorsContainer.style.display = 'none';
+            btn.style.display = 'block';
+            resetButtonCenter();
+            say("Oh, du hast ausnahmsweise mal auf mich gehört? Braver Nutzer. Hier ist trotzdem wieder der Knopf.");
+        });
+
+        document.getElementById('door-right').addEventListener('click', () => {
+            doorsContainer.style.display = 'none';
+            btn.style.display = 'block';
+            resetButtonCenter();
+            shakeScreen();
+            playTone(110, 'sawtooth', 0.4);
+            say("DAS WAR DIE RECHTE TÜR! Warum machst du IMMER das Gegenteil von dem, was ich sage?!");
+        });
+
+        function startFakeLoader() {
+            let pct = 0;
+            const interval = setInterval(() => {
+                if (pct < 99) {
+                    pct += 9;
+                    if (pct > 99) pct = 99;
+                    progressFill.style.width = pct + '%';
+                    loaderLabel.innerText = `Lösche deine Browser-Historie... ${pct}%`;
+                } else {
+                    clearInterval(interval);
+                    loaderLabel.innerText = "Hängt bei 99%. Bloß nicht pumpen!";
+                }
+            }, 150);
+        }
+
+        pumpBtn.addEventListener('click', () => {
+            pumpProgress++;
+            playTone(300 + pumpProgress * 40, 'sine', 0.08);
+            loaderLabel.innerText = `99.${pumpProgress}% ... HÖR AUF ZU PUMPEN!`;
+            if (pumpProgress >= 8) {
+                loaderContainer.style.display = 'none';
+                btn.style.display = 'block';
+                resetButtonCenter();
+            }
+        });
+
         function spawnDecoys(count) {
             for (let i = 0; i < count; i++) {
                 const decoy = document.createElement('button');
                 decoy.className = 'decoy';
                 decoy.innerText = 'NICHT DRÜCKEN';
                 decoy.style.left = Math.random() * (window.innerWidth - 200) + 'px';
-                decoy.style.top = (150 + Math.random() * (window.innerHeight - 250)) + 'px';
+                decoy.style.top = (180 + Math.random() * (window.innerHeight - 280)) + 'px';
                 decoy.onclick = () => {
-                    playTone(120, 'sawtooth', 0.3, 60);
-                    decoy.innerText = 'FALSCHER KNOPF!';
-                    decoy.style.backgroundColor = '#333';
-                    say("Haha! Das war nur eine billige Kopie. Such weiter.");
-                    setTimeout(() => decoy.remove(), 1000);
+                    playTone(100, 'sawtooth', 0.25, 50);
+                    decoy.innerText = 'FALSCH!';
+                    decoy.style.backgroundColor = '#222';
+                    say("Daneben! Das war nur eine Attrappe.");
+                    setTimeout(() => decoy.remove(), 800);
                 };
                 document.body.appendChild(decoy);
             }
         }
 
-        btn.addEventListener('click', () => {
-            clicks++;
-            counterDisplay.innerText = `Ungehorsam-Level: ${clicks}`;
-            playTone(220, 'square', 0.1, 110);
+        function enableReverseCursor() {
+            reverseControls = true;
+            document.body.style.cursor = 'none';
+            btn.style.cursor = 'none';
+            fakeCursor.style.display = 'block';
+        }
 
-            switch (clicks) {
-                case 1:
-                    say("Ernsthaft? Da steht 'NICHT DRÜCKEN'. Eine einzige Regel.");
-                    break;
-                case 2:
-                    say("Okay, vielleicht war das ein Versehen. Deine Maus ist ausgerutscht. Passiert. Hör jetzt auf.");
-                    break;
-                case 3:
-                    shakeScreen();
-                    playTone(100, 'sawtooth', 0.4);
-                    say("HÖR AUF DAMIT. Ich meine es ernst. Hier gibt es nichts zu gewinnen.");
-                    btn.innerText = "LASS ES!";
-                    break;
-                case 4:
-                    say("Weißt du was? Wenn du dich nicht beherrschen kannst, nehme ich ihn dir weg.");
-                    isDodging = true;
-                    moveButtonRandomly();
-                    break;
-                case 5:
-                    isDodging = false;
-                    btn.style.left = '50%';
-                    btn.style.top = '50%';
-                    btn.style.transform = 'translate(-50%, -50%)';
-                    say("Beeindruckend. Du hast Reflexe wie eine Katze. Und das Gehirn einer Stubenfliege.");
-                    btn.innerText = "DRÜCK MICH NICHT";
-                    break;
-                case 6:
-                    say("Vielleicht verstehst du die Sprache nicht. Ich mache ihn kleiner.");
-                    btn.style.padding = "8px 16px";
-                    btn.style.fontSize = "0.7rem";
-                    moveButtonRandomly();
-                    break;
-                case 7:
-                    btn.style.padding = "25px 50px";
-                    btn.style.fontSize = "1.5rem";
-                    say("Argh! Fine! Dann verstecke ich ihn eben zwischen diesen hier.");
-                    spawnDecoys(12);
-                    moveButtonRandomly();
-                    break;
-                case 8:
-                    document.querySelectorAll('.decoy').forEach(d => d.remove());
-                    fakeModal.style.display = 'block';
-                    playTone(440, 'sine', 0.2);
-                    say("Ich habe eine offizielle Beschwerde eingereicht.");
-                    break;
-                case 9:
-                    say("Du hast das Fenster geschlossen?! Du bist ein Monster. Ein komplettes Monster.");
-                    document.body.style.backgroundColor = "#3a0000";
-                    shakeScreen();
-                    break;
-                case 10:
-                    say("Okay. Ich gebe auf. Drück ihn so oft du willst. Es passiert absolut gar nichts mehr.");
-                    document.body.style.backgroundColor = "#121212";
-                    btn.style.backgroundColor = "#444";
-                    btn.style.boxShadow = "0 8px 0 #222";
-                    btn.innerText = "Mir egal";
-                    break;
-                case 15:
-                    say("...Du drückst immer noch? Du bist jetzt bei 15 Klicks. Geh mal an die frische Luft.");
-                    break;
-                case 20:
-                    say("Herzlichen Glückwunsch. Du hast die Webseite kaputt gemacht. Zufrieden?");
-                    btn.style.transition = "transform 1.5s ease-in, top 1.5s ease-in";
-                    btn.style.top = "120vh";
-                    btn.style.transform = "rotate(720deg)";
-                    playTone(400, 'sawtooth', 1.2, 50);
-                    setTimeout(() => {
-                        say("Endlich Ruhe. Tschüss.");
-                    }, 1800);
-                    break;
-                default:
-                    if (clicks > 10 && clicks < 15) {
-                        say("...");
-                    } else if (clicks > 15 && clicks < 20) {
-                        say(`Klick ${clicks}. Dein Leben wird dadurch nicht besser.`);
-                    }
-                    break;
-            }
-        });
+        function disableReverseCursor() {
+            reverseControls = false;
+            document.body.style.cursor = 'default';
+            btn.style.cursor = 'pointer';
+            fakeCursor.style.display = 'none';
+        }
 
-        btn.addEventListener('mouseover', () => {
-            if (isDodging && dodges < 6) {
-                dodges++;
-                playTone(500, 'sine', 0.08, 800);
-                moveButtonRandomly();
-                if (dodges === 3) say("Zu langsam!");
-                if (dodges === 5) say("Haha, daneben! Gib einfach auf.");
-            }
-        });
+        document.addEventListener('mousemove', (e) => {
+            if (!reverseControls) return;
+            const invX = window.innerWidth - e.clientX;
+            const invY = window.innerHeight - e.clientY;
+            fakeCursor.style.left = invX + 'px';
+            fakeCursor.style.top = invY + 'px';
 
-        modalYes.addEventListener('click', () => {
-            fakeModal.style.display = 'none';
-            say("Wenigstens bist du ehrlich. Und jetzt verschwinde.");
-        });
-
-        modalNo.addEventListener('click', () => {
-            playTone(150, 'sawtooth', 0.2);
-            document.getElementById('modal-text').innerText = "FEHLER: 'Abbrechen' wurde abgebrochen. Drücke 'Ja'.";
-        });
-    </script>
-</body>
-</html>
+            const rect = btn.getBoundingClientRect();
+            if (invX >= rect.left && invX <= rect.right && invY >= rect.top && invY <= rect.bottom) {
+                btn.style.backgroundColor = '#ff758f';
+            } else {
+btn.style.backgroundColor = '#e63946';
+}
+});
+document.addEventListener('click', (e) => {
+if (!reverseControls) return;
+const invX = window.innerWidth - e.clientX;
+const invY = window.innerHeight - e.clientY;
+const rect = btn.getBoundingClientRect();
+if (invX >= rect.left && invX <= rect.right && invY >= rect.top && invY <= rect.bottom) {
+btn.click();
+} else {
+playTone(140, 'triangle', 0.1);
+say("Knapp daneben! Rechts ist links und oben ist unten.");
+}
+});
