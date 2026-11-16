@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitte nicht drücken. (Ultimate Ragebait Edition)</title>
+    <title>Bitte nicht drücken.</title>
     <style>
         :root {
-            --bg-color: #0e0e10;
-            --text-color: #f4f4f6;
-            --btn-color: #e63946;
-            --btn-shadow: #9b1b26;
+            --bg-color: #0b0c0e;
+            --text-color: #e8e8ec;
+            --btn-color: #d90429;
+            --btn-shadow: #8d0801;
         }
 
         * {
@@ -30,58 +30,53 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            transition: background-color 0.4s, filter 0.3s;
+            transition: background-color 0.5s, filter 0.3s;
         }
-
-        body.inverted { filter: invert(1) hue-rotate(180deg); }
-        body.upside-down { transform: rotate(180deg); }
-        body.blurry { filter: blur(3px); }
 
         #narrator-box {
             position: fixed;
-            top: 6%;
+            top: 7%;
             width: 88%;
             max-width: 820px;
             text-align: center;
-            font-size: 1.35rem;
-            line-height: 1.5;
-            min-height: 105px;
+            font-size: 1.3rem;
+            line-height: 1.55;
+            min-height: 115px;
             z-index: 30;
             pointer-events: none;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.9);
-            background: rgba(15, 15, 18, 0.85);
-            padding: 15px 25px;
-            border-radius: 10px;
-            border: 1px solid #333;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            background: rgba(18, 19, 24, 0.9);
+            padding: 18px 28px;
+            border-radius: 6px;
+            border-left: 4px solid #d90429;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.8);
         }
 
         #hud {
             position: fixed;
-            bottom: 12px;
-            left: 20px;
-            right: 20px;
+            bottom: 14px;
+            left: 22px;
+            right: 22px;
             display: flex;
             justify-content: space-between;
-            font-size: 0.85rem;
-            color: #777;
+            font-size: 0.8rem;
+            color: #666;
             pointer-events: none;
             z-index: 30;
         }
 
         #the-button {
             position: absolute;
-            padding: 25px 50px;
-            font-size: 1.5rem;
+            padding: 24px 48px;
+            font-size: 1.45rem;
             font-weight: bold;
             font-family: inherit;
             color: white;
             background-color: var(--btn-color);
             border: none;
-            border-radius: 12px;
-            box-shadow: 0 8px 0 var(--btn-shadow), 0 15px 25px rgba(0,0,0,0.7);
+            border-radius: 8px;
+            box-shadow: 0 8px 0 var(--btn-shadow), 0 15px 30px rgba(0,0,0,0.8);
             cursor: pointer;
-            transition: transform 0.1s, box-shadow 0.1s, top 0.18s ease-out, left 0.18s ease-out, padding 0.2s, font-size 0.2s;
+            transition: transform 0.08s, box-shadow 0.08s, top 0.2s ease-out, left 0.2s ease-out, background-color 0.3s;
             z-index: 15;
         }
 
@@ -90,273 +85,248 @@
             box-shadow: 0 2px 0 var(--btn-shadow);
         }
 
-        /* Steam Achievement Popup */
-        #achievement-toast {
-            position: fixed;
-            bottom: -100px;
-            right: 25px;
-            width: 320px;
-            background: #1b2838;
-            border: 2px solid #66c0f4;
-            color: #fff;
-            padding: 12px 15px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.8);
-            transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 9999;
-            font-family: Arial, sans-serif;
+        #the-button.green-mode {
+            background-color: #2b9348;
+            box-shadow: 0 8px 0 #1b4332;
+        }
+        /* The Corridor - Der goldene Gang & die Ziegelmauer */
+        #corridor-view {
+            display: none;
+            position: relative;
+            width: 340px;
+            height: 260px;
+            background: linear-gradient(180deg, #1a1a1a 0%, #3a3a3a 100%);
+            border: 3px solid #555;
+            margin-top: 80px;
+            overflow: hidden;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 20;
         }
 
-        #achievement-toast.show { bottom: 45px; }
-        .ach-icon { font-size: 2rem; }
-        .ach-title { font-size: 0.75rem; color: #66c0f4; text-transform: uppercase; font-weight: bold; }
-        .ach-name { font-size: 0.95rem; font-weight: bold; margin-top: 2px; }
-        #fake-cursor {
+        #corridor-goal {
+            position: absolute;
+            top: 35px;
+            padding: 12px 20px;
+            background: gold;
+            color: #000;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 0 25px gold;
+            z-index: 21;
+        }
+
+        #brick-wall {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 2px;
+            z-index: 25;
+            pointer-events: auto;
+        }
+
+        .brick {
+            background: #8d2b24;
+            border: 1px solid #4a120e;
+            opacity: 0;
+            transform: scale(1.4);
+            transition: opacity 0.15s, transform 0.15s;
+        }
+
+        .brick.placed {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Tipp-Zwang Box */
+        #typing-challenge {
+            display: none;
+            width: 460px;
+            max-width: 90%;
+            background: #16171d;
+            border: 2px solid #444;
+            padding: 20px;
+            text-align: center;
+            margin-top: 80px;
+            z-index: 25;
+            border-radius: 8px;
+        }
+
+        #typing-input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 12px;
+            background: #0b0c0e;
+            border: 1px solid #666;
+            color: #fff;
+            font-family: inherit;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        /* Fake Browser Permission Popup */
+        #perm-popup {
             display: none;
             position: fixed;
-            width: 22px;
-            height: 22px;
-            background: #ffbe0b;
-            border: 2px solid #000;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            box-shadow: 0 0 12px #ffbe0b;
+            top: 18px;
+            left: 24px;
+            width: 340px;
+            background: #292a2d;
+            color: #e8eaed;
+            font-family: Arial, sans-serif;
+            font-size: 0.85rem;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.9);
+            border: 1px solid #3c4043;
+            z-index: 100;
         }
 
+        .perm-btns {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .perm-btns button {
+            padding: 6px 14px;
+            border-radius: 4px;
+            border: 1px solid #5f6368;
+            background: transparent;
+            color: #8ab4f8;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Stanley Parable Türen */
         #doors-container {
             display: none;
             gap: 60px;
             z-index: 20;
-            margin-top: 80px;
+            margin-top: 85px;
         }
 
         .door {
             width: 145px;
             height: 225px;
-            background: #2b2d42;
-            border: 4px solid #8d99ae;
-            border-radius: 8px 8px 0 0;
+            background: #1f222e;
+            border: 3px solid #6c757d;
+            border-radius: 6px 6px 0 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
+            transition: transform 0.2s;
             position: relative;
         }
-
-        .door:hover { transform: scale(1.06); background: #3a3d5c; }
+        .door:hover { transform: scale(1.04); border-color: #adb5bd; }
         .door::after {
             content: '';
             position: absolute;
-            right: 15px;
+            right: 14px;
             top: 50%;
-            width: 12px;
-            height: 12px;
-            background: gold;
+            width: 10px;
+            height: 10px;
+            background: #d4a373;
             border-radius: 50%;
         }
 
-        #loader-container, #captcha-container {
-            display: none;
-            width: 420px;
-            max-width: 90%;
-            background: #1e1e24;
-            border: 2px solid #555;
-            padding: 20px;
-            text-align: center;
-            z-index: 25;
-            margin-top: 70px;
-            border-radius: 8px;
-        }
-
-        #progress-bar-bg {
-            width: 100%;
-            height: 25px;
-            background: #000;
-            border: 1px solid #444;
-            margin: 15px 0;
-        }
-
-        #progress-fill {
-            width: 0%;
-            height: 100%;
-            background: #2a9d8f;
-            transition: width 0.2s;
-        }
-
-        #captcha-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .captcha-cell {
-            font-size: 2rem;
-            background: #2b2b36;
-            padding: 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-        .captcha-cell:hover { transform: scale(1.1); background: #3b3b4a; }
-
-        #tos-modal {
-            display: none;
+        /* Achievement Toast */
+        #achievement-toast {
             position: fixed;
-            top: 53%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 420px;
-            max-width: 90%;
-            background: #dcdcdc;
-            color: #111;
-            border: 3px solid #777;
-            box-shadow: 12px 12px 0 #000;
-            padding: 15px;
+            bottom: -100px;
+            right: 25px;
+            width: 330px;
+            background: #171a21;
+            border: 1px solid #66c0f4;
+            color: #fff;
+            padding: 12px 15px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.9);
+            transition: bottom 0.4s ease-out;
+            z-index: 9999;
             font-family: Arial, sans-serif;
-            z-index: 50;
         }
+        #achievement-toast.show { bottom: 45px; }
 
-        #tos-text {
-            height: 130px;
-            overflow-y: scroll;
-            background: #fff;
-            border: 1px solid #999;
-            padding: 10px;
-            font-size: 0.75rem;
-            margin: 10px 0;
-        }
-
-        /* Fake Blue Screen */
-        #bsod {
+        /* Fake Cursor */
+        #fake-cursor {
             display: none;
             position: fixed;
-            inset: 0;
-            background: #0078d7;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            padding: 10% 12%;
-            z-index: 9000;
-            cursor: pointer;
-        }
-
-        /* Bossfight Lebensleiste */
-        #boss-hud {
-            display: none;
-            position: fixed;
-            top: 23%;
-            width: 450px;
-            max-width: 85%;
-            text-align: center;
-            z-index: 25;
-        }
-        #boss-hp-bg {
-            width: 100%;
+            width: 18px;
             height: 18px;
-            background: #300;
-            border: 2px solid #ff4d4d;
-            margin-top: 6px;
-        }
-        #boss-hp-fill {
-            width: 100%;
-            height: 100%;
-            background: #ff1e1e;
-            transition: width 0.15s;
-        }
-
-        .decoy {
-            position: absolute;
-            padding: 18px 36px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            font-family: inherit;
-            color: white;
-            background-color: var(--btn-color);
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 6px 0 var(--btn-shadow);
-            cursor: pointer;
-            z-index: 12;
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
         }
 
         @keyframes shake {
             0%, 100% { transform: translate(0, 0); }
-            25% { transform: translate(-7px, 5px); }
-            50% { transform: translate(7px, -5px); }
-            75% { transform: translate(-5px, -7px); }
+            25% { transform: translate(-5px, 4px); }
+            50% { transform: translate(5px, -4px); }
+            75% { transform: translate(-4px, -5px); }
         }
-        .shake-screen { animation: shake 0.25s; }
+        .shake-screen { animation: shake 0.22s; }
     </style>
-</head><body>
+</head>
+<body>
 
     <div id="fake-cursor"></div>
 
-    <div id="narrator-box">Willkommen. Deine einzige Aufgabe ist simpel: Drücke diesen Knopf nicht.</div>
-
-    <div id="boss-hud">
-        <strong style="color: #ff4d4d; letter-spacing: 2px;">DER UNBEUGSAME KNOPF (BOSS)</strong>
-        <div id="boss-hp-bg"><div id="boss-hp-fill"></div></div>
-    </div>
+    <div id="narrator-box">Das hier ist ein Knopf. Auf ihm steht „NICHT DRÜCKEN“. Ich bin sicher, wir sind beide erwachsen genug, das zu respektieren.</div>
     
     <button id="the-button">NICHT DRÜCKEN</button>
 
+    <!-- The Corridor Mauer-Szene -->
+    <div id="corridor-view">
+        <div id="corridor-goal">ECHTES ENDE →</div>
+        <div id="brick-wall"></div>
+    </div>
+
+    <!-- Stanley Parable Türen -->
     <div id="doors-container">
-        <div class="door" id="door-left"><strong>LINKE TÜR</strong><br><small>(Empfohlen)</small></div>
-        <div class="door" id="door-right"><strong>RECHTE TÜR</strong><br><small>(Verboten)</small></div>
+        <div class="door" id="door-left"><strong>LINKE TÜR</strong></div>
+        <div class="door" id="door-right"><strong>RECHTE TÜR</strong></div>
     </div>
 
-    <div id="loader-container">
-        <div id="loader-label">Lösche deine Browser-Historie... 0%</div>
-        <div id="progress-bar-bg"><div id="progress-fill"></div></div>
-        <button id="pump-btn" style="padding: 8px 16px; cursor: pointer; font-weight: bold;">Manuell pumpen</button>
+    <!-- Peinlicher Tipp-Zwang -->
+    <div id="typing-challenge">
+        <div style="color: #aaa; font-size: 0.9rem;">Sicherheits-Sperre aktiv. Tippe exakt diesen Satz ein, um fortzufahren:</div>
+        <div id="target-phrase" style="color: #ffbe0b; font-weight: bold; margin-top: 10px; font-size: 1.05rem;">Ich habe keine Impulskontrolle.</div>
+        <input type="text" id="typing-input" placeholder="Hier tippen..." autocomplete="off">
     </div>
 
-    <div id="captcha-container">
-        <strong>Sicherheitsprüfung: Bist du ein Roboter?</strong>
-        <p style="font-size: 0.85rem; color: #bbb;">Klicke auf das <u>verzweifelte</u> Gesicht, um fortzufahren.</p>
-        <div id="captcha-grid"></div>
-    </div>
-
-    <div id="tos-modal">
-        <strong>Nutzungsbedingungen für Ungehorsame</strong>
-        <div id="tos-text">
-            §1 Der Nutzer gibt hiermit zu, zu viel Freizeit zu haben.<br><br>
-            §2 Der Erzähler hat immer recht. Auch wenn er falsch liegt, tritt automatisch §2 in Kraft.<br><br>
-            §3 Falls du das hier wirklich liest: Respekt. Aber hör auf zu klicken.<br><br>
-            §4 Dieser Text ist nur hier, damit du scrollen musst.<br><br>
-            §5 Fast geschafft...<br><br>
-            §6 Noch ein kleines Stück...<br><br>
-            §7 Okay, du darfst jetzt unten auf Akzeptieren drücken.
+    <!-- Fake Mikrofon-Warnung -->
+    <div id="perm-popup">
+        <strong>localhost möchte auf Ihr Mikrofon zugreifen</strong>
+        <p style="color: #9aa0a6; margin: 8px 0 0 0; font-size: 0.8rem;">Grund: Der Erzähler möchte hören, wie genervt Sie gerade schnaufen.</p>
+        <div class="perm-btns">
+            <button id="perm-block">Blockieren</button>
+            <button id="perm-allow">Zulassen</button>
         </div>
-        <button id="tos-accept" disabled style="padding: 6px 12px;">Erst komplett runterscrollen!</button>
-    </div>
-
-    <div id="bsod">
-        <div style="font-size: 5rem; margin-bottom: 20px;">:(</div>
-        <div style="font-size: 1.5rem; line-height: 1.5;">
-            Auf dem PC ist ein Problem aufgetreten, weil du nicht hören kannst.<br>
-            Stillstandcode: STURER_NUTZER_EXCEPTION
-        </div>
-        <p style="margin-top: 30px; font-size: 0.9rem; opacity: 0.8;">(Klicke irgendwo, um den Absturz zu ignorieren...)</p>
     </div>
 
     <div id="achievement-toast">
-        <div class="ach-icon">🏆</div>
+        <div style="font-size: 1.8rem;">🎖️</div>
         <div>
-            <div class="ach-title">Errungenschaft freigeschaltet</div>
-            <div class="ach-name" id="ach-name">Erster Ungehorsam</div>
+            <div style="font-size: 0.7rem; color: #66c0f4; text-transform: uppercase;">Errungenschaft</div>
+            <div style="font-size: 0.9rem; font-weight: bold;" id="ach-name">Titel</div>
         </div>
     </div>
 
     <div id="hud">
-        <span id="status-text">Status: Noch brav</span>
-        <span id="counter">Ungehorsam: 0 | Achievements: 0/6</span>
+        <span id="status-text">Psychologisches Profil: Unauffällig</span>
+        <span id="counter">Klicks: 0 | Achievements: 0/6</span>
     </div>
 
     <script>
@@ -364,30 +334,20 @@
         const narrator = document.getElementById('narrator-box');
         const counterDisplay = document.getElementById('counter');
         const statusText = document.getElementById('status-text');
+        const corridorView = document.getElementById('corridor-view');
+        const brickWall = document.getElementById('brick-wall');
         const doorsContainer = document.getElementById('doors-container');
-        const loaderContainer = document.getElementById('loader-container');
-        const progressFill = document.getElementById('progress-fill');
-        const loaderLabel = document.getElementById('loader-label');
-        const pumpBtn = document.getElementById('pump-btn');
-        const captchaContainer = document.getElementById('captcha-container');
-        const captchaGrid = document.getElementById('captcha-grid');
-        const tosModal = document.getElementById('tos-modal');
-        const tosText = document.getElementById('tos-text');
-        const tosAccept = document.getElementById('tos-accept');
+        const typingChallenge = document.getElementById('typing-challenge');
+        const typingInput = document.getElementById('typing-input');
+        const permPopup = document.getElementById('perm-popup');
         const fakeCursor = document.getElementById('fake-cursor');
-        const bsod = document.getElementById('bsod');
-        const bossHud = document.getElementById('boss-hud');
-        const bossHpFill = document.getElementById('boss-hp-fill');
 
         let stage = 0;
         let dodges = 0;
         let isDodging = false;
         let reverseControls = false;
-        let bossMode = false;
-        let bossHp = 100;
-        let pumpProgress = 0;
         let typewriterTimeout;
-        let unlockedAchievements = new Set();
+        let unlocked = new Set();
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playTone(freq, type, duration, slideTo = null) {
@@ -397,7 +357,7 @@
             osc.type = type;
             osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
             if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, audioCtx.currentTime + duration);
-            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
             osc.connect(gain);
             gain.connect(audioCtx.destination);
@@ -405,35 +365,32 @@
             osc.stop(audioCtx.currentTime + duration);
         }
 
-        function unlockAchievement(id, name) {
-            if (unlockedAchievements.has(id)) return;
-            unlockedAchievements.add(id);
-            updateHUD();
-            document.getElementById('ach-name').innerText = name;
+        function unlock(id, title) {
+            if (unlocked.has(id)) return;
+            unlocked.add(id);
+            counterDisplay.innerText = `Klicks: ${stage} | Achievements: ${unlocked.size}/6`;
+            document.getElementById('ach-name').innerText = title;
             const toast = document.getElementById('achievement-toast');
             toast.classList.add('show');
-            playTone(587.33, 'sine', 0.15);
-            setTimeout(() => playTone(880, 'sine', 0.3), 120);
-            setTimeout(() => toast.classList.remove('show'), 3800);
-        }        function say(text) {
+            playTone(523.25, 'sine', 0.12);
+            setTimeout(() => playTone(659.25, 'sine', 0.25), 110);
+            setTimeout(() => toast.classList.remove('show'), 3600);
+        }
+
+        function say(text) {
             clearTimeout(typewriterTimeout);
             narrator.innerHTML = "";
             let i = 0;
             function type() {
                 if (i < text.length) {
                     narrator.innerHTML += text.charAt(i);
-                    if (i % 2 === 0) playTone(260 + Math.random() * 90, 'triangle', 0.025);
+                    if (i % 3 === 0) playTone(220 + Math.random() * 60, 'triangle', 0.02);
                     i++;
-                    typewriterTimeout = setTimeout(type, 22);
+                    typewriterTimeout = setTimeout(type, 20);
                 }
             }
             type();
         }
-
-        function updateHUD() {
-            counterDisplay.innerText = `Ungehorsam: ${stage} | Achievements: ${unlockedAchievements.size}/6`;
-        }
-
         function moveButtonRandomly() {
             const maxX = window.innerWidth - btn.offsetWidth - 40;
             const maxY = window.innerHeight - btn.offsetHeight - 60;
@@ -454,171 +411,122 @@
             document.body.classList.add('shake-screen');
         }
 
+        // Tab-Wechsel erkennen (4. Wand durchbrechen!)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && stage > 0 && stage < 13) {
+                unlock('tab', 'Fluchtversuch gescheitert');
+                say("Willkommen zurück. Hast du kurz geschaut, ob auf YouTube etwas Spannenderes läuft? Spoiler: Tut es nicht.");
+            }
+        });
+
         // Geheimes Gedulds-Ende
         let idleTimer = setTimeout(() => {
             if (stage === 0) {
                 btn.style.display = 'none';
-                statusText.innerText = "Status: Zen-Meister";
-                unlockAchievement('zen', 'Zen-Meister (15 Sek. gewartet)');
-                say("...Du hast tatsächlich 15 Sekunden gewartet, ohne zu drücken? Ich bin sprachlos. Du hast das 'Gute Ende' freigeschaltet.");
+                unlock('zen', 'Statistisch unmöglich (15s gewartet)');
+                statusText.innerText = "Psychologisches Profil: Verdächtig diszipliniert";
+                say("...Du hast ihn wirklich nicht gedrückt. Weißt du, wie viel Arbeit in den nächsten 12 Stufen steckt? Du hast mir gerade den Feierabend ruiniert.");
             }
         }, 15000);
 
-        // Haupt-Klick-Steuerung
         btn.addEventListener('click', () => {
             clearTimeout(idleTimer);
-
-            // Bosskampf-Modus ab Phase 15
-            if (bossMode) {
-                bossHp -= 10;
-                bossHpFill.style.width = Math.max(0, bossHp) + '%';
-                shakeScreen();
-                playTone(150, 'sawtooth', 0.12, 60);
-                moveButtonRandomly();
-
-                if (bossHp === 70) say("AUTSCH! Hör auf, mich zu schlagen!");
-                if (bossHp === 40) say("Meine Lebensleiste! Du brutaler Klick-Monarch!");
-                if (bossHp === 10) say("Nur noch 10 HP... bitte... ich habe Familie (zwei Checkboxen und ein Dropdown-Menü)!");
-
-                if (bossHp <= 0) {
-                    bossMode = false;
-                    bossHud.style.display = 'none';
-                    unlockAchievement('boss', 'Knopf-Bezwinger');
-                    say("Du hast den Knopf besiegt. Er ist jetzt offiziell kaputt. Bist du stolz auf dich?");
-                    btn.style.transition = "transform 1.4s ease-in, top 1.4s ease-in";
-                    btn.style.top = "130vh";
-                    btn.style.transform = "rotate(1080deg)";
-                    statusText.innerText = "Status: Wahres Ende erreicht";
-                }
-                return;
-            }
-
             stage++;
-            updateHUD();
-            playTone(200, 'square', 0.09, 100);
+            counterDisplay.innerText = `Klicks: ${stage} | Achievements: ${unlocked.size}/6`;
+            playTone(190, 'square', 0.08, 95);
 
             switch (stage) {
                 case 1:
-                    unlockAchievement('first', 'Regelbrecher');
-                    statusText.innerText = "Status: Leicht rebellisch";
-                    say("Da stand 'NICHT DRÜCKEN'. Hast du das 'NICHT' überlesen, oder ist dein Zeigefinger fremdgesteuert?");
+                    statusText.innerText = "Psychologisches Profil: Leicht manipulierbar";
+                    say("Faszinierend. Ich schreibe ‚Nicht drücken‘, und dein Gehirn übersetzt das sofort in ‚Oh, ein Gratis-Dopamin-Knopf‘.");
                     break;
                 case 2:
-                    say("Zweiter Versuch. Stell dir vor, dieser Knopf löst weltweit spontanen Schluckauf aus. Hör auf.");
+                    document.title = "(1) Neue Nachricht von Mama";
+                    say("Schau mal ganz oben auf deinen Browser-Tab. Ich glaube, deine Mutter hat dir geschrieben. Geh ruhig nachsehen.");
                     break;
                 case 3:
-                    shakeScreen();
-                    playTone(90, 'sawtooth', 0.4);
-                    say("REICHT JETZT! Ich schalte die Ausweich-Automatik ein. Viel Spaß beim Zielen.");
+                    document.title = "Bitte nicht drücken.";
+                    say("Du hast nicht mal nachgesehen? Beeindruckend. Ein echtes Gewohnheitstier. Mal sehen, wie gut deine Reflexe sind.");
                     isDodging = true;
                     moveButtonRandomly();
                     break;
                 case 4:
                     isDodging = false;
                     resetButtonCenter();
-                    say("Wie hast du den erwischt?! Dann verstecke ich ihn eben hinter deutscher Bürokratie.");
-                    btn.style.display = 'none';
-                    tosModal.style.display = 'block';
+                    btn.classList.add('green-mode');
+                    btn.innerText = "JETZT DRÜCKEN!";
+                    say("Weißt du was? Vergiss es. Ich gebe dir die Erlaubnis. Drück ihn. Tu es sofort. Das ist ein Befehl.");
                     break;
                 case 5:
-                    say("Du hast die AGBs tatsächlich durchgescrollt?! Zeit für ein Experiment wie in 'The Stanley Parable'. Gehe durch die LINKE Tür.");
+                    btn.classList.remove('green-mode');
+                    btn.innerText = "NICHT DRÜCKEN";
+                    unlock('sheep', 'Blinder Gehorsam');
+                    say("Haha! Du machst wirklich ALLES, was man dir sagt, oder? Erst rebellieren und dann brav auf Kommando klicken. Peinlich.");
+                    break;
+                case 6:
+                    say("Zeit für eine klassische Entscheidung im Stil von ‚The Stanley Parable‘. Zwei Türen. Gehe durch die LINKE Tür.");
                     btn.style.display = 'none';
                     doorsContainer.style.display = 'flex';
                     break;
-                case 6:
-                    say("Gut, der Knopf ist wieder da. Aber ich drehe jetzt dein Licht um. Augenschmerzen inklusive.");
-                    document.body.classList.add('inverted');
-                    shakeScreen();
-                    break;
                 case 7:
-                    document.body.classList.remove('inverted');
-                    say("Immer noch nicht genug? Dann stelle ich deinen gesamten Monitor auf den Kopf!");
-                    document.body.classList.add('upside-down');
+                    say("Gut, machen wir es offiziell. Gib es wenigstens schriftlich zu, bevor ich den Knopf wieder freischalte.");
+                    btn.style.display = 'none';
+                    typingChallenge.style.display = 'block';
+                    typingInput.focus();
                     break;
                 case 8:
-                    document.body.classList.remove('upside-down');
-                    say("Systemfehler! Ich starte einen Notfall-Reset. Bitte warten und NICHTS tun.");
-                    btn.style.display = 'none';
-                    loaderContainer.style.display = 'block';
-                    startFakeLoader();
+                    say("Du hast es tatsächlich eingetippt. Ich schalte mal kurz dein Mikrofon ein, ich will hören, ob du dabei seufzt.");
+                    permPopup.style.display = 'block';
                     break;
                 case 9:
-                    say("DU HAST DEN LADEBALKEN MANUELL AUF 100% GEPUMPT?! Beweise erst mal, dass du kein Roboter bist.");
+                    say("Du suchst ein echtes Ende? Bitteschön. Lauf den goldenen Korridor entlang. Ich halte dich nicht auf.");
                     btn.style.display = 'none';
-                    startCaptcha();
+                    buildCorridorWall();
                     break;
                 case 10:
-                    say("Schluss mit lustig. Ich klone den Knopf 18 Mal. 17 davon sind billige Fälschungen.");
-                    spawnDecoys(17);
+                    say("Die Mauer hat dich nicht aufgehalten? Gut. Dann drehe ich jetzt deine gesamte Maus-Achse um. Viel Spaß.");
+                    enableReverseCursor();
                     moveButtonRandomly();
                     break;
                 case 11:
-                    document.querySelectorAll('.decoy').forEach(d => d.remove());
-                    resetButtonCenter();
-                    say("Ab jetzt ist deine Maus spiegelverkehrt. Viel Erfolg beim Treffen, Genie.");
-                    enableReverseCursor();
-                    break;
-                case 12:
                     disableReverseCursor();
-                    unlockAchievement('mirror', 'Spiegelverkehrtes Genie');
-                    say("UNMÖGLICH! Du hast mit spiegelverkehrter Maus getroffen?! Ich schrumpfe ihn auf Mikroben-Größe.");
-                    btn.style.padding = "4px 8px";
-                    btn.style.fontSize = "0.55rem";
-                    moveButtonRandomly();
-                    break;
-                case 13:
-                    btn.style.padding = "25px 50px";
-                    btn.style.fontSize = "1.5rem";
+                    unlock('mirror', 'Koordinations-Wunder');
                     resetButtonCenter();
-                    playTone(60, 'sawtooth', 0.8);
-                    bsod.style.display = 'block';
+                    say("Okay. Ich merke, du brauchst das hier mehr als ich. Ich gehe. Der Knopf gehört dir. Viel Spaß beim Anstarren.");
+                    btn.style.backgroundColor = "#2b2d42";
+                    btn.style.boxShadow = "0 8px 0 #14161f";
+                    btn.innerText = "Stille";
+                    statusText.innerText = "Psychologisches Profil: Erzähler hat den Raum verlassen";
                     break;
-                case 14:
-                    say("Du hast sogar einen Blue Screen weggeklickt?! Na schön. Dann kämpfe eben gegen den Knopf selbst!");
-                    bossMode = true;
-                    bossHud.style.display = 'block';
-                    btn.innerText = "GREIF MICH AN!";
-                    statusText.innerText = "Status: BOSSKAMPF";
-                    moveButtonRandomly();
+                case 15:
+                    say("...Ich habe durch das Schlüsselloch geschaut. Du klickst IMMER NOCH?! Was stimmt nicht mit dir?");
+                    break;
+                case 18:
+                    unlock('end', 'Vollständige Sinnlosigkeit');
+                    say("Weißt du was? Ich nehme den Knopf jetzt mit. Feierabend.");
+                    btn.style.transition = "top 1.2s ease-in, transform 1.2s ease-in";
+                    btn.style.top = "130vh";
+                    btn.style.transform = "rotate(720deg)";
+                    playTone(300, 'sawtooth', 1.1, 40);
+                    setTimeout(() => {
+                        say("Er ist weg. Du kannst jetzt endlich wieder etwas Sinnvolles mit deinem Leben anfangen.");
+                    }, 1400);
+                    break;
+                default:
+                    if (stage > 11 && stage < 15) say("...");
+                    if (stage > 15 && stage < 18) say(`Klick ${stage}. Erwartest du noch ein Feuerwerk?`);
                     break;
             }
         });
-        // Geheim-Achievement bei Rechtsklick
-        document.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            unlockAchievement('hacker', 'Möchtegern-Hacker (Rechtsklick)');
-            say("Netter Versuch mit dem Rechtsklick. Hier wird nicht geschummelt.");
-        });
-
-        // BSOD wegklicken
-        bsod.addEventListener('click', () => {
-            bsod.style.display = 'none';
-            say("Wie... wie hast du einen Blue Screen überlebt?!");
-        });
-
         // Ausweichen
         btn.addEventListener('mouseover', () => {
-            if (isDodging && dodges < 7) {
+            if (isDodging && dodges < 6) {
                 dodges++;
-                playTone(550, 'sine', 0.07, 850);
+                playTone(500, 'sine', 0.06, 800);
                 moveButtonRandomly();
-                if (dodges === 2) say("Zu langsam!");
-                if (dodges === 5) say("Haha! Deine Hand-Augen-Koordination ist tragisch.");
+                if (dodges === 2) say("Zu langsam.");
+                if (dodges === 4) say("Das ist fast schon traurig anzusehen.");
             }
-        });
-
-        // AGB Scroll-Logik
-        tosText.addEventListener('scroll', () => {
-            if (tosText.scrollTop + tosText.clientHeight >= tosText.scrollHeight - 10) {
-                tosAccept.disabled = false;
-                tosAccept.innerText = "Zähneknirschend akzeptieren";
-            }
-        });
-
-        tosAccept.addEventListener('click', () => {
-            tosModal.style.display = 'none';
-            btn.style.display = 'block';
-            resetButtonCenter();
         });
 
         // Stanley Parable Türen
@@ -626,7 +534,7 @@
             doorsContainer.style.display = 'none';
             btn.style.display = 'block';
             resetButtonCenter();
-            say("Oh, du hast ausnahmsweise mal auf mich gehört? Braver Nutzer. Hier ist trotzdem wieder der Knopf.");
+            say("Oh, du hast ausnahmsweise mal gehört. Hier ist trotzdem wieder dein geliebter Knopf.");
         });
 
         document.getElementById('door-right').addEventListener('click', () => {
@@ -634,81 +542,71 @@
             btn.style.display = 'block';
             resetButtonCenter();
             shakeScreen();
-            playTone(110, 'sawtooth', 0.4);
-            unlockAchievement('rebel', 'Türen-Rebell (Rechte Tür gewählt)');
-            say("DAS WAR DIE RECHTE TÜR! Warum machst du IMMER das Gegenteil von dem, was ich sage?!");
+            unlock('rebel', 'Chronisch ungehorsam (Rechte Tür)');
+            say("Das war die RECHTE Tür. Es ist wirklich faszinierend, wie vorhersehbar dein Trotz ist.");
         });
 
-        // 99% Ladebalken
-        function startFakeLoader() {
-            let pct = 0;
-            const interval = setInterval(() => {
-                if (pct < 99) {
-                    pct += 9;
-                    if (pct > 99) pct = 99;
-                    progressFill.style.width = pct + '%';
-                    loaderLabel.innerText = `Lösche deine Browser-Historie... ${pct}%`;
-                } else {
-                    clearInterval(interval);
-                    loaderLabel.innerText = "Hängt bei 99%. Bloß nicht pumpen!";
-                }
-            }, 140);
-        }
-
-        pumpBtn.addEventListener('click', () => {
-            pumpProgress++;
-            playTone(300 + pumpProgress * 40, 'sine', 0.08);
-            loaderLabel.innerText = `99.${pumpProgress}% ... HÖR AUF ZU PUMPEN!`;
-            if (pumpProgress >= 8) {
-                loaderContainer.style.display = 'none';
+        // Tipp-Zwang Prüfung
+        typingInput.addEventListener('input', () => {
+            if (typingInput.value.trim() === "Ich habe keine Impulskontrolle.") {
+                typingChallenge.style.display = 'none';
                 btn.style.display = 'block';
                 resetButtonCenter();
+                say("Einsicht ist der erste Schritt. Auch wenn er bei dir offensichtlich nichts bringt.");
             }
         });
 
-        // Unmögliches Captcha
-        function startCaptcha() {
-            captchaContainer.style.display = 'block';
-            captchaGrid.innerHTML = '';
-            const targetIndex = Math.floor(Math.random() * 12);
-            for (let i = 0; i < 12; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'captcha-cell';
-                cell.innerText = i === targetIndex ? '😫' : '😄';
-                cell.onclick = () => {
-                    if (i === targetIndex) {
-                        captchaContainer.style.display = 'none';
-                        btn.style.display = 'block';
-                        resetButtonCenter();
-                    } else {
-                        playTone(120, 'sawtooth', 0.2);
-                        say("Falsch! Das war ein glückliches Gesicht. Bist du doch ein Toaster?");
-                    }
-                };
-                captchaGrid.appendChild(cell);
+        // Fake Mikrofon-Popup
+        document.getElementById('perm-block').addEventListener('click', () => {
+            permPopup.style.display = 'none';
+            say("Blockiert? Feigling. Ich weiß trotzdem, dass du gerade die Augen verdreht hast.");
+        });
+
+        document.getElementById('perm-allow').addEventListener('click', () => {
+            permPopup.style.display = 'none';
+            say("Danke. Oh... dieses schwere Atmen. Du bist ja völlig am Ende.");
+        });
+
+        // The Corridor: Ziegelmauer baut sich vor dem Ziel auf
+        function buildCorridorWall() {
+            corridorView.style.display = 'flex';
+            brickWall.innerHTML = '';
+            const bricks = [];
+            for (let i = 0; i < 30; i++) {
+                const b = document.createElement('div');
+                b.className = 'brick';
+                brickWall.appendChild(b);
+                bricks.push(b);
             }
+
+            // Steine nacheinander einblenden
+            bricks.forEach((brick, idx) => {
+                setTimeout(() => {
+                    brick.classList.add('placed');
+                    if (idx % 3 === 0) playTone(120, 'square', 0.05);
+                }, idx * 75);
+            });
+
+            setTimeout(() => {
+                say("Ups. Da ist wohl eine massive Ziegelmauer gewachsen. Wie ungeschickt. Klick auf die Mauer, um sie einzureißen.");
+            }, 1800);
+
+            let wallHits = 0;
+            brickWall.onclick = () => {
+                wallHits++;
+                shakeScreen();
+                playTone(100, 'sawtooth', 0.1);
+                if (wallHits === 3) say("Du schlägst ernsthaft mit dem Mauszeiger gegen eine virtuelle Wand?");
+                if (wallHits >= 6) {
+                    corridorView.style.display = 'none';
+                    btn.style.display = 'block';
+                    resetButtonCenter();
+                    say("Fein, die Mauer ist weg. Dahinter war sowieso nichts. Überraschung.");
+                }
+            };
         }
 
-        // Klone
-        function spawnDecoys(count) {
-            for (let i = 0; i < count; i++) {
-                const decoy = document.createElement('button');
-                decoy.className = 'decoy';
-                decoy.innerText = 'NICHT DRÜCKEN';
-                decoy.style.left = Math.random() * (window.innerWidth - 200) + 'px';
-                decoy.style.top = (200 + Math.random() * (window.innerHeight - 280)) + 'px';
-                decoy.onclick = () => {
-                    playTone(100, 'sawtooth', 0.25, 50);
-                    decoy.innerText = 'FALSCH!';
-                    decoy.style.backgroundColor = '#222';
-                    say("Daneben! Das war nur eine billige Attrappe.");
-                    setTimeout(() => decoy.remove(), 800);
-                };
-                document.body.appendChild(decoy);
-            }
-        }
-
-        // Gespiegelter Fake-Cursor
+        // Gespiegelter Cursor
         function enableReverseCursor() {
             reverseControls = true;
             document.body.style.cursor = 'none';
@@ -729,13 +627,6 @@
             const invY = window.innerHeight - e.clientY;
             fakeCursor.style.left = invX + 'px';
             fakeCursor.style.top = invY + 'px';
-
-            const rect = btn.getBoundingClientRect();
-            if (invX >= rect.left && invX <= rect.right && invY >= rect.top && invY <= rect.bottom) {
-                btn.style.backgroundColor = '#ff758f';
-            } else {
-                btn.style.backgroundColor = '#e63946';
-            }
         });
 
         document.addEventListener('click', (e) => {
@@ -746,8 +637,7 @@
             if (invX >= rect.left && invX <= rect.right && invY >= rect.top && invY <= rect.bottom) {
                 btn.click();
             } else {
-                playTone(140, 'triangle', 0.1);
-                say("Knapp daneben! Rechts ist links und oben ist unten.");
+                playTone(130, 'triangle', 0.08);
             }
         });
     </script>
